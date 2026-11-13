@@ -77,7 +77,8 @@ function App() {
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState('');
   const [error, setError] = useState('');
-  const [categories,setCategories] = useState([]);\n  const [categoryAudience,setCategoryAudience] = useState('all');
+  const [categories,setCategories] = useState([]);
+  const [categoryAudience,setCategoryAudience] = useState('all');
   const [jobs,setJobs] = useState([]);
   const [jobForm,setJobForm] = useState({title:'',description:'',category_id:'',budget_min:'',budget_max:'',currency:'SAR',country_code:'SA',city:''});
   const [proposalForms,setProposalForms] = useState({});
@@ -204,7 +205,15 @@ function App() {
     finally { setBusy(false); }
   }
 
-  useEffect(() => {\n    if (!supabase) return undefined;\n    let alive = true;\n    supabase.from('categories').select('id,slug,name_en,name_ar,description_en,description_ar').eq('is_active',true).order('sort_order')\n      .then(({data,error:categoryError}) => { if (alive && !categoryError) setCategories(data || []); });\n    return () => { alive = false; };\n  }, []);\n\n  async function loadMarketplace() {
+  useEffect(() => {
+    if (!supabase) return undefined;
+    let alive = true;
+    supabase.from('categories').select('id,slug,name_en,name_ar,description_en,description_ar').eq('is_active',true).order('sort_order')
+      .then(({data,error:categoryError}) => { if (alive && !categoryError) setCategories(data || []); });
+    return () => { alive = false; };
+  }, []);
+
+  async function loadMarketplace() {
     if (!supabase) return;
     const [c,j,mp] = await Promise.all([
       supabase.from('categories').select('id,slug,name_en,name_ar,description_en,description_ar').eq('is_active',true).order('sort_order'),
@@ -325,8 +334,9 @@ function App() {
       <a className="brand" href="#home"><span className="mark">N</span><span>NUSQRA<small>نُسقرا</small></span></a>
       <nav className={menu ? 'nav open' : 'nav'}>
         <a href="#features" onClick={()=>setMenu(false)}>{t.nav[0]}</a>
-        <a href="#steps" onClick={()=>setMenu(false)}>{t.nav[1]}</a>
-        <a href="#premium" onClick={()=>setMenu(false)}>{t.nav[2]}</a>
+        <a href="#categories" onClick={()=>setMenu(false)}>{t.nav[1]}</a>
+        <a href="#steps" onClick={()=>setMenu(false)}>{t.nav[2]}</a>
+        <a href="#premium" onClick={()=>setMenu(false)}>{t.nav[3]}</a>
       </nav>
       <div className="actions">
         {session ? <button className="navlink" onClick={()=>document.getElementById('account')?.scrollIntoView({behavior:'smooth'})}><UserRound size={15}/>{t.account}</button> :
