@@ -44,3 +44,11 @@ The Supabase database migrations are in `../supabase/migrations/`. Keep real cus
 ## First-release payment model
 
 NUSQRA connects customers and professionals. They arrange payment independently; the platform does not collect or distribute payments in the first release.
+
+## Marketplace actions
+
+- Customers can publish open jobs with a category, description, optional budget range, currency, and city.
+- Professionals can browse open jobs and submit one proposal per job with a cover letter, optional price, and delivery estimate.
+- Customers can review proposals submitted to their own job posts.
+- Database Row Level Security enforces customer ownership, professional role membership, open-job eligibility, and one proposal per professional per job.
+- Payments remain independently arranged between customers and professionals; this release does not collect or hold funds.
