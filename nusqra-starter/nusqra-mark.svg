@@ -1,29 +1,25 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 220" role="img" aria-labelledby="title desc">
 <title id="title">NUSQRA — نسقرا</title>
-<desc id="desc">Emerald geometric hexagon enclosing a bold interlocking N monogram, paired with Arabic and English NUSQRA wordmarks.</desc>
+<desc id="desc">Bright emerald geometric N symbol with Arabic name above a bold white NUSQRA wordmark.</desc>
 <defs>
   <linearGradient id="emerald" x1="0" y1="0" x2="1" y2="1">
-    <stop offset="0" stop-color="#55f0ad"/>
-    <stop offset=".48" stop-color="#12c982"/>
-    <stop offset="1" stop-color="#08734d"/>
+    <stop offset="0" stop-color="#72ffd0"/>
+    <stop offset=".5" stop-color="#16d995"/>
+    <stop offset="1" stop-color="#087b55"/>
   </linearGradient>
   <linearGradient id="edge" x1="0" y1="0" x2="0" y2="1">
-    <stop offset="0" stop-color="#7af7c1"/>
-    <stop offset="1" stop-color="#07915d"/>
-  </linearGradient>
-  <linearGradient id="word" x1="0" y1="0" x2="0" y2="1">
-    <stop offset="0" stop-color="#ffffff"/>
-    <stop offset="1" stop-color="#d7e2dc"/>
+    <stop offset="0" stop-color="#a0ffda"/>
+    <stop offset="1" stop-color="#0a9b68"/>
   </linearGradient>
 </defs>
-<g transform="translate(16 8)">
-  <path d="M92 4 169 48v88l-77 44-77-44V48Z" fill="none" stroke="url(#edge)" stroke-width="13" stroke-linejoin="round"/>
-  <path d="M48 132V62l26-15 53 83V60l25-15v100l-27 15-52-82v69Z" fill="url(#emerald)" stroke="#9af8ce" stroke-opacity=".32" stroke-width="2" stroke-linejoin="round"/>
-  <path d="m48 62 26-15 53 83v-29L74 33 48 48Z" fill="#75f5bd" opacity=".28"/>
+<g transform="translate(18 10)">
+  <path d="M92 4 169 48v88l-77 44-77-44V48Z" fill="#071c17" stroke="url(#edge)" stroke-width="13" stroke-linejoin="round"/>
+  <path d="M48 132V62l26-15 53 83V60l25-15v100l-27 15-52-82v69Z" fill="url(#emerald)" stroke="#b6ffe2" stroke-opacity=".65" stroke-width="2" stroke-linejoin="round"/>
+  <path d="m48 62 26-15 53 83v-29L74 33 48 48Z" fill="#d1ffed" opacity=".22"/>
 </g>
-<g>
-  <text x="228" y="105" fill="url(#word)" font-family="Amiri, 'Noto Naskh Arabic', Cairo, serif" font-size="83" font-weight="700" direction="rtl" unicode-bidi="plaintext">نسقرا</text>
-  <text x="235" y="158" fill="#20d18b" font-family="Inter, Arial, sans-serif" font-size="30" font-weight="700" letter-spacing="12">NUSQRA</text>
-  <path d="M235 181H690" stroke="#0e9d68" stroke-opacity=".55" stroke-width="2"/>
+<g text-anchor="middle">
+  <text x="475" y="83" fill="#ffffff" font-family="Amiri, 'Noto Naskh Arabic', Cairo, serif" font-size="66" font-weight="700" direction="rtl" unicode-bidi="plaintext">نسقرا</text>
+  <text x="475" y="157" fill="#ffffff" font-family="Inter, Arial, sans-serif" font-size="57" font-weight="800" letter-spacing="8">NUSQRA</text>
+  <path d="M278 181H672" stroke="#20d995" stroke-opacity=".72" stroke-width="3" stroke-linecap="round"/>
 </g>
 </svg>
