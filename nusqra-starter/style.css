@@ -23,3 +23,32 @@
 .site-notice{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:30;background:#173d31;border:1px solid #3b9a76;color:#a6ebcd;padding:12px 18px;border-radius:12px;max-width:min(90vw,600px);font-size:13px;box-shadow:0 12px 40px #0008}
 .spin{animation:nusqra-spin 1s linear infinite}@keyframes nusqra-spin{to{transform:rotate(360deg)}}
 @media(max-width:600px){.account-card{padding:18px}.account-heading .btn{padding:10px 12px}}
+
+/* NUSQRA marketplace actions */
+.marketplace-section{padding-top:36px}
+.marketplace-layout{display:grid;grid-template-columns:minmax(280px,.85fr) minmax(320px,1.15fr);gap:22px;align-items:start}
+.marketplace-panel{background:#161722;border:1px solid #393344;border-radius:20px;padding:24px;min-width:0}
+.marketplace-panel h3{margin:0 0 18px}
+.market-form{display:grid;gap:14px}
+.market-form label{display:grid;gap:7px;color:#d2cedb;font-size:13px}
+.market-form input,.market-form textarea,.market-form select{width:100%;padding:12px;border-radius:9px;border:1px solid #585365;background:#25212f;color:white;font:inherit;min-width:0}
+.market-form textarea{resize:vertical}
+.market-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.market-empty{color:#aaa7b5;font-size:14px;padding:12px 0}
+.job-list{display:grid;gap:14px}
+.job-card{background:#211f2c;border:1px solid #393344;border-radius:14px;padding:18px;min-width:0}
+.job-card-top{display:flex;justify-content:space-between;gap:12px;align-items:center}
+.job-status{font-size:11px;color:#9ce1bf;background:#164b3833;border:1px solid #3b9a76;padding:5px 9px;border-radius:20px;text-transform:capitalize}
+.job-date,.job-category{color:#aaa7b5;font-size:12px}
+.job-card h4{font-size:18px;margin:13px 0 6px}
+.job-description{font-size:13px;line-height:1.7;white-space:pre-wrap;overflow-wrap:anywhere}
+.job-meta{font-size:13px;color:#e6ca8c;margin:14px 0}
+.proposal-form{border-top:1px solid #ffffff18;padding-top:16px;margin-top:16px}
+.proposal-form h5{font-size:14px;margin:0}
+.proposal-review{border-top:1px solid #ffffff18;padding-top:14px;margin-top:14px}
+.proposal-list{display:grid;gap:10px;margin-top:12px}
+.proposal-card{background:#171621;border:1px solid #40394d;padding:14px;border-radius:10px}
+.proposal-card p{font-size:13px;line-height:1.6;white-space:pre-wrap}
+.proposal-card small{color:#d9bd82}
+@media(max-width:900px){.marketplace-layout{grid-template-columns:1fr}}
+@media(max-width:520px){.marketplace-panel{padding:17px}.market-form-grid{grid-template-columns:1fr}}
