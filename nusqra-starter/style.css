@@ -1717,3 +1717,44 @@ footer .brand .mark{background:linear-gradient(145deg,#0b9862,#06402e)}
 @media(max-width:680px){
   .entry-auth-wrap::before{inset:-14px -10px;border-radius:30px}
 }
+
+
+/* Unified NUSQRA wordmark across the public site, signed-in workspace and admin centre. */
+.brand-lockup{display:flex;align-items:center;flex:0 0 auto}
+.nusqra-lockup{
+  display:block;
+  width:190px;
+  height:56px;
+  padding:4px 10px;
+  object-fit:contain;
+  border-radius:12px;
+  background:#071c17;
+  border:1px solid rgba(31,211,145,.32);
+  box-shadow:0 5px 18px rgba(4,47,31,.13);
+}
+footer .nusqra-lockup{width:178px;height:52px}
+.auth-dialog .nusqra-lockup{width:190px;height:56px}
+@media(max-width:650px){
+  .header .nusqra-lockup{width:166px;height:50px}
+  footer .nusqra-lockup{width:166px;height:49px}
+}
+
+/* Make the requested pale-green mirrored glass backing clearly visible around the welcome card. */
+.entry-auth-wrap{position:relative;isolation:isolate}
+.entry-auth-wrap::before{
+  content:"";
+  position:absolute;
+  z-index:0;
+  inset:-24px -22px;
+  border-radius:38px;
+  background:
+    radial-gradient(ellipse at 50% 0%,rgba(198,255,218,.82) 0%,rgba(145,229,177,.58) 30%,rgba(89,190,132,.30) 58%,rgba(34,125,79,.10) 76%,transparent 88%),
+    linear-gradient(135deg,rgba(226,255,235,.48),rgba(128,218,162,.30) 46%,rgba(222,255,232,.44));
+  border:1px solid rgba(180,247,203,.62);
+  box-shadow:0 0 70px rgba(112,231,158,.42),0 18px 58px rgba(38,151,91,.20),inset 0 1px 28px rgba(244,255,247,.48);
+  pointer-events:none;
+}
+.entry-auth-card{position:relative;z-index:1}
+@media(max-width:680px){
+  .entry-auth-wrap::before{inset:-14px -12px;border-radius:30px}
+}
