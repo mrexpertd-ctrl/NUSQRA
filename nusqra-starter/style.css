@@ -563,3 +563,22 @@ footer .brand small{color:#e2cb8f}
   .header>.nav a{white-space:nowrap}
   .header .actions .menu{display:none}
 }
+
+/* Photo-led homepage and category imagery */
+.hero{grid-template-columns:minmax(0,1fr) minmax(320px,.92fr);background:radial-gradient(ellipse at 78% 35%,#16865b 0%,#0a5239 42%,#073b2b 100%)}
+.hero-visual{position:relative;z-index:1;min-height:410px;align-self:stretch;overflow:hidden;border:1px solid #d9c17d88;border-radius:30px;background:#e8f5ee;box-shadow:0 30px 80px #001d1244}
+.hero-visual:after{content:"";position:absolute;inset:45% 0 0;background:linear-gradient(0deg,rgba(4,44,31,.82),transparent);pointer-events:none}
+.hero-visual img{position:absolute;width:100%;height:100%;inset:0;object-fit:cover;object-position:56% center}
+.hero-visual-caption{position:absolute;z-index:2;bottom:24px;left:26px;right:26px;display:flex;flex-direction:column;gap:5px;color:#fff}
+.hero-visual-caption strong{font-size:22px}.hero-visual-caption span{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#e3f4e9}
+.category-card{padding:0 0 20px;overflow:hidden}
+.category-image{position:relative;width:100%;height:150px;overflow:hidden;background:#e8f5ee}
+.category-image img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .35s ease}
+.category-card:hover .category-image img{transform:scale(1.055)}
+.category-image:after{content:"";position:absolute;inset:45% 0 0;background:linear-gradient(0deg,rgba(5,47,33,.34),transparent)}
+.category-image .category-symbol{position:absolute;z-index:1;left:15px;bottom:13px;width:40px;height:40px;border:1px solid #ffffff80;background:#ffffffdf;color:#087a50;backdrop-filter:blur(8px)}
+.category-card h3,.category-card p,.category-card>.category-audience,.category-card>.investor-disclaimer{margin-left:19px;margin-right:19px}
+.category-card h3{margin-top:17px}
+.category-card p{min-height:42px}
+@media(max-width:900px){.hero{grid-template-columns:1fr;gap:28px}.hero-visual{min-height:360px;max-height:430px}}
+@media(max-width:600px){.hero-visual{min-height:270px;max-height:320px;border-radius:22px}.hero-visual-caption{left:18px;right:18px;bottom:18px}.hero-visual-caption strong{font-size:19px}.category-image{height:125px}.category-card{padding-bottom:16px}.category-card h3,.category-card p,.category-card>.category-audience,.category-card>.investor-disclaimer{margin-left:14px;margin-right:14px}}
