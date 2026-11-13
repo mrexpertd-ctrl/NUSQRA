@@ -375,7 +375,7 @@ function App() {
 
   return <div dir={isAr ? 'rtl' : 'ltr'}>
     <header className="header">
-      <a className="brand" href="#home" onClick={()=>{setSettingsOpen(false);setPage('home');setMenu(false);}}><span className="mark" aria-label="NUSQRA logo"><svg className="brand-symbol" viewBox="0 0 64 64" role="img" aria-hidden="true"><defs><linearGradient id="nqMark" x1="8" y1="5" x2="56" y2="59" gradientUnits="userSpaceOnUse"><stop stopColor="#6D4A91"/><stop offset=".52" stopColor="#087A50"/><stop offset="1" stopColor="#C5A15A"/></linearGradient></defs><path d="M32 3.5 55.5 17v30L32 60.5 8.5 47V17L32 3.5Z" fill="url(#nqMark)"/><path d="M32 8.5 51 19.4v25.2L32 55.5 13 44.6V19.4L32 8.5Z" fill="none" stroke="#F4DDA8" strokeWidth="1.3"/><path d="M21 43V21l22 22V21" fill="none" stroke="#FFFDF7" strokeWidth="4.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M40 13.5 46 17" fill="none" stroke="#F3D28B" strokeWidth="3" strokeLinecap="round"/><circle cx="46.5" cy="43.5" r="3.2" fill="#E5C27A"/></svg></span><span>NUSQRA<small>نُسقرا</small></span></a>
+      <a className="brand" href="#home" onClick={()=>{setSettingsOpen(false);setPage('home');setMenu(false);}}><span className="mark" aria-label="NUSQRA logo"><svg className="brand-symbol" viewBox="0 0 48 48" role="img" aria-hidden="true"><path d="M10 36V12h5.5l17 18V12H38v24h-5.5l-17-18v18H10Z" fill="none" stroke="#F4DCA2" strokeWidth="3.2" strokeLinejoin="miter"/><path d="M8 7h32v34H8z" fill="none" stroke="#8D70A9" strokeWidth="1.2"/></svg></span><span>NUSQRA<small>نُسقرا</small></span></a>
       <nav className={menu ? 'nav open' : 'nav'}>
         <a href="#explore" onClick={()=>setMenu(false)}>{t.nav[0]}</a>
         <a href="#categories" onClick={()=>setMenu(false)}>{t.nav[1]}</a>
