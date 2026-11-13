@@ -68,6 +68,8 @@ function App() {
   const [lang, setLang] = useState('en');
   const [menu, setMenu] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [profileTab, setProfileTab] = useState('identity');
+  const [previewOpen, setPreviewOpen] = useState(false);
   const [authMode, setAuthMode] = useState(null);
   const [session, setSession] = useState(null);
   const [profile, setProfile] = useState(null);
@@ -79,7 +81,7 @@ function App() {
   const [otp,setOtp] = useState('');
   const [otpSent,setOtpSent] = useState(false);
   const [photoFiles,setPhotoFiles] = useState({avatar:null,cover:null});
-  const [profileForm, setProfileForm] = useState({full_name:'',bio:'',country_code:'SA',headline:'',about:'',years_experience:'',city:'',avatar_url:'',cover_url:'',profile_style:'simple',phone_number:''});
+  const [profileForm, setProfileForm] = useState({full_name:'',bio:'',country_code:'SA',headline:'',about:'',years_experience:'',city:'',avatar_url:'',cover_url:'',profile_style:'simple',profile_template:'classic',phone_number:''});
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState('');
   const [error, setError] = useState('');
@@ -117,7 +119,7 @@ function App() {
     let alive = true;
     (async () => {
       const [p,r,pp] = await Promise.all([
-        supabase.from('profiles').select('id,full_name,display_name,country_code,preferred_language,bio,avatar_url,cover_url,profile_style,phone_number').eq('id',session.user.id).maybeSingle(),
+        supabase.from('profiles').select('id,full_name,display_name,country_code,preferred_language,bio,avatar_url,cover_url,profile_style,profile_template,phone_number').eq('id',session.user.id).maybeSingle(),
         supabase.from('user_roles').select('role').eq('user_id',session.user.id),
         supabase.from('professional_profiles').select('headline,about,years_experience,city,country_code').eq('user_id',session.user.id).maybeSingle()
       ]);
@@ -128,7 +130,7 @@ function App() {
       setProfessional(pp.data || null);
       setProfileForm({
         full_name:p.data?.full_name || '', bio:p.data?.bio || '',
-        country_code:p.data?.country_code || 'SA', avatar_url:p.data?.avatar_url || '', cover_url:p.data?.cover_url || '', profile_style:p.data?.profile_style || 'simple', phone_number:p.data?.phone_number || '',
+        country_code:p.data?.country_code || 'SA', avatar_url:p.data?.avatar_url || '', cover_url:p.data?.cover_url || '', profile_style:p.data?.profile_style || 'simple', profile_template:p.data?.profile_template || 'classic', phone_number:p.data?.phone_number || '',
         headline:pp.data?.headline || '', about:pp.data?.about || '',
         years_experience:pp.data?.years_experience ?? '', city:pp.data?.city || ''
       });
@@ -202,7 +204,7 @@ function App() {
       const {error:pError} = await supabase.from('profiles').update({
         full_name:profileForm.full_name.trim(), bio:profileForm.bio.trim() || null,
         country_code:profileForm.country_code, avatar_url:avatarUrl, cover_url:coverUrl,
-        profile_style:profileForm.profile_style, phone_number:profileForm.phone_number || null,
+        profile_style:profileForm.profile_style, profile_template:profileForm.profile_template, phone_number:profileForm.phone_number || null,
         updated_at:new Date().toISOString()
       }).eq('id',session.user.id);
       if (pError) throw pError;
@@ -215,7 +217,7 @@ function App() {
         if (ppError) throw ppError;
       }
       setPhotoFiles({avatar:null,cover:null});
-      setProfile({...profile,full_name:profileForm.full_name,bio:profileForm.bio,country_code:profileForm.country_code,avatar_url:avatarUrl,cover_url:coverUrl,profile_style:profileForm.profile_style});
+      setProfile({...profile,full_name:profileForm.full_name,bio:profileForm.bio,country_code:profileForm.country_code,avatar_url:avatarUrl,cover_url:coverUrl,profile_style:profileForm.profile_style,profile_template:profileForm.profile_template});
       setProfileForm(v=>({...v,avatar_url:avatarUrl||'',cover_url:coverUrl||''}));
       if (isProfessional) setProfessional({...professional,...profileForm});
       setNotice(t.saved);
@@ -403,7 +405,7 @@ function App() {
           <button type="button" className={categoryAudience==='companies'?'active':''} onClick={()=>setCategoryAudience('companies')}>{t.audienceCompanies}</button>
           <button type="button" className={categoryAudience==='investors'?'active':''} onClick={()=>setCategoryAudience('investors')}>{t.audienceInvestors}</button>
         </div>
-        <div className="category-grid">
+        {categories.length>0 && <div className="category-grid">
           {categories.filter(c=>categoryAudience==='all'||(categoryAudience==='investors'?c.slug==='investors-opportunities':c.slug!=='investors-opportunities')).map(c=>{
             const symbols={'web-technology':'⌘','design-creative':'✦','marketing-sales':'↗','business-services':'▤','automotive-services':'⚙','education-training':'◎','home-maintenance':'⌂','writing-translation':'✎','construction-engineering':'⌁','transport-logistics':'⇢','finance-administration':'＄','hr-recruitment':'♙','healthcare-wellness':'＋','hospitality-events':'◇','industrial-manufacturing':'▦','investors-opportunities':'◈'};
             return <article className="category-card" key={c.id}>
@@ -414,7 +416,7 @@ function App() {
               {c.slug==='investors-opportunities'&&<small className="investor-disclaimer">{t.investorDisclaimer}</small>}
             </article>;
           })}
-        </div>
+        </div>}
       </section>
       <section className="section" id="features"><div className="section-label">NUSQRA PLATFORM</div><h2>{t.trust}</h2><div className="feature-grid">
         {[ShieldCheck,Users,Crown,Globe2].map((Icon,i)=><article className="feature" key={i}><span className="iconbox"><Icon size={24}/></span><h3>{t.features[i]}</h3><p>{t.featureText[i]}</p></article>)}
@@ -480,39 +482,70 @@ function App() {
           </div>
         </div>
       </section>}
-      {session && <section className="section marketplace-section messaging-section" id="messages"><div className="section-label">NUSQRA · PRIVATE</div><h2>{t.messages}</h2><div className="messaging-layout"><aside className="conversation-list">{conversations.length===0?<p className="market-empty">{t.noConversations}</p>:conversations.map(c=><button type="button" className={'conversation-item'+(selectedConversation?.id===c.id?' active':'')} key={c.id} onClick={()=>setSelectedConversation(c)}><strong>{c.job?.title||t.marketplace}</strong><span>{session.user.id===c.customer_id?(c.professional?.full_name||t.professional):(c.customer?.full_name||t.customer)}</span></button>)}</aside><div className="chat-panel">{selectedConversation?<><div className="chat-heading"><strong>{selectedConversation.job?.title||conversations.find(c=>c.id===selectedConversation.id)?.job?.title||t.marketplace}</strong><span>{session.user.id===selectedConversation.customer_id?(conversations.find(c=>c.id===selectedConversation.id)?.professional?.full_name||t.professional):(conversations.find(c=>c.id===selectedConversation.id)?.customer?.full_name||t.customer)}</span></div><div className="message-list">{messages.map(m=><div key={m.id} className={'message-bubble'+(m.sender_id===session.user.id?' mine':'')}><p>{m.body}</p><time>{new Date(m.created_at).toLocaleString(lang==='ar'?'ar-SA':'en-US')}</time></div>)}</div><form className="message-compose" onSubmit={sendMessage}><textarea rows="2" maxLength="4000" required placeholder={t.messagePlaceholder} value={messageDraft} onChange={e=>setMessageDraft(e.target.value)}/><button className="btn primary" type="submit" disabled={busy||!messageDraft.trim()}><Send size={16}/>{t.sendMessage}</button></form></>:<p className="market-empty">{t.noConversations}</p>}</div></div></section>}
+      {session && conversations.length>0 && <section className="section marketplace-section messaging-section" id="messages"><div className="section-label">NUSQRA · PRIVATE</div><h2>{t.messages}</h2><div className="messaging-layout"><aside className="conversation-list">{conversations.length===0?<p className="market-empty">{t.noConversations}</p>:conversations.map(c=><button type="button" className={'conversation-item'+(selectedConversation?.id===c.id?' active':'')} key={c.id} onClick={()=>setSelectedConversation(c)}><strong>{c.job?.title||t.marketplace}</strong><span>{session.user.id===c.customer_id?(c.professional?.full_name||t.professional):(c.customer?.full_name||t.customer)}</span></button>)}</aside><div className="chat-panel">{selectedConversation?<><div className="chat-heading"><strong>{selectedConversation.job?.title||conversations.find(c=>c.id===selectedConversation.id)?.job?.title||t.marketplace}</strong><span>{session.user.id===selectedConversation.customer_id?(conversations.find(c=>c.id===selectedConversation.id)?.professional?.full_name||t.professional):(conversations.find(c=>c.id===selectedConversation.id)?.customer?.full_name||t.customer)}</span></div><div className="message-list">{messages.map(m=><div key={m.id} className={'message-bubble'+(m.sender_id===session.user.id?' mine':'')}><p>{m.body}</p><time>{new Date(m.created_at).toLocaleString(lang==='ar'?'ar-SA':'en-US')}</time></div>)}</div><form className="message-compose" onSubmit={sendMessage}><textarea rows="2" maxLength="4000" required placeholder={t.messagePlaceholder} value={messageDraft} onChange={e=>setMessageDraft(e.target.value)}/><button className="btn primary" type="submit" disabled={busy||!messageDraft.trim()}><Send size={16}/>{t.sendMessage}</button></form></>:<p className="market-empty">{t.noConversations}</p>}</div></div></section>}
       {session && settingsOpen && <section className="section account-section settings-page" id="account">
         <div className="section-label">NUSQRA · {t.dashboard.toUpperCase()}</div><h2>{t.dashboard}</h2>
         <div className="account-card">
           <div className="account-heading"><div><h3>{profileForm.full_name || session.user.email}</h3><p>{session.user.email}</p></div><div className="settings-actions"><button className="btn secondary" type="button" onClick={()=>setSettingsOpen(false)}>{isAr?"العودة للرئيسية":"Back to home"}</button><button className="btn secondary" onClick={signOut}><LogOut size={16}/>{t.logout}</button></div></div>
           <div className="role-list"><strong>{t.roles}:</strong>{roles.map(role=><span className="role-chip" key={role}>{role==='customer'?t.customer:t.professional}</span>)}</div>
           {!isProfessional && <button className="btn secondary enable-pro" disabled={busy} onClick={enableProfessional}><BriefcaseBusiness size={16}/>{t.enablePro}</button>}
-          <form className="profile-form" onSubmit={saveProfile}>
-            <h3>{t.account}</h3>
-            <div className={'profile-preview '+(profileForm.profile_style==='premium'?'premium-profile':'simple-profile')}>
-              {profileForm.cover_url && <img className="profile-cover-preview" src={profileForm.cover_url} alt="Profile cover"/>}
-              <div className="profile-avatar-preview">{profileForm.avatar_url?<img src={profileForm.avatar_url} alt="Profile"/>:<UserRound size={34}/>}</div>
-              <strong>{profileForm.full_name || 'NUSQRA Member'}</strong><span>{profileForm.profile_style==='premium'?'PREMIUM PROFILE':'SIMPLE PROFILE'}</span>
+          <form className="profile-form profile-studio" onSubmit={saveProfile}>
+            <div className="profile-studio-heading"><div><h3>{isAr?'تخصيص الملف الشخصي':'Profile studio'}</h3><p>{isAr?'اختر تخطيطك وحدّث تفاصيلك وشاهد المعاينة قبل الحفظ.':'Choose a layout, edit your details and preview your profile before saving.'}</p></div><button className="btn secondary preview-open" type="button" onClick={()=>setPreviewOpen(true)}>{isAr?'معاينة الملف':'Preview profile'}</button></div>
+            <div className="profile-editor-tabs" role="tablist" aria-label="Profile editor sections">
+              <button type="button" role="tab" aria-selected={profileTab==='identity'} className={profileTab==='identity'?'active':''} onClick={()=>setProfileTab('identity')}>{isAr?'الهوية':'Profile'}</button>
+              {isProfessional && <button type="button" role="tab" aria-selected={profileTab==='professional'} className={profileTab==='professional'?'active':''} onClick={()=>setProfileTab('professional')}>{isAr?'المعلومات المهنية':'Professional'}</button>}
+              <button type="button" role="tab" aria-selected={profileTab==='appearance'} className={profileTab==='appearance'?'active':''} onClick={()=>setProfileTab('appearance')}>{isAr?'المظهر والقوالب':'Appearance & templates'}</button>
             </div>
-            <div className="profile-style-picker">
-              <label><input type="radio" name="profile_style" value="simple" checked={profileForm.profile_style==='simple'} onChange={()=>setProfileField('profile_style','simple')}/><span><b>Simple Profile</b><small>Clean, elegant and professional</small></span></label>
-              <label><input type="radio" name="profile_style" value="premium" checked={profileForm.profile_style==='premium'} onChange={()=>setProfileField('profile_style','premium')}/><span><b>Premium Profile</b><small>Featured emerald and gold presentation</small></span></label>
-            </div>
-            <div className="profile-media-fields">
-              <label>Profile photo (JPG, PNG, WEBP · max 5 MB)<input type="file" accept="image/jpeg,image/png,image/webp" onChange={e=>setPhotoFiles(v=>({...v,avatar:e.target.files?.[0]||null}))}/></label>
-              <label>Cover photo (JPG, PNG, WEBP · max 5 MB)<input type="file" accept="image/jpeg,image/png,image/webp" onChange={e=>setPhotoFiles(v=>({...v,cover:e.target.files?.[0]||null}))}/></label>
-            </div>
-            <label>{t.fullName}<input required value={profileForm.full_name} onChange={e=>setProfileField('full_name',e.target.value)} /></label>
-            <label>{t.country}<select value={profileForm.country_code} onChange={e=>setProfileField('country_code',e.target.value)}>{countryCodes.map(code=><option key={code} value={code}>{t.countries[code]}</option>)}</select></label>
-            <label>{t.bio}<textarea rows="3" value={profileForm.bio} onChange={e=>setProfileField('bio',e.target.value)}/></label>
-            {isProfessional && <div className="professional-fields"><h3>{t.proDetails}</h3>
-              <label>{t.headline}<input value={profileForm.headline} onChange={e=>setProfileField('headline',e.target.value)}/></label>
-              <label>{t.city}<input value={profileForm.city} onChange={e=>setProfileField('city',e.target.value)}/></label>
-              <label>{t.experience}<input type="number" min="0" max="60" value={profileForm.years_experience} onChange={e=>setProfileField('years_experience',e.target.value)}/></label>
-              <label>{t.bio}<textarea rows="3" value={profileForm.about} onChange={e=>setProfileField('about',e.target.value)}/></label>
+            {profileTab==='identity' && <div className="profile-tab-panel">
+              <div className="profile-upload-grid">
+                <label className="profile-upload-card"><span className="upload-icon">◎</span><strong>{isAr?'الصورة الشخصية':'Profile photo'}</strong><small>{isAr?'JPG أو PNG أو WEBP · حتى 5MB':'JPG, PNG or WEBP · up to 5MB'}</small><input type="file" accept="image/jpeg,image/png,image/webp" onChange={e=>setPhotoFiles(v=>({...v,avatar:e.target.files?.[0]||null}))}/></label>
+                <label className="profile-upload-card"><span className="upload-icon">▱</span><strong>{isAr?'صورة الغلاف':'Cover image'}</strong><small>{isAr?'صورة عريضة اختيارية':'Optional wide banner image'}</small><input type="file" accept="image/jpeg,image/png,image/webp" onChange={e=>setPhotoFiles(v=>({...v,cover:e.target.files?.[0]||null}))}/></label>
+              </div>
+              <label>{t.fullName}<input required maxLength="100" value={profileForm.full_name} onChange={e=>setProfileField('full_name',e.target.value)} /></label>
+              <label>{t.country}<select value={profileForm.country_code} onChange={e=>setProfileField('country_code',e.target.value)}>{countryCodes.map(code=><option key={code} value={code}>{t.countries[code]}</option>)}</select></label>
+              <label>{t.bio}<textarea rows="4" maxLength="500" value={profileForm.bio} onChange={e=>setProfileField('bio',e.target.value)}/></label>
             </div>}
-            <button className="btn primary" type="submit" disabled={busy}>{busy?<LoaderCircle className="spin" size={17}/>:<CheckCircle2 size={17}/>} {t.save}</button>
+            {profileTab==='professional' && isProfessional && <div className="profile-tab-panel professional-fields">
+              <label>{t.headline}<input maxLength="120" value={profileForm.headline} onChange={e=>setProfileField('headline',e.target.value)}/></label>
+              <label>{t.city}<input maxLength="100" value={profileForm.city} onChange={e=>setProfileField('city',e.target.value)}/></label>
+              <label>{t.experience}<input type="number" min="0" max="60" value={profileForm.years_experience} onChange={e=>setProfileField('years_experience',e.target.value)}/></label>
+              <label>{isAr?'نبذة مهنية':'Professional summary'}<textarea rows="5" maxLength="3000" value={profileForm.about} onChange={e=>setProfileField('about',e.target.value)}/></label>
+            </div>}
+            {profileTab==='appearance' && <div className="profile-tab-panel">
+              <div className="profile-template-intro"><strong>{isAr?'اختر قالب الملف':'Choose your profile template'}</strong><span>{isAr?'يمكنك تغيير القالب في أي وقت.':'You can change your template at any time.'}</span></div>
+              <div className="profile-template-grid">
+                {[
+                  {id:'classic',name:'Classic',desc:'Balanced, clean and familiar'},
+                  {id:'modern',name:'Modern',desc:'Bold header with compact details'},
+                  {id:'executive',name:'Executive',desc:'Refined layout for business leaders'},
+                  {id:'creative',name:'Creative',desc:'Expressive portfolio-inspired style'}
+                ].map(template=><button key={template.id} type="button" className={'profile-template-option '+(profileForm.profile_template===template.id?'selected':'')} onClick={()=>setProfileField('profile_template',template.id)}>
+                  <span className={'template-mini template-'+template.id}><i/><i/><i/></span><strong>{template.name}</strong><small>{template.desc}</small><span className="template-select">{profileForm.profile_template===template.id?(isAr?'محدد':'Selected'):(isAr?'اختيار':'Select')}</span>
+                </button>)}
+              </div>
+              <div className="profile-style-row"><label><span>{isAr?'نمط اللون':'Profile accent'}</span><select value={profileForm.profile_style} onChange={e=>setProfileField('profile_style',e.target.value)}><option value="simple">{isAr?'أخضر بسيط':'Simple emerald'}</option><option value="premium">{isAr?'ذهبي مميز':'Premium emerald & gold'}</option></select></label></div>
+              <div className={'profile-preview profile-template-preview template-'+profileForm.profile_template+(profileForm.profile_style==='premium'?' premium-profile':'')}>
+                <div className="template-preview-cover">{profileForm.cover_url?<img src={profileForm.cover_url} alt=""/>:<span>NUSQRA · {profileForm.profile_template.toUpperCase()}</span>}</div>
+                <div className="template-preview-identity"><div className="profile-avatar-preview">{profileForm.avatar_url?<img src={profileForm.avatar_url} alt=""/>:<UserRound size={30}/>}</div><div><strong>{profileForm.full_name||'Your name'}</strong><span>{profileForm.headline|| (isProfessional?'Professional on NUSQRA':'NUSQRA member')}</span></div></div>
+                <p>{profileForm.bio||profileForm.about||'Your introduction will appear here when you add it.'}</p>
+                <div className="template-preview-meta"><span>{t.countries[profileForm.country_code]||'Gulf region'}</span>{profileForm.city&&<span>{profileForm.city}</span>}</div>
+              </div>
+            </div>}
+            {error && <p className="auth-error" role="alert">{error}</p>}
+            <div className="profile-save-row"><span>{isAr?'التغييرات لا تُنشر إلا بعد الحفظ.':'Your changes are applied after you save.'}</span><button className="btn primary" type="submit" disabled={busy}>{busy?<LoaderCircle className="spin" size={17}/>:<CheckCircle2 size={17}/>} {t.save}</button></div>
           </form>
+          {previewOpen && <div className="profile-preview-backdrop" role="presentation" onMouseDown={e=>{if(e.target===e.currentTarget)setPreviewOpen(false);}}>
+            <section className="profile-preview-dialog" role="dialog" aria-modal="true" aria-label="Profile preview">
+              <div className="profile-preview-dialog-head"><div><strong>{isAr?'معاينة الملف الشخصي':'Profile preview'}</strong><span>{isAr?'هذا مثال لكيفية ظهور ملفك':'A preview of how your profile may appear'}</span></div><button type="button" aria-label="Close preview" onClick={()=>setPreviewOpen(false)}><X size={20}/></button></div>
+              <div className={'profile-preview profile-template-preview template-'+profileForm.profile_template+(profileForm.profile_style==='premium'?' premium-profile':'')}>
+                <div className="template-preview-cover">{profileForm.cover_url?<img src={profileForm.cover_url} alt=""/>:<span>NUSQRA · {profileForm.profile_template.toUpperCase()}</span>}</div>
+                <div className="template-preview-identity"><div className="profile-avatar-preview">{profileForm.avatar_url?<img src={profileForm.avatar_url} alt=""/>:<UserRound size={30}/>}</div><div><strong>{profileForm.full_name||'Your name'}</strong><span>{profileForm.headline||(isProfessional?'Professional on NUSQRA':'NUSQRA member')}</span></div></div>
+                <p>{profileForm.bio||profileForm.about||'Add an introduction to complete your profile.'}</p>
+                <div className="template-preview-meta"><span>{t.countries[profileForm.country_code]||'Gulf region'}</span>{profileForm.city&&<span>{profileForm.city}</span>}</div>
+              </div>
+              <div className="profile-preview-dialog-actions"><button className="btn secondary" type="button" onClick={()=>setPreviewOpen(false)}>{isAr?'إغلاق':'Close preview'}</button><button className="btn primary" type="button" onClick={()=>{setPreviewOpen(false);setProfileTab('appearance')}}>{isAr?'تعديل القالب':'Change template'}</button></div>
+            </section>
+          </div>}
         </div>
       </section>}
     </main>
