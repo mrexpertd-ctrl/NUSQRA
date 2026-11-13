@@ -504,7 +504,6 @@ function App() {
             <label>{t.fullName}<input required value={profileForm.full_name} onChange={e=>setProfileField('full_name',e.target.value)} /></label>
             <label>{t.country}<select value={profileForm.country_code} onChange={e=>setProfileField('country_code',e.target.value)}>{countryCodes.map(code=><option key={code} value={code}>{t.countries[code]}</option>)}</select></label>
             <label>{t.bio}<textarea rows="3" value={profileForm.bio} onChange={e=>setProfileField('bio',e.target.value)}/></label>
-            isProfessional
             {isProfessional && <div className="professional-fields"><h3>{t.proDetails}</h3>
               <label>{t.headline}<input value={profileForm.headline} onChange={e=>setProfileField('headline',e.target.value)}/></label>
               <label>{t.city}<input value={profileForm.city} onChange={e=>setProfileField('city',e.target.value)}/></label>
