@@ -647,10 +647,10 @@ function App() {
     <header className="header">
       <a className="brand" href="#home" onClick={()=>{setSettingsOpen(false);setPage('home');setMenu(false);}}><span className="mark" aria-label="NUSQRA Arabic calligraphy logo"><span className="brand-calligraphy" lang="ar">نسقرا</span></span><span>NUSQRA<small>نُسقرا</small></span></a>
       <nav className={menu ? 'nav open' : 'nav'} aria-label={isAr?'التنقل الرئيسي':'Main navigation'}>
-        <button type="button" className="navlink" onClick={()=>navigatePage('professionals')}>{t.nav[0]}</button>
+        <button type="button" className="navlink" onClick={()=>navigatePage('explore')}>{t.nav[0]}</button>
         <button type="button" className="navlink" onClick={()=>navigatePage('categories')}>{t.nav[1]}</button>
-        <button type="button" className="navlink" onClick={()=>{navigatePage('home');window.setTimeout(()=>document.getElementById('how-it-works')?.scrollIntoView({behavior:'smooth',block:'start'}),80);}}>{t.nav[2]}</button>
-        <button type="button" className="navlink" onClick={()=>{setProfileTab('professional');navigatePage('settings');}}>{t.nav[3]}</button>
+        <button type="button" className="navlink" onClick={()=>navigatePage('how-it-works')}>{t.nav[2]}</button>
+        <button type="button" className="navlink" onClick={()=>navigatePage('professionals')}>{t.nav[3]}</button>
         {session && <><button type="button" className="navlink" onClick={()=>navigatePage('marketplace')}>{isAr?'السوق':'Marketplace'}</button><button type="button" className="navlink" onClick={()=>navigatePage('messages')}>{t.messages}</button></>}
       </nav>
       <div className="actions">
