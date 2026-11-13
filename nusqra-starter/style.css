@@ -1600,3 +1600,29 @@ footer .brand .mark{background:linear-gradient(145deg,#0b9862,#06402e)}
  .home-final-cta{padding:19px}
 }
 @media(prefers-reduced-motion:reduce){.btn{transition:none}}
+
+/* Keep every profile template within the emerald-and-gold brand family */
+.template-mini.template-classic{background:linear-gradient(120deg,#e7f3e9,#0b7950)}
+.template-mini.template-classic i{background:#0b7950}
+.template-mini.template-classic i:nth-child(2){background:#c5a15b}
+.template-mini.template-classic i:nth-child(3){background:#d9eee0}
+.template-mini.template-modern{background:linear-gradient(120deg,#06452f,#0b9662)}
+.template-mini.template-modern i{background:#fff}
+.template-mini.template-modern i:nth-child(2){background:#e3ca8e}
+.template-mini.template-executive{background:linear-gradient(120deg,#073d2b,#c5a15b)}
+.template-mini.template-executive i{background:#fff}
+.template-mini.template-executive i:nth-child(3){background:#d7eadc}
+.template-mini.template-creative{background:linear-gradient(120deg,#e8f5eb,#0b9662 58%,#c5a15b)}
+.template-mini.template-creative i{background:#087a50}
+.template-mini.template-creative i:nth-child(2){background:#c5a15b}
+.profile-template-preview.template-classic .template-preview-cover{background:linear-gradient(115deg,#e8f5eb,#0b7950 65%,#c5a15b)}
+.profile-template-preview.template-modern .template-preview-cover{background:linear-gradient(115deg,#063d2b,#0b9662 62%,#d3b777)}
+.profile-template-preview.template-executive .template-preview-cover{background:linear-gradient(115deg,#073d2b,#0b6746 60%,#b99753)}
+.profile-template-preview.template-creative .template-preview-cover{background:linear-gradient(115deg,#e8f5eb,#0b9662 55%,#c5a15b)}
+.profile-template-preview.purple-gold-profile{border-color:#c5a15b;background:linear-gradient(145deg,#f7fbf7,#fffdf7)}
+.profile-template-preview.purple-gold-profile .template-preview-cover{background:linear-gradient(115deg,#063d2b,#0b9662 58%,#c5a15b)}
+.profile-template-preview.purple-gold-profile .template-preview-identity strong{color:#07583c}
+.profile-template-preview.purple-gold-profile .profile-avatar-preview{box-shadow:0 0 0 3px #c5a15b,0 8px 20px rgba(8,90,58,.14)}
+.profile-preview.purple-gold-profile{border-color:#c5a15b}
+.profile-template-preview .template-preview-meta span{background:#edf7ef;color:#176344;border:1px solid #d6e9db}
+.profile-template-option .template-mini{box-shadow:inset 0 0 0 1px rgba(8,90,58,.12)}
