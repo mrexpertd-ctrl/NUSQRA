@@ -74,7 +74,12 @@ function App() {
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState('');
   const [error, setError] = useState('');
-  // Marketplace feature module is connected in this release.
+  const [categories,setCategories] = useState([]);
+  const [jobs,setJobs] = useState([]);
+  const [jobForm,setJobForm] = useState({title:'',description:'',category_id:'',budget_min:'',budget_max:'',currency:'SAR',country_code:'SA',city:''});
+  const [proposalForms,setProposalForms] = useState({});
+  const [jobProposals,setJobProposals] = useState({});
+  const [expandedJob,setExpandedJob] = useState(null);
   const t = dictionary[lang];
   const isAr = lang === 'ar';
   const isProfessional = roles.includes('professional');
