@@ -386,7 +386,7 @@ function App() {
                   <h4>{job.title}</h4><p className="job-category">{category?(isAr?category.name_ar:category.name_en):t.marketplace} · {job.city||job.country_code}</p>
                   <p className="job-description">{job.description}</p>
                   <div className="job-meta"><strong>{t.budget}: {job.budget_min??'—'} – {job.budget_max??'—'} {job.currency}</strong></div>
-                  {isProfessional&&job.status==='open'&&job.customer_id!==session.user.id&&<form className="market-form proposal-form" onSubmit={e=>submitProposal(e,job)}>
+                  {isProfessional&&job.status==='open'&&job.customer_id!==session.user.id&&!myProposals[job.id]&&<form className="market-form proposal-form" onSubmit={e=>submitProposal(e,job)}>
                     <h5>{t.submitProposal}</h5>
                     <label>{t.proposalText}<textarea required minLength="20" maxLength="5000" rows="4" value={v.cover_letter} onChange={e=>setProposalForms(old=>({...old,[job.id]:{...v,cover_letter:e.target.value}}))}/></label>
                     <div className="market-form-grid">
