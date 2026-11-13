@@ -97,6 +97,7 @@ function App() {
   const [professionalPortfolio,setProfessionalPortfolio] = useState([]);
   const [adminReviewQueue,setAdminReviewQueue] = useState([]);
   const [staffRole,setStaffRole] = useState(null);
+  const [accountControl,setAccountControl] = useState(null);
   const [adminTab,setAdminTab] = useState('overview');
   const [adminMetrics,setAdminMetrics] = useState(null);
   const [adminAccounts,setAdminAccounts] = useState([]);
@@ -136,6 +137,9 @@ function App() {
   const isStaff = !!staffRole?.is_active;
   const isSuperAdmin = staffRole?.staff_role === 'super_admin';
   const canModerateProfiles = ['super_admin','moderator'].includes(staffRole?.staff_role);
+  const canPostJobs = !accountControl || accountControl.account_status!=='restricted' || accountControl.restrictions?.can_post_jobs!==false;
+  const canSubmitProposals = !accountControl || accountControl.account_status!=='restricted' || accountControl.restrictions?.can_submit_proposals!==false;
+  const canMessage = !accountControl || accountControl.account_status!=='restricted' || accountControl.restrictions?.can_message!==false;
 
   useEffect(() => {
     const syncPage = () => { const next = window.location.hash.replace('#','') || 'home'; setPage(next); setSettingsOpen(next === 'settings'); setMenu(false); window.scrollTo(0,0); };
@@ -154,6 +158,23 @@ function App() {
     });
     return () => { alive = false; subscription.unsubscribe(); };
   }, []);
+
+  useEffect(()=>{
+    if(!session||!supabase){setAccountControl(null);return;}
+    let alive=true;
+    (async()=>{
+      const {data,error:e}=await supabase.from('account_controls').select('account_status,restrictions,reason,expires_at').eq('user_id',session.user.id).maybeSingle();
+      if(!alive)return;
+      if(e){setError(e.message);return;}
+      setAccountControl(data||null);
+      if(data&&['banned','deletion_requested'].includes(data.account_status)&&(!data.expires_at||new Date(data.expires_at)>new Date())){
+        setError('This account is currently suspended. Contact NUSQRA support for assistance.');
+        await supabase.auth.signOut();
+        setSession(null);
+      }
+    })();
+    return()=>{alive=false;};
+  },[session]);
 
   useEffect(() => {
     if (!session || !supabase) {
@@ -692,7 +713,7 @@ function App() {
                 <label>{t.currency}<select value={jobForm.currency} onChange={e=>setJobForm(v=>({...v,currency:e.target.value}))}>{['SAR','AED','BHD','KWD','OMR','QAR'].map(x=><option key={x}>{x}</option>)}</select></label>
                 <label>{t.cityLabel}<input value={jobForm.city} onChange={e=>setJobForm(v=>({...v,city:e.target.value}))}/></label>
               </div>
-              <button className="btn primary" type="submit" disabled={busy}>{t.publishJob}</button>
+              <button className="btn primary" type="submit" disabled={busy||!canPostJobs}>{t.publishJob}</button>
             </form>
           </div>}
           <div className="marketplace-panel">
@@ -716,7 +737,7 @@ function App() {
                       <label>{t.proposedPrice}<input type="number" min="0" step="0.01" value={v.proposed_price} onChange={e=>setProposalForms(old=>({...old,[job.id]:{...v,proposed_price:e.target.value}}))}/></label>
                       <label>{t.deliveryDays}<input type="number" min="1" max="365" value={v.delivery_days} onChange={e=>setProposalForms(old=>({...old,[job.id]:{...v,delivery_days:e.target.value}}))}/></label>
                     </div>
-                    <button className="btn primary" type="submit" disabled={busy}>{t.sendProposal}</button>
+                    <button className="btn primary" type="submit" disabled={busy||!canSubmitProposals}>{t.sendProposal}</button>
                   </form>}
                   {job.customer_id===session.user.id&&<div className="job-management">{job.status==='open'&&<><button className="btn secondary" type="button" disabled={busy} onClick={()=>updateJobStatus(job,'closed')}>{t.closeJob}</button><button className="btn secondary" type="button" disabled={busy} onClick={()=>updateJobStatus(job,'cancelled')}>{t.cancelJob}</button></>}{job.status==='closed'&&<><button className="btn secondary" type="button" disabled={busy} onClick={()=>updateJobStatus(job,'open')}>{t.reopenJob}</button><button className="btn secondary" type="button" disabled={busy} onClick={()=>updateJobStatus(job,'cancelled')}>{t.cancelJob}</button></>}{job.status==='in_progress'&&<button className="btn primary" type="button" disabled={busy} onClick={()=>updateJobStatus(job,'completed')}>{t.completeJob}</button>}</div>}
                   {isProfessional&&myProposals[job.id]&&<p className="my-proposal-status">{t.proposalSubmitted}: <strong>{myProposals[job.id].status==='accepted'?t.proposalAccepted:myProposals[job.id].status==='rejected'?t.proposalRejected:myProposals[job.id].status}</strong></p>}
@@ -726,7 +747,7 @@ function App() {
                       {(jobProposals[job.id]||[]).length===0?<p className="market-empty">{t.noProposals}</p>:(jobProposals[job.id]||[]).map(p=><div className="proposal-card" key={p.id}>
                         <strong>{p.professional?.full_name||t.professional}</strong><p>{p.cover_letter}</p>
                         <small>{p.proposed_price??'—'} {p.currency} · {p.delivery_days??'—'} {t.deliveryDays} · {p.status}</small>
-                        <div className="proposal-actions">{p.status==='submitted'&&job.status==='open'&&<><button className="btn primary" type="button" disabled={busy} onClick={()=>decideProposal(p,'accepted')}>{t.accept}</button><button className="btn secondary" type="button" disabled={busy} onClick={()=>decideProposal(p,'rejected')}>{t.reject}</button></>}{(p.status==='submitted'||p.status==='accepted')&&<button className="btn secondary" type="button" disabled={busy} onClick={()=>openConversation(job,p.professional_id)}><MessageCircle size={15}/>{t.messageProfessional}</button>}</div>{job.status==='completed'&&p.status==='accepted'&&<form className="skill-rating-form" onSubmit={e=>submitSkillRating(e,job,p)}><strong>Rate professional skills</strong>{skillRatingForms[p.id]?.submitted?<span>Rating submitted ✓</span>:<><input required maxLength="80" placeholder="Skill (e.g. diagnostic accuracy)" value={skillRatingForms[p.id]?.skill_name||''} onChange={e=>setSkillRatingForms(old=>({...old,[p.id]:{...(old[p.id]||{rating:5}),skill_name:e.target.value}}))}/><div className="skill-star-picker">{[1,2,3,4,5].map(n=><button type="button" key={n} aria-label={n+' stars'} className={(skillRatingForms[p.id]?.rating||5)>=n?'selected':''} onClick={()=>setSkillRatingForms(old=>({...old,[p.id]:{...(old[p.id]||{skill_name:''}),rating:n}}))}>★</button>)}</div><textarea rows="2" placeholder="Optional feedback" value={skillRatingForms[p.id]?.comment||''} onChange={e=>setSkillRatingForms(old=>({...old,[p.id]:{...(old[p.id]||{rating:5}),comment:e.target.value}}))}/><button className="btn secondary" type="submit">Submit skill rating</button></>}</form>}
+                        <div className="proposal-actions">{p.status==='submitted'&&job.status==='open'&&<><button className="btn primary" type="button" disabled={busy} onClick={()=>decideProposal(p,'accepted')}>{t.accept}</button><button className="btn secondary" type="button" disabled={busy} onClick={()=>decideProposal(p,'rejected')}>{t.reject}</button></>}{(p.status==='submitted'||p.status==='accepted')&&<button className="btn secondary" type="button" disabled={busy} disabled={!canMessage} onClick={()=>openConversation(job,p.professional_id)}><MessageCircle size={15}/>{t.messageProfessional}</button>}</div>{job.status==='completed'&&p.status==='accepted'&&<form className="skill-rating-form" onSubmit={e=>submitSkillRating(e,job,p)}><strong>Rate professional skills</strong>{skillRatingForms[p.id]?.submitted?<span>Rating submitted ✓</span>:<><input required maxLength="80" placeholder="Skill (e.g. diagnostic accuracy)" value={skillRatingForms[p.id]?.skill_name||''} onChange={e=>setSkillRatingForms(old=>({...old,[p.id]:{...(old[p.id]||{rating:5}),skill_name:e.target.value}}))}/><div className="skill-star-picker">{[1,2,3,4,5].map(n=><button type="button" key={n} aria-label={n+' stars'} className={(skillRatingForms[p.id]?.rating||5)>=n?'selected':''} onClick={()=>setSkillRatingForms(old=>({...old,[p.id]:{...(old[p.id]||{skill_name:''}),rating:n}}))}>★</button>)}</div><textarea rows="2" placeholder="Optional feedback" value={skillRatingForms[p.id]?.comment||''} onChange={e=>setSkillRatingForms(old=>({...old,[p.id]:{...(old[p.id]||{rating:5}),comment:e.target.value}}))}/><button className="btn secondary" type="submit">Submit skill rating</button></>}</form>}
                       </div>)}
                     </div>}
                   </div>}
@@ -735,7 +756,7 @@ function App() {
           </div>
         </div>
       </section>}
-      {page === 'messages' && session && <section className="section marketplace-section messaging-section" id="messages"><div className="section-label">NUSQRA · PRIVATE</div><h2>{t.messages}</h2><div className="messaging-layout"><aside className="conversation-list">{conversations.length===0?<p className="market-empty">{t.noConversations}</p>:conversations.map(c=><button type="button" className={'conversation-item'+(selectedConversation?.id===c.id?' active':'')} key={c.id} onClick={()=>setSelectedConversation(c)}><strong>{c.job?.title||t.marketplace}</strong><span>{session.user.id===c.customer_id?(c.professional?.full_name||t.professional):(c.customer?.full_name||t.customer)}</span></button>)}</aside><div className="chat-panel">{selectedConversation?<><div className="chat-heading"><strong>{selectedConversation.job?.title||conversations.find(c=>c.id===selectedConversation.id)?.job?.title||t.marketplace}</strong><span>{session.user.id===selectedConversation.customer_id?(conversations.find(c=>c.id===selectedConversation.id)?.professional?.full_name||t.professional):(conversations.find(c=>c.id===selectedConversation.id)?.customer?.full_name||t.customer)}</span></div><div className="message-list">{messages.map(m=><div key={m.id} className={'message-bubble'+(m.sender_id===session.user.id?' mine':'')}><p>{m.body}</p><time>{new Date(m.created_at).toLocaleString(lang==='ar'?'ar-SA':'en-US')}</time></div>)}</div><form className="message-compose" onSubmit={sendMessage}><textarea rows="2" maxLength="4000" required placeholder={t.messagePlaceholder} value={messageDraft} onChange={e=>setMessageDraft(e.target.value)}/><button className="btn primary" type="submit" disabled={busy||!messageDraft.trim()}><Send size={16}/>{t.sendMessage}</button></form></>:<p className="market-empty">{t.noConversations}</p>}</div></div></section>}
+      {page === 'messages' && session && <section className="section marketplace-section messaging-section" id="messages"><div className="section-label">NUSQRA · PRIVATE</div><h2>{t.messages}</h2><div className="messaging-layout"><aside className="conversation-list">{conversations.length===0?<p className="market-empty">{t.noConversations}</p>:conversations.map(c=><button type="button" className={'conversation-item'+(selectedConversation?.id===c.id?' active':'')} key={c.id} onClick={()=>setSelectedConversation(c)}><strong>{c.job?.title||t.marketplace}</strong><span>{session.user.id===c.customer_id?(c.professional?.full_name||t.professional):(c.customer?.full_name||t.customer)}</span></button>)}</aside><div className="chat-panel">{selectedConversation?<><div className="chat-heading"><strong>{selectedConversation.job?.title||conversations.find(c=>c.id===selectedConversation.id)?.job?.title||t.marketplace}</strong><span>{session.user.id===selectedConversation.customer_id?(conversations.find(c=>c.id===selectedConversation.id)?.professional?.full_name||t.professional):(conversations.find(c=>c.id===selectedConversation.id)?.customer?.full_name||t.customer)}</span></div><div className="message-list">{messages.map(m=><div key={m.id} className={'message-bubble'+(m.sender_id===session.user.id?' mine':'')}><p>{m.body}</p><time>{new Date(m.created_at).toLocaleString(lang==='ar'?'ar-SA':'en-US')}</time></div>)}</div><form className="message-compose" onSubmit={sendMessage}><textarea rows="2" maxLength="4000" required placeholder={t.messagePlaceholder} value={messageDraft} onChange={e=>setMessageDraft(e.target.value)}/><button className="btn primary" type="submit" disabled={busy||!messageDraft.trim()||!canMessage}><Send size={16}/>{t.sendMessage}</button></form></>:<p className="market-empty">{t.noConversations}</p>}</div></div></section>}
       {page === 'settings' && session && <section className="section account-section settings-page" id="account">
         <div className="section-label">NUSQRA · {t.dashboard.toUpperCase()}</div><h2>{t.dashboard}</h2>
         <div className="account-card">
