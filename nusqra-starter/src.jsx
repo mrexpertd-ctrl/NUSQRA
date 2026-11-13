@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import nusqraLogo from './nusqra-mark.svg';
 import { createRoot } from 'react-dom/client';
 import {
   Globe2, ShieldCheck, Users, ArrowRight, ArrowLeft, Crown, Menu, X,
@@ -619,13 +620,13 @@ function App() {
   }
 
   if (!authReady) {
-    return <div className="access-gate" dir={isAr ? 'rtl' : 'ltr'}><section className="access-gate-card" aria-live="polite"><div className="access-gate-mark"><img src="/nusqra-mark.svg" alt="NUSQRA نُسقرا" /></div><h1>NUSQRA</h1><p>{isAr?'جارٍ التحقق من جلسة الدخول…':'Checking your secure sign-in…'}</p><LoaderCircle className="spin access-gate-loader" size={24}/></section></div>;
+    return <div className="access-gate" dir={isAr ? 'rtl' : 'ltr'}><section className="access-gate-card" aria-live="polite"><div className="access-gate-mark"><img src={nusqraLogo} alt="NUSQRA نُسقرا" /></div><h1>NUSQRA</h1><p>{isAr?'جارٍ التحقق من جلسة الدخول…':'Checking your secure sign-in…'}</p><LoaderCircle className="spin access-gate-loader" size={24}/></section></div>;
   }
 
   if (!session) {
     return <div className="access-gate" dir={isAr ? 'rtl' : 'ltr'}>
       <section className="access-gate-card" aria-labelledby="access-gate-title">
-        <div className="access-gate-brand"><span className="access-gate-mark"><img src="/nusqra-mark.svg" alt="" /></span><span>NUSQRA<small>نُسقرا</small></span></div>
+        <div className="access-gate-brand"><span className="access-gate-mark"><img src={nusqraLogo} alt="" /></span><span>NUSQRA<small>نُسقرا</small></span></div>
         <div className="access-gate-eyebrow">{isAr?'بوابة الدخول الآمن':'PRIVATE MEMBER ACCESS'}</div>
         <h1 id="access-gate-title">{isAr?'مرحباً بك في نسقرا':'Your next opportunity starts here.'}</h1>
         <p>{isAr?'يجب تسجيل الدخول باستخدام حساب Google للوصول إلى نسقرا. إذا كانت هذه زيارتك الأولى، فسيتم إنشاء حسابك تلقائياً.':'NUSQRA is available to signed-in members only. Continue with your Google account to sign in or create your account automatically.'}</p>
@@ -645,7 +646,7 @@ function App() {
 
   return <div dir={isAr ? 'rtl' : 'ltr'}>
     <header className="header">
-      <a className="brand" href="#home" onClick={()=>{setSettingsOpen(false);setPage('home');setMenu(false);}}><span className="mark"><img src="/nusqra-mark.svg" alt="NUSQRA Arabic calligraphy logo" /></span><span>NUSQRA<small>نُسقرا</small></span></a>
+      <a className="brand" href="#home" onClick={()=>{setSettingsOpen(false);setPage('home');setMenu(false);}}><span className="mark"><img src={nusqraLogo} alt="NUSQRA Arabic calligraphy logo" /></span><span>NUSQRA<small>نُسقرا</small></span></a>
       <nav className={menu ? 'nav open' : 'nav'} aria-label={isAr?'التنقل الرئيسي':'Main navigation'}>
         <button type="button" className="navlink" onClick={()=>navigatePage('explore')}>{t.nav[0]}</button>
         <button type="button" className="navlink" onClick={()=>navigatePage('categories')}>{t.nav[1]}</button>
@@ -889,11 +890,11 @@ function App() {
         </div>
       </section>}
     </main>
-    <footer><div className="brand"><span className="mark" aria-label="NUSQRA Arabic calligraphy logo"><span className="brand-calligraphy" lang="ar">نسقرا</span></span><span>NUSQRA<small>نُسقرا</small></span></div><p>{t.footer}</p><span>© {new Date().getFullYear()} NUSQRA · {t.join}</span></footer>
+    <footer><div className="brand"><span className="mark" aria-label="NUSQRA Arabic calligraphy logo"><img src={nusqraLogo} alt="NUSQRA Arabic calligraphy logo" /></span><span>NUSQRA<small>نُسقرا</small></span></div><p>{t.footer}</p><span>© {new Date().getFullYear()} NUSQRA · {t.join}</span></footer>
     {authMode && <div className="auth-backdrop" role="presentation" onMouseDown={e=>{if(e.target===e.currentTarget){setAuthMode(null);setError('')}}}>
       <section className="auth-dialog" role="dialog" aria-modal="true" aria-label={authMode==='register'?t.create:t.welcome}>
         <button className="auth-close" aria-label="Close" onClick={()=>setAuthMode(null)}><X size={22}/></button>
-        <div className="brand"><span className="mark" aria-label="NUSQRA Arabic calligraphy logo"><span className="brand-calligraphy" lang="ar">نسقرا</span></span><span>NUSQRA<small>نُسقرا</small></span></div>
+        <div className="brand"><span className="mark" aria-label="NUSQRA Arabic calligraphy logo"><img src={nusqraLogo} alt="NUSQRA Arabic calligraphy logo" /></span><span>NUSQRA<small>نُسقرا</small></span></div>
         <h2>{authMode==='register'?t.create:t.welcome}</h2>
         {!isSupabaseConfigured && <p className="auth-warning">{t.noConfig}</p>}
         <div className="auth-method-tabs">
