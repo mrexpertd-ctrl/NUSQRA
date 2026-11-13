@@ -619,13 +619,13 @@ function App() {
   }
 
   if (!authReady) {
-    return <div className="access-gate" dir={isAr ? 'rtl' : 'ltr'}><section className="access-gate-card" aria-live="polite"><div className="access-gate-mark">N</div><h1>NUSQRA</h1><p>{isAr?'جارٍ التحقق من جلسة الدخول…':'Checking your secure sign-in…'}</p><LoaderCircle className="spin access-gate-loader" size={24}/></section></div>;
+    return <div className="access-gate" dir={isAr ? 'rtl' : 'ltr'}><section className="access-gate-card" aria-live="polite"><div className="access-gate-mark"><span className="brand-calligraphy" lang="ar">نسقرا</span></div><h1>NUSQRA</h1><p>{isAr?'جارٍ التحقق من جلسة الدخول…':'Checking your secure sign-in…'}</p><LoaderCircle className="spin access-gate-loader" size={24}/></section></div>;
   }
 
   if (!session) {
     return <div className="access-gate" dir={isAr ? 'rtl' : 'ltr'}>
       <section className="access-gate-card" aria-labelledby="access-gate-title">
-        <div className="access-gate-brand"><span className="access-gate-mark">N</span><span>NUSQRA<small>نُسقرا</small></span></div>
+        <div className="access-gate-brand"><span className="access-gate-mark"><span className="brand-calligraphy" lang="ar">نسقرا</span></span><span>NUSQRA<small>نُسقرا</small></span></div>
         <div className="access-gate-eyebrow">{isAr?'بوابة الدخول الآمن':'PRIVATE MEMBER ACCESS'}</div>
         <h1 id="access-gate-title">{isAr?'مرحباً بك في نسقرا':'Your next opportunity starts here.'}</h1>
         <p>{isAr?'يجب تسجيل الدخول باستخدام حساب Google للوصول إلى نسقرا. إذا كانت هذه زيارتك الأولى، فسيتم إنشاء حسابك تلقائياً.':'NUSQRA is available to signed-in members only. Continue with your Google account to sign in or create your account automatically.'}</p>
@@ -645,13 +645,13 @@ function App() {
 
   return <div dir={isAr ? 'rtl' : 'ltr'}>
     <header className="header">
-      <a className="brand" href="#home" onClick={()=>{setSettingsOpen(false);setPage('home');setMenu(false);}}><span className="mark" aria-label="NUSQRA logo"><svg className="brand-symbol" viewBox="0 0 64 64" role="img" aria-hidden="true"><path d="M14 49V15h7l29 34V15" fill="none" stroke="#F0D59A" strokeWidth="6" strokeLinecap="square" strokeLinejoin="miter"/><path d="M49 15h-8" fill="none" stroke="#FFFFFF" strokeWidth="6" strokeLinecap="square"/><path d="M14 15h8" fill="none" stroke="#FFFFFF" strokeWidth="6" strokeLinecap="square"/></svg></span><span>NUSQRA<small>نُسقرا</small></span></a>
-      <nav className={menu ? 'nav open' : 'nav'}>
-        <a href="#explore" onClick={()=>setMenu(false)}>{t.nav[0]}</a>
-        <a href="#categories" onClick={()=>setMenu(false)}>{t.nav[1]}</a>
-        <a href="#how-it-works" onClick={()=>setMenu(false)}>{t.nav[2]}</a>
-        <a href="#professionals" onClick={()=>setMenu(false)}>{t.nav[3]}</a>
-        {session && <><a href="#marketplace" onClick={()=>setMenu(false)}>{isAr?'السوق':'Marketplace'}</a><a href="#messages" onClick={()=>setMenu(false)}>{t.messages}</a></>}
+      <a className="brand" href="#home" onClick={()=>{setSettingsOpen(false);setPage('home');setMenu(false);}}><span className="mark" aria-label="NUSQRA Arabic calligraphy logo"><span className="brand-calligraphy" lang="ar">نسقرا</span></span><span>NUSQRA<small>نُسقرا</small></span></a>
+      <nav className={menu ? 'nav open' : 'nav'} aria-label={isAr?'التنقل الرئيسي':'Main navigation'}>
+        <button type="button" className="navlink" onClick={()=>navigatePage('professionals')}>{t.nav[0]}</button>
+        <button type="button" className="navlink" onClick={()=>navigatePage('categories')}>{t.nav[1]}</button>
+        <button type="button" className="navlink" onClick={()=>{navigatePage('home');window.setTimeout(()=>document.getElementById('how-it-works')?.scrollIntoView({behavior:'smooth',block:'start'}),80);}}>{t.nav[2]}</button>
+        <button type="button" className="navlink" onClick={()=>{setProfileTab('professional');navigatePage('settings');}}>{t.nav[3]}</button>
+        {session && <><button type="button" className="navlink" onClick={()=>navigatePage('marketplace')}>{isAr?'السوق':'Marketplace'}</button><button type="button" className="navlink" onClick={()=>navigatePage('messages')}>{t.messages}</button></>}
       </nav>
       <div className="actions">
         {session ? <button className="navlink" onClick={()=>navigatePage('settings')}><UserRound size={15}/>{t.account}</button> :
@@ -687,7 +687,7 @@ function App() {
           </div>
         </section>
         <section className="home-trust-band"><div><span className="section-label">{isAr?'مصممة للخليج':'BUILT FOR THE GULF'}</span><h2>{isAr?'فرص أوضح. تواصل أسهل. نمو أقوى.':'A clearer way to find work and get work done.'}</h2></div><div className="home-trust-points"><span><ShieldCheck size={19}/>{isAr?'تواصل بثقة':'Connect with confidence'}</span><span><Globe2 size={19}/>{isAr?'العربية والإنجليزية':'Arabic & English'}</span><span><Users size={19}/>{isAr?'للأفراد والشركات':'For people & businesses'}</span></div></section>
-        <section className="home-steps section"><div className="section-label">{isAr?'ابدأ في ثلاث خطوات':'GET STARTED IN THREE STEPS'}</div><h2>{isAr?'كيف تعمل نسقرا':'A simple path from need to opportunity'}</h2><div className="home-step-grid"><article><b>01</b><h3>{isAr?'أنشئ حسابك':'Create your account'}</h3><p>{isAr?'أنشئ ملفك كعميل أو محترف.':'Join as a customer or professional.'}</p></article><article><b>02</b><h3>{isAr?'اكتشف أو انشر':'Discover or post'}</h3><p>{isAr?'ابحث عن خدمة أو انشر طلبك.':'Find a service or publish a job request.'}</p></article><article><b>03</b><h3>{isAr?'تواصل وابدأ':'Connect and begin'}</h3><p>{isAr?'راجع العروض وتواصل مباشرة.':'Review proposals and connect directly.'}</p></article></div><div className="home-final-cta"><div><h2>{isAr?'مستعد للخطوة التالية؟':'Ready for your next opportunity?'}</h2><p>{isAr?'انضم إلى مجتمع نسقرا اليوم.':'Join the NUSQRA community today.'}</p></div><button className="btn primary" onClick={()=>{if(session)navigatePage('settings');else{setForm(x=>({...x,account_type:'customer'}));setAuthMode('register');}}}>{isAr?'أنشئ حسابك':'Get started'} <ArrowRight size={17}/></button></div></section>
+        <section className="home-steps section" id="how-it-works"><div className="section-label">{isAr?'ابدأ في ثلاث خطوات':'GET STARTED IN THREE STEPS'}</div><h2>{isAr?'كيف تعمل نسقرا':'A simple path from need to opportunity'}</h2><div className="home-step-grid"><article><b>01</b><h3>{isAr?'أنشئ حسابك':'Create your account'}</h3><p>{isAr?'أنشئ ملفك كعميل أو محترف.':'Join as a customer or professional.'}</p></article><article><b>02</b><h3>{isAr?'اكتشف أو انشر':'Discover or post'}</h3><p>{isAr?'ابحث عن خدمة أو انشر طلبك.':'Find a service or publish a job request.'}</p></article><article><b>03</b><h3>{isAr?'تواصل وابدأ':'Connect and begin'}</h3><p>{isAr?'راجع العروض وتواصل مباشرة.':'Review proposals and connect directly.'}</p></article></div><div className="home-final-cta"><div><h2>{isAr?'مستعد للخطوة التالية؟':'Ready for your next opportunity?'}</h2><p>{isAr?'انضم إلى مجتمع نسقرا اليوم.':'Join the NUSQRA community today.'}</p></div><button className="btn primary" onClick={()=>{if(session)navigatePage('settings');else{setForm(x=>({...x,account_type:'customer'}));setAuthMode('register');}}}>{isAr?'أنشئ حسابك':'Get started'} <ArrowRight size={17}/></button></div></section>
       </>}
       {page === 'categories' && <section className="section category-section" id="categories">
         <div className="section-label">NUSQRA · SERVICES DIRECTORY</div>
@@ -889,11 +889,11 @@ function App() {
         </div>
       </section>}
     </main>
-    <footer><div className="brand"><span className="mark" aria-label="NUSQRA logo"><svg className="brand-symbol" viewBox="0 0 64 64" role="img" aria-hidden="true"><path d="M14 49V15h7l29 34V15" fill="none" stroke="#F0D59A" strokeWidth="6" strokeLinecap="square" strokeLinejoin="miter"/><path d="M49 15h-8" fill="none" stroke="#FFFFFF" strokeWidth="6" strokeLinecap="square"/><path d="M14 15h8" fill="none" stroke="#FFFFFF" strokeWidth="6" strokeLinecap="square"/></svg></span><span>NUSQRA<small>نُسقرا</small></span></div><p>{t.footer}</p><span>© {new Date().getFullYear()} NUSQRA · {t.join}</span></footer>
+    <footer><div className="brand"><span className="mark" aria-label="NUSQRA Arabic calligraphy logo"><span className="brand-calligraphy" lang="ar">نسقرا</span></span><span>NUSQRA<small>نُسقرا</small></span></div><p>{t.footer}</p><span>© {new Date().getFullYear()} NUSQRA · {t.join}</span></footer>
     {authMode && <div className="auth-backdrop" role="presentation" onMouseDown={e=>{if(e.target===e.currentTarget){setAuthMode(null);setError('')}}}>
       <section className="auth-dialog" role="dialog" aria-modal="true" aria-label={authMode==='register'?t.create:t.welcome}>
         <button className="auth-close" aria-label="Close" onClick={()=>setAuthMode(null)}><X size={22}/></button>
-        <div className="brand"><span className="mark" aria-label="NUSQRA logo"><svg className="brand-symbol" viewBox="0 0 64 64" role="img" aria-hidden="true"><path d="M14 49V15h7l29 34V15" fill="none" stroke="#F0D59A" strokeWidth="6" strokeLinecap="square" strokeLinejoin="miter"/><path d="M49 15h-8" fill="none" stroke="#FFFFFF" strokeWidth="6" strokeLinecap="square"/><path d="M14 15h8" fill="none" stroke="#FFFFFF" strokeWidth="6" strokeLinecap="square"/></svg></span><span>NUSQRA<small>نُسقرا</small></span></div>
+        <div className="brand"><span className="mark" aria-label="NUSQRA Arabic calligraphy logo"><span className="brand-calligraphy" lang="ar">نسقرا</span></span><span>NUSQRA<small>نُسقرا</small></span></div>
         <h2>{authMode==='register'?t.create:t.welcome}</h2>
         {!isSupabaseConfigured && <p className="auth-warning">{t.noConfig}</p>}
         <div className="auth-method-tabs">
