@@ -1371,3 +1371,5 @@ footer .brand small{color:#d0b477!important}
 .admin-review-card textarea{width:100%;margin:12px 0}
 @media(max-width:600px){.admin-review-card{padding:15px}.admin-review-document{grid-template-columns:1fr}.admin-review-document input{grid-column:1}}
 .profile-avatar-preview img{object-fit:cover;object-position:center}
+
+.verified-profile-badge{display:inline-flex;align-items:center;width:max-content;padding:5px 9px;border-radius:999px;background:#eaf5ef;color:#176444;font-size:10px;font-weight:800;margin:2px 0 10px}
