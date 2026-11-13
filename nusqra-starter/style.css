@@ -1015,3 +1015,74 @@ footer .mark{background:linear-gradient(145deg,#56327d,#087a50);border-color:#d9
 @media(prefers-reduced-motion:reduce){
   .profile-template-option,.profile-upload-card{transition:none}
 }
+
+
+/* NUSQRA premium light identity — unified across every page */
+:root{
+  color-scheme:light;
+  --ink:#202638;--muted:#687386;--paper:#fbfaf7;--surface:#ffffff;
+  --line:#e8e5df;--emerald:#087a50;--emerald-deep:#075b40;
+  --violet:#67438a;--violet-deep:#493064;--gold:#b38b45;
+  --shadow:0 18px 48px rgba(35,39,53,.075);
+}
+html,body{background:var(--paper)!important;color:var(--ink)!important}
+body{font-family:Inter,Cairo,Arial,sans-serif}
+.header{height:82px;background:rgba(255,255,255,.94)!important;border-bottom:1px solid #e9e5dc!important;box-shadow:0 5px 24px rgba(30,35,48,.045);backdrop-filter:blur(18px)}
+.brand{color:#202638!important;gap:13px;letter-spacing:2.2px}
+.brand small{color:var(--gold)!important;font-weight:800}
+.mark{width:48px;height:48px;flex-basis:48px;border:0!important;border-radius:15px!important;background:transparent!important;box-shadow:0 7px 18px rgba(45,49,63,.13)!important}
+.brand-symbol{width:48px;height:48px;display:block}
+.brand-symbol-frame,.brand-symbol-letter,.brand-symbol-accent{display:none}
+.nav a,.navlink{color:#4c5668!important;font-weight:650}
+.nav a:hover,.navlink:hover{color:var(--violet)!important}
+.lang{background:#f5f2f8!important;color:var(--violet-deep)!important;border:1px solid #e2d8eb!important}
+.menu{color:var(--ink)!important}
+.hero{background:radial-gradient(ellipse at 88% 15%,rgba(103,67,138,.13),transparent 38%),radial-gradient(ellipse at 8% 90%,rgba(8,122,80,.10),transparent 36%),linear-gradient(135deg,#fff 0%,#f8f7f2 58%,#f5f0f8 100%)!important;color:var(--ink)!important}
+.hero h1,.section h2,.home-intro h2{color:#202638!important}
+.hero p,.section-intro,.feature p,.step-grid p{color:#687386!important}
+.eyebrow,.section-label{color:var(--violet)!important}
+.spark{background:var(--emerald)!important;box-shadow:0 0 12px #087a5066!important}
+.orb1{background:#8d65b0!important;opacity:.12!important}.orb2{background:#0b9b69!important;opacity:.11!important}
+.hero-card,.hero-visual{border:1px solid #e1d7e9!important;box-shadow:var(--shadow)!important}
+.btn.primary,.primary{background:linear-gradient(115deg,var(--emerald-deep),var(--emerald) 58%,#2a8c68)!important;color:#fff!important;border:1px solid #087a50!important;box-shadow:0 8px 20px rgba(8,122,80,.16)}
+.btn.primary:hover,.primary:hover{filter:brightness(1.06);transform:translateY(-1px)}
+.btn.secondary,.secondary{background:#fff!important;color:var(--violet-deep)!important;border:1px solid #d8cbe4!important}
+.btn.secondary:hover,.secondary:hover{background:#f6f1fa!important}
+.section{color:var(--ink)!important}
+.feature,.step-grid article,.home-step,.category-card,.home-category-card,.marketplace-panel,.job-card,.account-card,.dashboard,.module,.metric{
+  background:#fff!important;color:var(--ink)!important;border:1px solid var(--line)!important;box-shadow:0 10px 30px rgba(35,39,53,.045)
+}
+.feature h3,.step-grid h3,.category-card h3,.home-category-card span{color:#283246!important}
+.feature p,.category-card p,.step-grid p{color:#697487!important}
+.iconbox{background:#f1eaf7!important;color:var(--violet)!important}
+.steps{border-color:#e8e5df!important}
+.step-grid article{border-top:2px solid #d8c9e6!important}
+.step-num{color:var(--gold)!important}
+.premium{background:linear-gradient(120deg,#f1eaf7,#edf7f1 65%,#fbf5e8)!important;border:1px solid #e1d7e9!important;color:var(--ink)!important;box-shadow:var(--shadow)}
+.premium h2,.premium h3{color:var(--violet-deep)!important}
+.premium p{color:#687386!important}
+.premium-symbol{border-color:#c7a45e!important;color:var(--violet)!important;background:#fff9!important}
+.dashboard{background:#fff!important}
+.metric,.module{background:#faf9f6!important;border-color:#ece8e0!important}
+.metric span,.demo-note{color:#687386!important}
+.module{color:#394458!important}.module svg{color:var(--violet)!important}
+footer{background:#f3f1ec!important;border-top:1px solid #e5e1d8!important;color:#687386!important}
+footer .brand{color:#202638!important}
+.auth-dialog,.profile-preview-dialog{background:#fff!important;color:var(--ink)!important;box-shadow:0 24px 80px rgba(24,29,43,.22)!important}
+input,select,textarea{color:var(--ink)}
+.account-heading h3,.profile-studio-heading h3{color:var(--violet-deep)!important}
+.profile-studio{background:linear-gradient(145deg,#fff,#fbf8fd 55%,#f6faf7)!important;border-color:#e1d7e9!important}
+.profile-tab-panel,.profile-template-option{background:#fff!important}
+.profile-studio-heading p,.profile-template-option small,.profile-upload-card small{color:#687386!important}
+.profile-editor-tabs button{background:#fff!important;color:#5a5264!important}
+.profile-editor-tabs button.active{background:linear-gradient(120deg,var(--violet-deep),var(--violet))!important;color:#fff!important}
+.profile-save-row .btn.primary{background:linear-gradient(110deg,var(--violet-deep),var(--violet) 58%,var(--emerald))!important}
+.category-audience,.role-chip{background:#f4eff8!important;color:var(--violet-deep)!important;border-color:#e2d6ec!important}
+.audience-tabs button.active{background:var(--violet)!important;color:#fff!important}
+input:focus,select:focus,textarea:focus{border-color:#9678b2!important;box-shadow:0 0 0 3px rgba(103,67,138,.10)!important}
+@media(max-width:650px){
+ .header{background:rgba(255,255,255,.97)!important}
+ .nav{background:#fff!important;border:1px solid #eee9e1!important;box-shadow:0 18px 35px rgba(25,30,45,.12)!important}
+ .hero{background:linear-gradient(150deg,#fff,#f7f3fa 62%,#f2f8f4)!important}
+}
+[dir=rtl] .brand{letter-spacing:1px}
