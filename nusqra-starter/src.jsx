@@ -6,6 +6,7 @@ import {
   MessageCircle, Send, Check, XCircle, RefreshCw
 } from 'lucide-react';
 import './style.css';
+import heroImage from './heroImage';
 import { isSupabaseConfigured, supabase } from './supabaseClient';
 
 const dictionary = {
@@ -403,7 +404,7 @@ function App() {
           </div>
           <div className="proof"><ShieldCheck size={18}/>{t.trust}<span className="dot"/> <span>Gulf-first · Mobile-first</span></div>
         </div>
-        <div className="hero-card"><div className="card-glow"/><div className="hero-monogram">ن</div><div className="hero-card-title">نُسقرا <span>NUSQRA</span></div><div className="hero-card-caption">EXPERTISE · TRUST · OPPORTUNITY</div></div>
+        <div className="hero-visual"><img src={heroImage} alt={isAr?'رجل سعودي يستخدم جهازاً لوحياً في بيئة عمل حديثة':'A Saudi man in traditional attire using a tablet in a modern workplace'} /><div className="hero-visual-caption"><strong>نُسقرا · NUSQRA</strong><span>{isAr?'خبرات · ثقة · فرص':'Expertise · Trust · Opportunity'}</span></div></div>
       </section>}
       {page === 'categories' && <section className="section category-section" id="categories">
         <div className="section-label">NUSQRA · SERVICES DIRECTORY</div>
@@ -418,8 +419,26 @@ function App() {
         {categories.length>0 && <div className="category-grid">
           {categories.filter(c=>categoryAudience==='all'||(categoryAudience==='investors'?c.slug==='investors-opportunities':c.slug!=='investors-opportunities')).map(c=>{
             const symbols={'web-technology':'⌘','design-creative':'✦','marketing-sales':'↗','business-services':'▤','automotive-services':'⚙','education-training':'◎','home-maintenance':'⌂','writing-translation':'✎','construction-engineering':'⌁','transport-logistics':'⇢','finance-administration':'＄','hr-recruitment':'♙','healthcare-wellness':'＋','hospitality-events':'◇','industrial-manufacturing':'▦','investors-opportunities':'◈'};
+            const images={
+              'web-technology':'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=900&q=82',
+              'design-creative':'https://images.unsplash.com/photo-1541701494587-cb58502866ab?auto=format&fit=crop&w=900&q=82',
+              'marketing-sales':'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=900&q=82',
+              'business-services':'https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=900&q=82',
+              'automotive-services':'https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?auto=format&fit=crop&w=900&q=82',
+              'education-training':'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=900&q=82',
+              'home-maintenance':'https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=900&q=82',
+              'writing-translation':'https://images.unsplash.com/photo-1455390582262-044cdez?auto=format&fit=crop&w=900&q=82',
+              'construction-engineering':'https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=900&q=82',
+              'transport-logistics':'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=900&q=82',
+              'finance-administration':'https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=900&q=82',
+              'hr-recruitment':'https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=900&q=82',
+              'healthcare-wellness':'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=900&q=82',
+              'hospitality-events':'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=900&q=82',
+              'industrial-manufacturing':'https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&w=900&q=82',
+              'investors-opportunities':'https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?auto=format&fit=crop&w=900&q=82'
+            };
             return <article className="category-card" key={c.id}>
-              <span className="category-symbol">{symbols[c.slug]||'✧'}</span>
+              <div className="category-image"><img src={images[c.slug]||images['business-services']} alt={isAr?c.name_ar:c.name_en} loading="lazy" decoding="async"/><span className="category-symbol">{symbols[c.slug]||'✧'}</span></div>
               <h3>{isAr?c.name_ar:c.name_en}</h3>
               <p>{isAr?(c.description_ar||''): (c.description_en||'')}</p>
               <span className="category-audience">{c.slug==='investors-opportunities'?t.audienceInvestors:t.audienceBoth}</span>
