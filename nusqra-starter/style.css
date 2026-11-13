@@ -1688,3 +1688,32 @@ footer .brand .mark{background:linear-gradient(145deg,#0b9862,#06402e)}
 .entry-auth-card .access-gate-google:hover:not(:disabled){
   box-shadow:0 9px 22px rgba(11,50,30,.11);
 }
+
+
+/* Welcome screen: soft light-green mirrored halo behind the Google sign-in dialogue. */
+.entry-auth-wrap{
+  position:relative;
+  isolation:isolate;
+}
+.entry-auth-wrap::before{
+  content:"";
+  position:absolute;
+  z-index:-1;
+  inset:-26px -24px;
+  border-radius:42px;
+  background:
+    radial-gradient(ellipse at 50% 12%,rgba(190,239,210,.42) 0%,rgba(146,211,174,.25) 34%,rgba(94,167,128,.10) 62%,transparent 78%),
+    linear-gradient(135deg,rgba(213,246,225,.20),rgba(135,198,160,.12) 48%,rgba(225,249,232,.18));
+  border:1px solid rgba(190,231,204,.22);
+  box-shadow:0 0 44px rgba(148,220,174,.20),inset 0 1px 22px rgba(238,255,243,.16);
+  filter:blur(1px);
+  pointer-events:none;
+}
+.entry-auth-card{
+  position:relative;
+  border-color:rgba(190,211,197,.82);
+  box-shadow:0 26px 78px rgba(0,0,0,.38),0 0 34px rgba(164,222,183,.12);
+}
+@media(max-width:680px){
+  .entry-auth-wrap::before{inset:-14px -10px;border-radius:30px}
+}
