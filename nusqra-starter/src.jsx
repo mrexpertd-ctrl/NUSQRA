@@ -672,7 +672,7 @@ function App() {
 
   return <div dir={isAr ? 'rtl' : 'ltr'}>
     <header className="header">
-      <a className="brand brand-lockup" href="#home" onClick={()=>{setSettingsOpen(false);setPage('home');setMenu(false);}}><img className="nusqra-lockup" src={nusqraLogo} alt="NUSQRA نسقرا" /></a>
+      <a className="brand brand-lockup" href="#home" aria-label="NUSQRA home" onClick={()=>{setSettingsOpen(false);setPage('home');setMenu(false);}}><img className="nusqra-header-symbol" src={nusqraSymbol} alt="" aria-hidden="true" /><span className="nusqra-wordmark" dir="ltr"><span>NUSQRA</span><span className="nusqra-wordmark-divider" aria-hidden="true">|</span><span lang="ar" dir="rtl">نُسقرا</span></span></a>
       <nav className={menu ? 'nav open' : 'nav'} aria-label={isAr?'التنقل الرئيسي':'Main navigation'}>
         <button type="button" className="navlink" onClick={()=>navigatePage('explore')}>{t.nav[0]}</button>
         <button type="button" className="navlink" onClick={()=>navigatePage('categories')}>{t.nav[1]}</button>
