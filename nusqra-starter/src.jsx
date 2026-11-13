@@ -30,7 +30,7 @@ const dictionary = {
     authError: 'Something went wrong. Please try again.', signInPrompt: 'Already have an account? Log in',
     signUpPrompt: 'New to NUSQRA? Create an account', join: 'Join the marketplace',
     footer: 'A better services marketplace for the Gulf.',
-    marketplace:'Marketplace',postJob:'Post a job',browseJobs:'Open jobs',myJobs:'My job posts',jobTitle:'Job title',jobDescription:'Describe the work (20 characters minimum)',category:'Category',selectCategory:'Select category',minBudget:'Minimum budget',maxBudget:'Maximum budget',currency:'Currency',cityLabel:'City / area',publishJob:'Publish job',submitProposal:'Submit proposal',proposalText:'Explain why you are right for this job (20 characters minimum)',proposedPrice:'Your price',deliveryDays:'Delivery days',sendProposal:'Send proposal',viewProposals:'View proposals',noJobs:'No open jobs yet.',noOwnJobs:'You have not posted any jobs yet.',noProposals:'No proposals yet.',jobPosted:'Your job has been published.',proposalSent:'Your proposal was sent.',duplicateProposal:'You have already submitted a proposal for this job.',budget:'Budget',jobError:'Could not load marketplace data.',ownJob:'You cannot apply to your own job.',
+    marketplace:'Marketplace',myJobsAndOpenJobs:'My posts and open jobs',postJob:'Post a job',browseJobs:'Open jobs',myJobs:'My job posts',jobTitle:'Job title',jobDescription:'Describe the work (20 characters minimum)',category:'Category',selectCategory:'Select category',minBudget:'Minimum budget',maxBudget:'Maximum budget',currency:'Currency',cityLabel:'City / area',publishJob:'Publish job',submitProposal:'Submit proposal',proposalText:'Explain why you are right for this job (20 characters minimum)',proposedPrice:'Your price',deliveryDays:'Delivery days',sendProposal:'Send proposal',viewProposals:'View proposals',noJobs:'No open jobs yet.',noOwnJobs:'You have not posted any jobs yet.',noProposals:'No proposals yet.',jobPosted:'Your job has been published.',proposalSent:'Your proposal was sent.',duplicateProposal:'You have already submitted a proposal for this job.',budget:'Budget',jobError:'Could not load marketplace data.',ownJob:'You cannot apply to your own job.',
     countries: {SA:'Saudi Arabia',AE:'United Arab Emirates',BH:'Bahrain',KW:'Kuwait',OM:'Oman',QA:'Qatar'}
   },
   ar: {
@@ -55,7 +55,7 @@ const dictionary = {
     authError: 'حدث خطأ. يرجى المحاولة مرة أخرى.', signInPrompt: 'لديك حساب؟ سجّل الدخول',
     signUpPrompt: 'جديد في نسقرا؟ أنشئ حساباً', join: 'انضم إلى السوق',
     footer: 'سوق خدمات أفضل للخليج.',
-    marketplace:'سوق نسقرا',postJob:'انشر طلب خدمة',browseJobs:'الطلبات المفتوحة',myJobs:'طلباتي المنشورة',jobTitle:'عنوان الطلب',jobDescription:'اشرح العمل المطلوب (20 حرفاً على الأقل)',category:'التصنيف',selectCategory:'اختر التصنيف',minBudget:'الميزانية الدنيا',maxBudget:'الميزانية القصوى',currency:'العملة',cityLabel:'المدينة / المنطقة',publishJob:'نشر الطلب',submitProposal:'تقديم عرض',proposalText:'اشرح لماذا أنت مناسب لهذا العمل (20 حرفاً على الأقل)',proposedPrice:'السعر المقترح',deliveryDays:'مدة التنفيذ بالأيام',sendProposal:'إرسال العرض',viewProposals:'عرض العروض',noJobs:'لا توجد طلبات مفتوحة حالياً.',noOwnJobs:'لم تنشر أي طلبات بعد.',noProposals:'لا توجد عروض بعد.',jobPosted:'تم نشر طلبك بنجاح.',proposalSent:'تم إرسال عرضك.',duplicateProposal:'لقد قدمت عرضاً لهذا الطلب مسبقاً.',budget:'الميزانية',jobError:'تعذر تحميل بيانات السوق.',ownJob:'لا يمكنك تقديم عرض على طلبك الخاص.',
+    marketplace:'سوق نسقرا',myJobsAndOpenJobs:'طلباتي والطلبات المفتوحة',postJob:'انشر طلب خدمة',browseJobs:'الطلبات المفتوحة',myJobs:'طلباتي المنشورة',jobTitle:'عنوان الطلب',jobDescription:'اشرح العمل المطلوب (20 حرفاً على الأقل)',category:'التصنيف',selectCategory:'اختر التصنيف',minBudget:'الميزانية الدنيا',maxBudget:'الميزانية القصوى',currency:'العملة',cityLabel:'المدينة / المنطقة',publishJob:'نشر الطلب',submitProposal:'تقديم عرض',proposalText:'اشرح لماذا أنت مناسب لهذا العمل (20 حرفاً على الأقل)',proposedPrice:'السعر المقترح',deliveryDays:'مدة التنفيذ بالأيام',sendProposal:'إرسال العرض',viewProposals:'عرض العروض',noJobs:'لا توجد طلبات مفتوحة حالياً.',noOwnJobs:'لم تنشر أي طلبات بعد.',noProposals:'لا توجد عروض بعد.',jobPosted:'تم نشر طلبك بنجاح.',proposalSent:'تم إرسال عرضك.',duplicateProposal:'لقد قدمت عرضاً لهذا الطلب مسبقاً.',budget:'الميزانية',jobError:'تعذر تحميل بيانات السوق.',ownJob:'لا يمكنك تقديم عرض على طلبك الخاص.',
     countries: {SA:'السعودية',AE:'الإمارات',BH:'البحرين',KW:'الكويت',OM:'عُمان',QA:'قطر'}
   }
 };
@@ -238,7 +238,7 @@ function App() {
 
   async function toggleProposals(job){
     if(expandedJob===job.id){setExpandedJob(null);return;}
-    setExpandedJob(job.id);if(jobProposals[job.id]||!supabase)return;
+    setExpandedJob(job.id);if(!supabase)return;
     const {data,error:e}=await supabase.from('proposals').select('id,cover_letter,proposed_price,currency,delivery_days,status,professional:profiles!proposals_professional_id_fkey(full_name)').eq('job_id',job.id).order('created_at',{ascending:false});
     if(e){setError(e.message);return;}setJobProposals(old=>({...old,[job.id]:data||[]}));
   }
@@ -289,6 +289,7 @@ function App() {
       <section className="section premium" id="premium"><div><div className="section-label">NUSQRA PREMIUM</div><h2>{isAr?'أدوات أكثر، وفرص أكبر.':'More tools. More possibilities.'}</h2><p>{isAr?'ملفات احترافية ومهارات موثوقة وأدوات تساعد المهنيين على النمو.':'Professional profiles and tools designed to help Gulf talent grow.'}</p></div><div className="premium-symbol"><Crown size={65}/><span>PRO</span></div></section>
       {session && <section className="section marketplace-section" id="marketplace">
         <div className="section-label">NUSQRA · MARKETPLACE</div><h2>{t.marketplace}</h2>
+        {error && <p className="auth-error" role="alert">{error}</p>}
         <div className="marketplace-layout">
           {roles.includes('customer') && <div className="marketplace-panel">
             <h3>{t.postJob}</h3>
@@ -306,8 +307,8 @@ function App() {
             </form>
           </div>}
           <div className="marketplace-panel">
-            <h3>{isProfessional?t.browseJobs:t.myJobs}</h3>
-            {jobs.filter(j=>isProfessional?j.status==='open'&&j.customer_id!==session.user.id:j.customer_id===session.user.id).length===0
+            <h3>{isProfessional?t.myJobsAndOpenJobs:t.myJobs}</h3>
+            {jobs.filter(j=>(isProfessional&&j.status==='open'&&j.customer_id!==session.user.id)||(j.customer_id===session.user.id)).length===0
               ? <p className="market-empty">{isProfessional?t.noJobs:t.noOwnJobs}</p>
               : <div className="job-list">{jobs.filter(j=>isProfessional?j.status==='open'&&j.customer_id!==session.user.id:j.customer_id===session.user.id).map(job=>{
                 const category=categories.find(c=>c.id===job.category_id);
@@ -317,7 +318,7 @@ function App() {
                   <h4>{job.title}</h4><p className="job-category">{category?(isAr?category.name_ar:category.name_en):t.marketplace} · {job.city||job.country_code}</p>
                   <p className="job-description">{job.description}</p>
                   <div className="job-meta"><strong>{t.budget}: {job.budget_min??'—'} – {job.budget_max??'—'} {job.currency}</strong></div>
-                  {isProfessional&&job.status==='open'&&<form className="market-form proposal-form" onSubmit={e=>submitProposal(e,job)}>
+                  {isProfessional&&job.status==='open'&&job.customer_id!==session.user.id&&<form className="market-form proposal-form" onSubmit={e=>submitProposal(e,job)}>
                     <h5>{t.submitProposal}</h5>
                     <label>{t.proposalText}<textarea required minLength="20" maxLength="5000" rows="4" value={v.cover_letter} onChange={e=>setProposalForms(old=>({...old,[job.id]:{...v,cover_letter:e.target.value}}))}/></label>
                     <div className="market-form-grid">
@@ -326,7 +327,7 @@ function App() {
                     </div>
                     <button className="btn primary" type="submit" disabled={busy}>{t.sendProposal}</button>
                   </form>}
-                  {!isProfessional&&<div className="proposal-review">
+                  {job.customer_id===session.user.id&&<div className="proposal-review">
                     <button className="btn secondary" type="button" onClick={()=>toggleProposals(job)}>{t.viewProposals}</button>
                     {expandedJob===job.id&&<div className="proposal-list">
                       {(jobProposals[job.id]||[]).length===0?<p className="market-empty">{t.noProposals}</p>:(jobProposals[job.id]||[]).map(p=><div className="proposal-card" key={p.id}>
