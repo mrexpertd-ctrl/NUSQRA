@@ -147,7 +147,7 @@ function App() {
     setBusy(true);
     try {
       if (authMethod === 'google') {
-        const {error:e}=await supabase.auth.signInWithOAuth({provider:'google',options:{redirectTo:window.location.origin}});
+        const {error:e}=await supabase.auth.signInWithOAuth({provider:'google',options:{redirectTo:'https://nusqra.mrexpertd.workers.dev'}});
         if(e) throw e;
         return;
       }
@@ -526,7 +526,7 @@ function App() {
           <button type="button" className={authMethod==='email'?'active':''} onClick={()=>{setAuthMethod('email');setError('');}}>Email</button>
           <button type="button" className={authMethod==='phone'?'active':''} onClick={()=>{setAuthMethod('phone');setError('');}}>Phone</button>
         </div>
-        <button type="button" className="google-auth" disabled={busy||!isSupabaseConfigured} onClick={async()=>{setAuthMethod('google');setError('');setBusy(true);try{const {error:e}=await supabase.auth.signInWithOAuth({provider:'google',options:{redirectTo:window.location.origin}});if(e)throw e;}catch(e){setError(e.message||t.authError);setBusy(false);}}}><span className="google-g">G</span> Continue with Google</button>
+        <button type="button" className="google-auth" disabled={busy||!isSupabaseConfigured} onClick={async()=>{setAuthMethod('google');setError('');setBusy(true);try{const {error:e}=await supabase.auth.signInWithOAuth({provider:'google',options:{redirectTo:'https://nusqra.mrexpertd.workers.dev'}});if(e)throw e;}catch(e){setError(e.message||t.authError);setBusy(false);}}}><span className="google-g">G</span> Continue with Google</button>
         <div className="auth-divider"><span>or continue with</span></div>
         <form onSubmit={submitAuth}>
           {authMode==='register' && <>
