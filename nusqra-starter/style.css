@@ -1358,3 +1358,16 @@ footer .brand small{color:#d0b477!important}
 .directory-work-highlights a{font-size:11px;color:#62417f;font-weight:750}
 .professional-directory-card>img{object-fit:cover;object-position:center}
 @media(max-width:650px){.professional-subform{grid-template-columns:1fr}.professional-subform label:nth-child(n){grid-column:1}.professional-subform .btn{width:100%;justify-content:center}.professional-category-editor{padding:15px}.submitted-document-list>div{align-items:flex-start;flex-direction:column}}
+
+.admin-review-card{margin:22px 0;padding:22px;border:1px solid #e4dce9;border-radius:18px;background:#fff;box-shadow:0 12px 30px rgba(33,24,42,.06)}
+.admin-review-head{display:flex;align-items:center;gap:15px;margin-bottom:14px}
+.admin-review-head img{width:76px;height:76px;border-radius:50%;object-fit:cover;object-position:center}
+.admin-review-head h3{margin:0 0 5px}.admin-review-head p{margin:0 0 4px;color:#6c6471}.admin-review-head small{color:#81788a}
+.admin-review-card h4{margin:18px 0 8px;color:#503767}
+.admin-review-document{display:grid;grid-template-columns:1fr auto;gap:9px;align-items:center;padding:12px;margin:8px 0;border:1px solid #ece6ef;border-radius:11px;background:#faf9fb}
+.admin-review-document img{max-width:180px;max-height:130px;object-fit:contain;border-radius:8px}
+.admin-review-document a{color:#62417f;font-size:12px;font-weight:750}
+.admin-review-document input{grid-column:1/-1}
+.admin-review-card textarea{width:100%;margin:12px 0}
+@media(max-width:600px){.admin-review-card{padding:15px}.admin-review-document{grid-template-columns:1fr}.admin-review-document input{grid-column:1}}
+.profile-avatar-preview img{object-fit:cover;object-position:center}
