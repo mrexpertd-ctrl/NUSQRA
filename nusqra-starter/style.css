@@ -2213,3 +2213,132 @@ a:hover{color:#e0d1af}
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
+
+
+/* NUSQRA refinement: black site chrome, soft sage cards, true black card typography.
+   Preserve existing structure, spacing, logo artwork and component layouts. */
+:root{
+  --nq-paper:#090b0a!important;
+  --nq-ink:#f2f4f2!important;
+  --nq-muted:#aeb7b1!important;
+  --nq-line:#333b36!important;
+  --nq-card:#dce8dd!important;
+  --nq-card-2:#cbdace!important;
+}
+html,body,#root{background:#090b0a!important;color:#edf1ed!important}
+body{background:#090b0a!important}
+.header,.nav,.nav.open,.entry-header,footer,.entry-footer{
+  background:#090b0a!important;color:#edf1ed!important;
+  border-color:#303833!important;
+}
+.header .brand,.header .nusqra-wordmark,.header .nusqra-wordmark span[lang="ar"],
+.brand,footer .brand{color:#edf1ed!important;-webkit-text-fill-color:#edf1ed!important}
+.hero,.entry-screen,.entry-page{
+  background:radial-gradient(ellipse at 76% 20%,#202923 0%,#101512 42%,#090b0a 82%)!important;
+  color:#f1f4f1!important;
+}
+.hero h1,.hero h2,.hero h3,.hero p{color:#f1f4f1!important}
+.hero p{color:#c2cbc4!important}
+.hero-card{
+  background:linear-gradient(145deg,#252e28 0%,#151b17 70%,#0c100e 100%)!important;
+  border-color:#68776b!important;
+}
+.primary,.btn.primary,.profile-save-row .btn.primary,
+.admin-tabs button.active,.audience-tabs button.active,
+.profile-editor-tabs button.active,.auth-method-tabs button.active,
+.admin-action.active{
+  background:linear-gradient(125deg,#d8e5d8 0%,#aebfae 55%,#849985 100%)!important;
+  color:#080b09!important;border-color:#b9cbb9!important;
+}
+.secondary,.btn.secondary,.home-outline{
+  background:#171d19!important;color:#edf2ed!important;border-color:#536056!important;
+}
+.feature,.step-grid article,.home-step,.category-card,.home-category-card,
+.marketplace-panel,.job-card,.account-card,.dashboard,.module,.metric,
+.profile-studio,.profile-tab-panel,.profile-template-option,.conversation-list,
+.chat-panel,.chat-heading,.admin-card,.admin-panel,.admin-sidebar,.admin-content,
+.dashboard-card,.dashboard-panel,.stat-card,.settings-card,.workspace-card,
+.profile-form,.profile-settings,.settings-panel,.premium,
+.auth-dialog,.entry-auth-card,.proposal-card,.admin-ticket,.support-card,
+.profile-preview-dialog,.profile-template-preview,.settings-section{
+  background:linear-gradient(145deg,#e3ece3 0%,#d6e3d7 55%,#c9d9cb 100%)!important;
+  color:#101511!important;
+  border-color:#9eaf9f!important;
+  box-shadow:0 12px 30px rgba(0,0,0,.24)!important;
+}
+.feature :is(h1,h2,h3,h4,p,span,strong,small,label,li),
+.step-grid article :is(h1,h2,h3,h4,p,span,strong,small,label,li),
+.home-step :is(h1,h2,h3,h4,p,span,strong,small,label,li),
+.category-card :is(h1,h2,h3,h4,p,span,strong,small,label,li),
+.home-category-card :is(h1,h2,h3,h4,p,span,strong,small,label,li),
+.marketplace-panel :is(h1,h2,h3,h4,p,span,strong,small,label,li),
+.job-card :is(h1,h2,h3,h4,p,span,strong,small,label,li),
+.account-card :is(h1,h2,h3,h4,p,span,strong,small,label,li),
+.dashboard :is(h1,h2,h3,h4,p,span,strong,small,label,li),
+.module :is(h1,h2,h3,h4,p,span,strong,small,label,li),
+.metric :is(h1,h2,h3,h4,p,span,strong,small,label,li),
+.profile-studio :is(h1,h2,h3,h4,p,span,strong,small,label,li),
+.profile-tab-panel :is(h1,h2,h3,h4,p,span,strong,small,label,li),
+.profile-template-option :is(h1,h2,h3,h4,p,span,strong,small,label,li),
+.conversation-list :is(h1,h2,h3,h4,p,span,strong,small,label,li),
+.chat-panel :is(h1,h2,h3,h4,p,span,strong,small,label,li),
+.admin-card :is(h1,h2,h3,h4,p,span,strong,small,label,li),
+.admin-panel :is(h1,h2,h3,h4,p,span,strong,small,label,li),
+.admin-sidebar :is(h1,h2,h3,h4,p,span,strong,small,label,li),
+.admin-content :is(h1,h2,h3,h4,p,span,strong,small,label,li),
+.dashboard-card :is(h1,h2,h3,h4,p,span,strong,small,label,li),
+.dashboard-panel :is(h1,h2,h3,h4,p,span,strong,small,label,li),
+.stat-card :is(h1,h2,h3,h4,p,span,strong,small,label,li),
+.settings-card :is(h1,h2,h3,h4,p,span,strong,small,label,li),
+.workspace-card :is(h1,h2,h3,h4,p,span,strong,small,label,li),
+.auth-dialog :is(h1,h2,h3,h4,p,span,strong,small,label,li),
+.entry-auth-card :is(h1,h2,h3,h4,p,span,strong,small,label,li){
+  color:#101511!important;-webkit-text-fill-color:#101511!important;
+}
+.feature a,.category-card a,.job-card a,.admin-panel a,.dashboard a,
+.profile-studio a,.auth-dialog a{color:#243b2a!important}
+.iconbox,.category-symbol,.role-chip,.category-audience,.enable-pro,
+.preview-tag,.premium-symbol,.profile-upload-card,.profile-style-row,
+.home-step-grid article b{
+  background:linear-gradient(145deg,#dce8dd,#c8d9ca)!important;
+  color:#101511!important;border-color:#9eaf9f!important;
+}
+.iconbox svg,.category-symbol svg,.premium-symbol svg,
+.role-chip svg,.category-audience svg{color:#101511!important;stroke:#101511!important}
+input,select,textarea,.profile-form input,.profile-form textarea,
+.market-form input,.market-form textarea,.market-form select,
+.auth-dialog input,.auth-dialog select{
+  background:#edf3ed!important;color:#101511!important;
+  border-color:#9eaf9f!important;
+}
+input::placeholder,textarea::placeholder{color:#566357!important}
+.profile-template-option.selected{
+  background:#c5d8c7!important;border-color:#536e56!important;
+}
+.template-mini,.template-mini.template-classic,.template-mini.template-creative{
+  background:linear-gradient(120deg,#dce8dd,#b9cdbb)!important;
+}
+.template-mini i:first-child,.template-mini.template-classic i:first-child,
+.template-mini.template-creative i{background:#101511!important}
+.template-mini i:nth-child(2){background:#b49a62!important}
+.template-mini i:nth-child(3),.template-mini.template-classic i:nth-child(3),
+.template-mini.template-executive i:nth-child(3){background:#6f8972!important}
+.profile-template-preview .template-preview-cover{
+  background:linear-gradient(115deg,#101511,#425b46 58%,#91a992)!important;
+}
+.profile-template-preview .template-preview-identity strong{color:#101511!important}
+.profile-template-preview .template-preview-meta span{
+  background:#e3ece3!important;color:#101511!important;border-color:#9eaf9f!important;
+}
+.message-bubble{background:#dce8dd!important;color:#101511!important}
+.message-bubble.mine{background:#b9cdbb!important;color:#101511!important}
+.site-notice{background:#dce8dd!important;color:#101511!important;border-color:#9eaf9f!important}
+.home-trust-band{background:linear-gradient(120deg,#111713,#29382c)!important}
+.home-trust-band :is(h1,h2,h3,p,span){color:#edf2ed!important}
+.home-final-cta{background:linear-gradient(120deg,#dce8dd,#bdcfbf)!important;color:#101511!important}
+.home-final-cta :is(h1,h2,h3,p,span){color:#101511!important}
+a:hover{color:#b8c9b9}
+@media(max-width:650px){
+  .nav{background:#090b0a!important;border-color:#303833!important}
+  .hero{background:radial-gradient(ellipse at 76% 18%,#202923,#090b0a 82%)!important}
+}
