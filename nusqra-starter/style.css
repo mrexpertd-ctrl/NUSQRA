@@ -1725,12 +1725,13 @@ footer .brand .mark{background:linear-gradient(145deg,#0b9862,#06402e)}
   display:block;
   width:190px;
   height:56px;
-  padding:4px 10px;
+  padding:0;
   object-fit:contain;
-  border-radius:12px;
-  background:#071c17;
-  border:1px solid rgba(31,211,145,.32);
-  box-shadow:0 5px 18px rgba(4,47,31,.13);
+  object-position:center;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  box-shadow:none;
 }
 footer .nusqra-lockup{width:178px;height:52px}
 .auth-dialog .nusqra-lockup{width:190px;height:56px}
