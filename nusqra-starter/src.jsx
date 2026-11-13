@@ -404,7 +404,7 @@ function App() {
           <div className="proof"><ShieldCheck size={18}/>{t.trust}<span className="dot"/> <span>Gulf-first · Mobile-first</span></div>
         </div>
         <div className="hero-card"><div className="card-glow"/><div className="hero-monogram">ن</div><div className="hero-card-title">نُسقرا <span>NUSQRA</span></div><div className="hero-card-caption">EXPERTISE · TRUST · OPPORTUNITY</div></div>
-      </section>
+      </section>}
       {page === 'categories' && <section className="section category-section" id="categories">
         <div className="section-label">NUSQRA · SERVICES DIRECTORY</div>
         <h2>{t.categoriesTitle}</h2>
