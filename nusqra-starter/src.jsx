@@ -6,7 +6,6 @@ import {
   MessageCircle, Send, Check, XCircle, RefreshCw
 } from 'lucide-react';
 import './style.css';
-import heroImage from './heroImage';
 import { isSupabaseConfigured, supabase } from './supabaseClient';
 
 const dictionary = {
@@ -404,7 +403,7 @@ function App() {
           </div>
           <div className="proof"><ShieldCheck size={18}/>{t.trust}<span className="dot"/> <span>Gulf-first · Mobile-first</span></div>
         </div>
-        <div className="hero-visual"><img src={heroImage} alt={isAr?'رجل سعودي يستخدم جهازاً لوحياً في بيئة عمل حديثة':'A Saudi man in traditional attire using a tablet in a modern workplace'} /><div className="hero-visual-caption"><strong>نُسقرا · NUSQRA</strong><span>{isAr?'خبرات · ثقة · فرص':'Expertise · Trust · Opportunity'}</span></div></div>
+        <div className="hero-visual"><img src="https://cdn.salla.sa/PlrKO/fef5aac3-88f4-405a-a41c-075fb4d60beb-1000x666.66666666667-b3Y1S8P9MjvhziT4PUproprjtiSKU3TU33XLNBnh.png" alt={isAr?'رجل سعودي يستخدم جهازاً لوحياً في بيئة عمل حديثة':'A Saudi man in traditional attire using a tablet in a modern workplace'} /><div className="hero-visual-caption"><strong>نُسقرا · NUSQRA</strong><span>{isAr?'خبرات · ثقة · فرص':'Expertise · Trust · Opportunity'}</span></div></div>
       </section>}
       {page === 'categories' && <section className="section category-section" id="categories">
         <div className="section-label">NUSQRA · SERVICES DIRECTORY</div>
@@ -427,7 +426,7 @@ function App() {
               'automotive-services':'https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?auto=format&fit=crop&w=900&q=82',
               'education-training':'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=900&q=82',
               'home-maintenance':'https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=900&q=82',
-              'writing-translation':'https://images.unsplash.com/photo-1455390582262-044cdez?auto=format&fit=crop&w=900&q=82',
+              'writing-translation':'https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=900&q=82',
               'construction-engineering':'https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=900&q=82',
               'transport-logistics':'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=900&q=82',
               'finance-administration':'https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=900&q=82',
