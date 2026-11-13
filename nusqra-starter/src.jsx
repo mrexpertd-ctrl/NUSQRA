@@ -82,7 +82,7 @@ function App() {
   const [otp,setOtp] = useState('');
   const [otpSent,setOtpSent] = useState(false);
   const [photoFiles,setPhotoFiles] = useState({avatar:null,cover:null});
-  const [profileForm, setProfileForm] = useState({full_name:'',bio:'',country_code:'SA',headline:'',about:'',years_experience:'',city:'',avatar_url:'',cover_url:'',profile_style:'simple',profile_template:'classic',phone_number:''});
+  const [profileForm, setProfileForm] = useState({full_name:'',bio:'',country_code:'SA',headline:'',about:'',years_experience:'',city:'',avatar_url:'',cover_url:'',profile_style:'simple',profile_template:'classic',phone_number:'',profile_level:'entry',identity_name_confirmed:false,verification_status:'pending_review'});
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState('');
   const [error, setError] = useState('');
@@ -92,6 +92,11 @@ function App() {
   const [professionalDirectory,setProfessionalDirectory] = useState([]);
   const [selectedCategoryId,setSelectedCategoryId] = useState('');
   const [professionalCategoryIds,setProfessionalCategoryIds] = useState([]);
+  const [signupCategoryId,setSignupCategoryId] = useState('');
+  const [professionalCredentials,setProfessionalCredentials] = useState([]);
+  const [professionalPortfolio,setProfessionalPortfolio] = useState([]);
+  const [credentialForm,setCredentialForm] = useState({category_id:'',title:'',issuer:'',credential_number:'',file:null});
+  const [portfolioForm,setPortfolioForm] = useState({category_id:'',title:'',description:'',project_url:'',file:null});
   const [jobForm,setJobForm] = useState({title:'',description:'',category_id:'',budget_min:'',budget_max:'',currency:'SAR',country_code:'SA',city:''});
   const [proposalForms,setProposalForms] = useState({});
   const [jobProposals,setJobProposals] = useState({});
@@ -133,7 +138,7 @@ function App() {
       const [p,r,pp] = await Promise.all([
         supabase.from('profiles').select('id,full_name,display_name,country_code,preferred_language,bio,avatar_url,cover_url,profile_style,profile_template,phone_number').eq('id',session.user.id).maybeSingle(),
         supabase.from('user_roles').select('role').eq('user_id',session.user.id),
-        supabase.from('professional_profiles').select('headline,about,years_experience,city,country_code').eq('user_id',session.user.id).maybeSingle()
+        supabase.from('professional_profiles').select('headline,about,years_experience,city,country_code,profile_level,identity_name_confirmed,verification_status').eq('user_id',session.user.id).maybeSingle()
       ]);
       if (!alive) return;
       if (p.error || r.error) { setError(p.error?.message || r.error?.message || t.authError); return; }
@@ -144,7 +149,7 @@ function App() {
         full_name:p.data?.full_name || '', bio:p.data?.bio || '',
         country_code:p.data?.country_code || 'SA', avatar_url:p.data?.avatar_url || '', cover_url:p.data?.cover_url || '', profile_style:p.data?.profile_style || 'simple', profile_template:p.data?.profile_template || 'classic', phone_number:p.data?.phone_number || '',
         headline:pp.data?.headline || '', about:pp.data?.about || '',
-        years_experience:pp.data?.years_experience ?? '', city:pp.data?.city || ''
+        years_experience:pp.data?.years_experience ?? '', city:pp.data?.city || '', profile_level:pp.data?.profile_level || 'entry', identity_name_confirmed:pp.data?.identity_name_confirmed || false, verification_status:pp.data?.verification_status || 'pending_review'
       });
     })();
     return () => { alive = false; };
@@ -170,7 +175,7 @@ function App() {
         const fullPhone=normalizedPhone();
         if(phone.replace(/[^0-9]/g,'').length<7) throw new Error(isAr?'أدخل رقم هاتف صحيحاً.':'Enter a valid Gulf mobile number.');
         if(!otpSent){
-          const {error:e}=await supabase.auth.signInWithOtp({phone:fullPhone,options:{channel:'sms',shouldCreateUser:authMode==='register',data:{full_name:form.full_name.trim(),account_type:form.account_type,country_code:form.country_code,preferred_language:lang}}});
+          const {error:e}=await supabase.auth.signInWithOtp({phone:fullPhone,options:{channel:'sms',shouldCreateUser:authMode==='register',data:{full_name:form.full_name.trim(),account_type:form.account_type,country_code:form.country_code,preferred_language:lang,professional_category_id:form.account_type==='professional'?signupCategoryId:null}}});
           if(e) throw e;
           setOtpSent(true);setNotice(isAr?'أرسلنا رمز التحقق عبر الرسائل النصية.':'We sent an SMS verification code.');
         } else {
@@ -185,7 +190,7 @@ function App() {
       if (!form.email || (authMode==='register' && !form.full_name.trim())) { setError(t.missing); return; }
       if (authMode === 'register') {
         if (form.password.length < 8) throw new Error(isAr ? 'يجب أن تتكون كلمة المرور من 8 أحرف على الأقل.' : 'Password must be at least 8 characters.');
-        const {data,error:signUpError} = await supabase.auth.signUp({email:form.email.trim(),password:form.password,options:{data:{full_name:form.full_name.trim(),account_type:form.account_type,country_code:form.country_code,preferred_language:lang}}});
+        const {data,error:signUpError} = await supabase.auth.signUp({email:form.email.trim(),password:form.password,options:{data:{full_name:form.full_name.trim(),account_type:form.account_type,country_code:form.country_code,preferred_language:lang,professional_category_id:form.account_type==='professional'?signupCategoryId:null}}});
         if (signUpError) throw signUpError;
         if (data.session) { setSession(data.session); setAuthMode(null); setNotice(t.signedIn); }
         else { setNotice(t.signedUp); setAuthMode('login'); }
@@ -197,6 +202,17 @@ function App() {
     } catch (e) { setError(e.message || t.authError); }
     finally { setBusy(false); }
   }
+
+  useEffect(()=>{
+    if(!session||!supabase||!isProfessional)return;
+    let alive=true;
+    (async()=>{const [cr,po]=await Promise.all([supabase.from('professional_credentials').select('id,category_id,title,issuer,credential_number,status,review_note,created_at').eq('professional_user_id',session.user.id).order('created_at',{ascending:false}),supabase.from('professional_portfolio').select('id,category_id,title,description,media_url,project_url,created_at').eq('professional_user_id',session.user.id).order('created_at',{ascending:false})]);if(!alive)return;if(cr.error||po.error){setError(cr.error?.message||po.error?.message);return;}setProfessionalCredentials(cr.data||[]);setProfessionalPortfolio(po.data||[]);})();
+    return()=>{alive=false;};
+  },[session,isProfessional]);
+
+  async function addProfessionalCredential(event){event.preventDefault();if(!supabase||!session||!credentialForm.category_id||!credentialForm.file)return;setBusy(true);setError('');setNotice('');try{const file=credentialForm.file;if(!['application/pdf','image/jpeg','image/png','image/webp'].includes(file.type)||file.size>10*1024*1024)throw new Error(isAr?'ارفع شهادة PDF أو صورة حتى 10 ميجابايت.':'Upload a PDF or image certificate up to 10 MB.');const ext=file.name.split('.').pop().toLowerCase().replace(/[^a-z0-9]/g,'')||'pdf';const path=session.user.id+'/certificate-'+crypto.randomUUID()+'.'+ext;const {error:uploadError}=await supabase.storage.from('professional-documents').upload(path,file,{contentType:file.type,upsert:false});if(uploadError)throw uploadError;const {data,error:insertError}=await supabase.from('professional_credentials').insert({professional_user_id:session.user.id,category_id:credentialForm.category_id,title:credentialForm.title.trim(),issuer:credentialForm.issuer.trim(),credential_number:credentialForm.credential_number.trim()||null,document_path:path}).select('id,category_id,title,issuer,credential_number,status,review_note,created_at').single();if(insertError)throw insertError;setProfessionalCredentials(old=>[data,...old]);setCredentialForm({category_id:'',title:'',issuer:'',credential_number:'',file:null});setNotice(isAr?'تم رفع الشهادة وهي بانتظار المراجعة.':'Certificate uploaded and waiting for review.');}catch(e){setError(e.message||t.authError);}finally{setBusy(false);}}
+
+  async function addPortfolioHighlight(event){event.preventDefault();if(!supabase||!session||!portfolioForm.category_id)return;setBusy(true);setError('');setNotice('');try{let mediaUrl=null;if(portfolioForm.file){const file=portfolioForm.file;if(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>5*1024*1024)throw new Error(isAr?'استخدم صورة JPG أو PNG أو WEBP حتى 5 ميجابايت.':'Use a JPG, PNG or WEBP project image up to 5 MB.');const ext=file.name.split('.').pop().toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg';const path=session.user.id+'/work-'+crypto.randomUUID()+'.'+ext;const {error:uploadError}=await supabase.storage.from('profile-media').upload(path,file,{contentType:file.type,upsert:false});if(uploadError)throw uploadError;mediaUrl=supabase.storage.from('profile-media').getPublicUrl(path).data.publicUrl;}const {data,error:insertError}=await supabase.from('professional_portfolio').insert({professional_user_id:session.user.id,category_id:portfolioForm.category_id,title:portfolioForm.title.trim(),description:portfolioForm.description.trim(),project_url:portfolioForm.project_url.trim()||null,media_url:mediaUrl}).select('id,category_id,title,description,media_url,project_url,created_at').single();if(insertError)throw insertError;setProfessionalPortfolio(old=>[data,...old]);setPortfolioForm({category_id:'',title:'',description:'',project_url:'',file:null});setNotice(isAr?'تمت إضافة إنجازك إلى ملفك.':'Work highlight added to your profile.');}catch(e){setError(e.message||t.authError);}finally{setBusy(false);}}
 
   async function saveProfile(event) {
     event.preventDefault(); if (!supabase || !session) return;
@@ -224,7 +240,7 @@ function App() {
         const {error:ppError} = await supabase.from('professional_profiles').update({
           headline:profileForm.headline.trim() || null,about:profileForm.about.trim() || null,
           years_experience:profileForm.years_experience === '' ? null : Number(profileForm.years_experience),
-          city:profileForm.city.trim() || null,country_code:profileForm.country_code,updated_at:new Date().toISOString()
+          city:profileForm.city.trim() || null,country_code:profileForm.country_code,profile_level:profileForm.profile_level,identity_name_confirmed:profileForm.identity_name_confirmed,updated_at:new Date().toISOString()
         }).eq('user_id',session.user.id);
         if (ppError) throw ppError;
         const {error:deleteCategoriesError}=await supabase.from('professional_categories').delete().eq('professional_user_id',session.user.id);
@@ -293,7 +309,7 @@ function App() {
       else {const {data,error:e}=await supabase.from('professional_categories').select('professional_user_id,category_id');if(e){if(alive)setError(e.message);return;}categoryRows=data||[];}
       const categoryUserIds=[...new Set(categoryRows.map(x=>x.professional_user_id))];
       if(selectedCategoryId&&!categoryUserIds.length){if(alive)setProfessionalDirectory([]);return;}
-      let query=supabase.from('professional_profiles').select('user_id,headline,about,years_experience,city,country_code').limit(60);
+      let query=supabase.from('professional_profiles').select('user_id,headline,about,years_experience,city,country_code,profile_level,verification_status').eq('is_public',true).limit(60);
       if(selectedCategoryId)query=query.in('user_id',categoryUserIds);
       const {data:proRows,error:proError}=await query;
       if(proError){if(alive)setError(proError.message);return;}
@@ -302,9 +318,12 @@ function App() {
       const {data:profilesRows,error:profilesError}=await supabase.from('profiles').select('id,full_name,display_name,country_code,bio,avatar_url').in('id',ids);
       if(!alive)return;
       if(profilesError){setError(profilesError.message);return;}
+      const {data:portfolioRows,error:portfolioError}=await supabase.from('professional_portfolio').select('id,professional_user_id,category_id,title,description,media_url,project_url').in('professional_user_id',ids);
+      if(portfolioError){if(alive)setError(portfolioError.message);return;}
       const byId=Object.fromEntries((profilesRows||[]).map(p=>[p.id,p]));
+      const portfolioByUser={};(portfolioRows||[]).forEach(x=>{(portfolioByUser[x.professional_user_id] ||= []).push(x);});
       const tagsByUser={};categoryRows.forEach(x=>{(tagsByUser[x.professional_user_id] ||= []).push(x.category_id);});
-      setProfessionalDirectory((proRows||[]).map(p=>({...p,profile:byId[p.user_id],categoryIds:tagsByUser[p.user_id]||[]})).filter(p=>p.profile));
+      setProfessionalDirectory((proRows||[]).map(p=>({...p,profile:byId[p.user_id],categoryIds:tagsByUser[p.user_id]||[],portfolio:portfolioByUser[p.user_id]||[]})).filter(p=>p.profile));
     })();
     return()=>{alive=false;};
   },[page,selectedCategoryId]);
