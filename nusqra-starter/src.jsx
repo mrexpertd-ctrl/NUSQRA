@@ -285,6 +285,7 @@ function App() {
 
   useEffect(()=>{
     if(page!=='professionals'||!supabase)return;
+    if(!selectedCategoryId){setProfessionalDirectory([]);return undefined;}
     let alive=true;
     (async()=>{
       let categoryRows=[];
