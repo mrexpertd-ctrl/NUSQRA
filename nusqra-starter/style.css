@@ -2036,3 +2036,180 @@ footer .brand{color:#315b43!important}
 @media(prefers-reduced-motion:reduce){
  *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
+
+
+/* NUSQRA SMOKE-BLACK PREMIUM THEME — unified public, member and admin surfaces */
+:root{
+  color-scheme:dark!important;
+  --nusqra-green:#aeb6b3!important;
+  --nusqra-green-dark:#e1e5e3!important;
+  --nusqra-mint:#292e2d!important;
+  --nusqra-soft:#202423!important;
+  --nusqra-ink:#f0f2f1!important;
+  --nusqra-muted:#aeb6b3!important;
+  --nusqra-line:#414846!important;
+  --surface:#242928!important;
+  --surface-soft:#2c3230!important;
+  --line:#414846!important;
+  --ink:#f0f2f1!important;
+  --paper:#171b1a!important;
+  --nq-paper:#171b1a!important;
+  --nq-ink:#f0f2f1!important;
+  --nq-ink-2:#d4d9d6!important;
+  --nq-muted:#aeb6b3!important;
+  --nq-line:#414846!important;
+  --nq-emerald:#aeb6b3!important;
+  --nq-emerald-dark:#737d79!important;
+  --nq-purple:#737d79!important;
+  --nq-purple-dark:#454d4a!important;
+  --nq-purple-soft:#292e2d!important;
+  --nq-gold:#b9a477!important;
+  --violet:#737d79!important;
+  --violet-deep:#454d4a!important;
+  --emerald:#aeb6b3!important;
+  --emerald-deep:#737d79!important;
+  font-family:Inter,Cairo,Arial,sans-serif;
+}
+html,body,#root{background:#171b1a!important;color:#f0f2f1!important}
+body{color-scheme:dark!important}
+.header,.nav,.nav.open,.entry-header{
+  background:rgba(25,29,28,.96)!important;
+  color:#f0f2f1!important;border-color:#3b4240!important;
+  box-shadow:0 8px 28px rgba(0,0,0,.22)!important;
+}
+.header .brand,.header .nusqra-wordmark,.header .nusqra-wordmark span[lang="ar"],
+.brand,footer .brand{color:#f0f2f1!important;-webkit-text-fill-color:#f0f2f1!important}
+.header .nusqra-wordmark-divider{color:#b9a477!important}
+.nav a,.navlink,.menu{color:#d3d8d5!important}
+.nav a:hover,.navlink:hover,.section-label,.eyebrow{color:#c6b58e!important}
+.lang,.audience-tabs button,.profile-editor-tabs button,.auth-method-tabs button{
+  background:#2b302f!important;color:#e5e8e6!important;border-color:#505856!important
+}
+.hero,.entry-screen,.entry-page{
+  background:radial-gradient(ellipse at 78% 28%,#343b39 0%,#222827 42%,#171b1a 82%)!important;
+  color:#f0f2f1!important;
+}
+.hero:after{opacity:.045!important}
+.hero h1,.hero h2,.hero h3,.hero p{color:#f0f2f1!important}
+.hero p{color:#c4cbc7!important}
+.spark{background:#c6b58e!important;box-shadow:0 0 12px rgba(198,181,142,.35)!important}
+.hero-card{
+  background:radial-gradient(circle at 32% 18%,#454d4a 0%,#292f2d 55%,#1c2120 100%)!important;
+  border-color:#777d78!important;box-shadow:0 30px 80px rgba(0,0,0,.42),inset 0 0 70px rgba(255,255,255,.025)!important
+}
+.hero-card:before{border-color:#b9a477!important;box-shadow:0 0 38px rgba(185,164,119,.16)!important}
+.hero-monogram,.hero-card-title{color:#e3d4b4!important;text-shadow:0 5px 22px rgba(0,0,0,.45)!important}
+.hero-card-caption{color:#c1c7c3!important}
+.orb1,.orb2{background:#8c9691!important;opacity:.09!important}
+.primary,.btn.primary,.profile-save-row .btn.primary,.admin-tabs button.active,
+.audience-tabs button.active,.profile-editor-tabs button.active,.auth-method-tabs button.active,
+.admin-action.active{
+  background:linear-gradient(125deg,#d0d4d1 0%,#929b96 52%,#68726d 100%)!important;
+  color:#171b1a!important;border-color:#b8c0bb!important;
+  box-shadow:0 8px 22px rgba(0,0,0,.25)!important
+}
+.primary:hover,.btn.primary:hover{filter:brightness(1.08)!important}
+.secondary,.btn.secondary,.home-outline{
+  background:#303735!important;color:#f0f2f1!important;border-color:#626b66!important
+}
+.secondary:hover,.btn.secondary:hover{background:#3a4240!important}
+.section,.section h2,.feature h3,.step-grid h3,.category-card h3,
+.home-category-card span,.account-heading h3,.profile-studio-heading h3,
+.profile-template-intro strong,.profile-template-option strong,
+.admin-panel h2,.admin-panel h3,.dashboard h2,.dashboard h3{color:#edf0ee!important}
+.feature,.step-grid article,.home-step,.category-card,.home-category-card,
+.marketplace-panel,.job-card,.account-card,.dashboard,.module,.metric,
+.profile-studio,.profile-tab-panel,.profile-template-option,.conversation-list,
+.chat-panel,.chat-heading,.admin-card,.admin-panel,.admin-sidebar,.admin-content,
+.dashboard-card,.dashboard-panel,.stat-card,.settings-card,.workspace-card,
+.profile-form,.profile-settings,.settings-panel,.premium{
+  background:linear-gradient(145deg,#292f2d 0%,#222827 58%,#252b29 100%)!important;
+  color:#edf0ee!important;border-color:#424a46!important;
+  box-shadow:0 12px 30px rgba(0,0,0,.20)!important
+}
+.feature p,.category-card p,.step-grid p,.section-intro,.profile-studio-heading p,
+.profile-template-option small,.profile-upload-card small,.metric span,.demo-note,
+.job-date,.job-category,.conversation-item span,.chat-heading span{color:#b0b8b3!important}
+.iconbox,.category-symbol,.metric,.module,.profile-upload-card,.profile-style-row,
+.profile-template-option,.role-chip,.category-audience,.enable-pro,.preview-tag,
+.home-step-grid article b{
+  background:#343b38!important;color:#d8deda!important;border-color:#555f59!important
+}
+.step-grid article,.steps,.step-grid{border-color:#424a46!important}
+.step-num,.proof svg{color:#c6b58e!important}
+.premium h2,.premium h3,.premium p{color:#edf0ee!important}
+.premium-symbol{color:#d9deda!important;border-color:#b9a477!important;background:#252b29!important}
+.home-trust-band{background:linear-gradient(120deg,#292f2d,#414a46)!important}
+.home-trust-band .section-label{color:#e1d4b8!important}
+.home-final-cta{background:linear-gradient(120deg,#292f2d,#202624)!important;border-color:#505a54!important;color:#edf0ee!important}
+input,select,textarea,.profile-form input,.profile-form textarea,
+.market-form input,.market-form textarea,.market-form select,
+.auth-dialog input,.auth-dialog select{
+  background:#1c2220!important;color:#f0f2f1!important;
+  border-color:#505a55!important
+}
+input::placeholder,textarea::placeholder{color:#89938d!important}
+input:focus,select:focus,textarea:focus,input:focus-visible,
+select:focus-visible,textarea:focus-visible{
+  border-color:#b9a477!important;box-shadow:0 0 0 3px rgba(185,164,119,.14)!important
+}
+.profile-template-option.selected{border-color:#b9a477!important;background:#343b38!important;box-shadow:0 0 0 2px rgba(185,164,119,.14)!important}
+.template-mini,.template-mini.template-classic,.template-mini.template-creative{
+  background:linear-gradient(120deg,#353d39,#242a28)!important
+}
+.template-mini i:first-child,.template-mini.template-classic i:first-child,
+.template-mini.template-creative i{background:#747e78!important}
+.template-mini i:nth-child(2){background:#b9a477!important}
+.template-mini i:nth-child(3),.template-mini.template-classic i:nth-child(3),
+.template-mini.template-executive i:nth-child(3){background:#aeb7b1!important}
+.profile-template-preview .template-preview-cover,
+.profile-template-preview.template-executive .template-preview-cover,
+.profile-template-preview.template-creative .template-preview-cover,
+.profile-template-preview.premium-profile .template-preview-cover,
+.profile-template-preview.purple-gold-profile .template-preview-cover{
+  background:linear-gradient(115deg,#343b38,#626d66 58%,#929b94)!important
+}
+.profile-template-preview .template-preview-identity strong,
+.profile-template-preview.purple-gold-profile .template-preview-identity strong{color:#e7ece8!important}
+.profile-template-preview .template-preview-meta span{background:#343b38!important;color:#e0e5e1!important;border-color:#505a55!important}
+.profile-template-preview.purple-gold-profile{border-color:#505a55!important;background:#292f2d!important}
+.profile-save-row{border-color:#424a46!important}
+.profile-save-row .btn.primary{box-shadow:0 8px 18px rgba(0,0,0,.24)!important}
+.auth-dialog,.entry-auth-card{
+  background:linear-gradient(145deg,#2c3230 0%,#202624 100%)!important;
+  color:#f0f2f1!important;border-color:#555f59!important;
+  box-shadow:0 28px 90px rgba(0,0,0,.55)!important
+}
+.entry-auth-card h2,.entry-auth-card>p:not(.auth-error):not(.auth-warning){color:#f0f2f1!important}
+.entry-auth-eyebrow,.entry-auth-card .access-gate-security{color:#c1c9c4!important}
+.entry-auth-wrap::before{
+  background:radial-gradient(ellipse at 50% 12%,rgba(185,164,119,.18),rgba(125,137,130,.10) 48%,transparent 78%)!important;
+  border-color:rgba(185,164,119,.18)!important;box-shadow:0 0 45px rgba(0,0,0,.22)!important
+}
+.entry-auth-card .access-gate-google{
+  background:#f0f2f1!important;color:#202624!important;border-color:#d5dbd7!important
+}
+.entry-footer{background:#1d2321!important;border-color:#3d4641!important;color:#aeb8b1!important}
+.auth-switch,.footer-admin,a{color:#c6b58e}
+.auth-error{background:#492a2a!important;color:#ffb8b8!important}
+.auth-success,.job-status{background:#263b32!important;color:#b8e0c8!important;border-color:#527661!important}
+.auth-warning{background:#443a27!important;color:#f1d79f!important;border-color:#806d43!important}
+.message-bubble{background:#343b38!important;color:#edf0ee!important}
+.message-bubble.mine{background:#4a514c!important;color:#fff!important}
+.conversation-item.active,.proposal-card,.job-card,.admin-ticket.active{
+  background:#303734!important;border-color:#626d66!important;color:#f0f2f1!important
+}
+.job-meta,.role-chip,.category-audience,.preview-tag{color:#d6c49b!important;border-color:#6b624e!important}
+.site-notice{background:#303a35!important;border-color:#78877d!important;color:#f0f2f1!important}
+footer{background:#1d2321!important;border-color:#3d4641!important;color:#aeb8b1!important}
+footer .brand{color:#f0f2f1!important}
+.admin-panel button:not(.danger),.dashboard button:not(.danger){border-color:#505a55!important}
+.admin-bar-row i,.progress-fill,.profile-progress>span{background:linear-gradient(90deg,#6f7973,#b9a477,#929c95)!important}
+a:hover{color:#e0d1af}
+@media(max-width:650px){
+  .nav{background:#202624!important;border-color:#414a46!important}
+  .hero{background:radial-gradient(ellipse at 78% 20%,#343b39,#171b1a 80%)!important}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
