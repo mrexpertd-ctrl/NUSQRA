@@ -624,23 +624,46 @@ function App() {
   }
 
   if (!session) {
-    return <div className="access-gate" dir={isAr ? 'rtl' : 'ltr'}>
-      <section className="access-gate-card" aria-labelledby="access-gate-title">
-        <div className="access-gate-brand"><span className="access-gate-mark"><img src={nusqraLogo} alt="" /></span><span>NUSQRA<small>نُسقرا</small></span></div>
-        <div className="access-gate-eyebrow">{isAr?'بوابة الدخول الآمن':'PRIVATE MEMBER ACCESS'}</div>
-        <h1 id="access-gate-title">{isAr?'مرحباً بك في نسقرا':'Your next opportunity starts here.'}</h1>
-        <p>{isAr?'يجب تسجيل الدخول باستخدام حساب Google للوصول إلى نسقرا. إذا كانت هذه زيارتك الأولى، فسيتم إنشاء حسابك تلقائياً.':'NUSQRA is available to signed-in members only. Continue with your Google account to sign in or create your account automatically.'}</p>
-        {!isSupabaseConfigured && <p className="auth-warning" role="alert">{t.noConfig}</p>}
-        {error && <p className="auth-error" role="alert">{error}</p>}
-        <button type="button" className="google-auth access-gate-google" disabled={busy || !isSupabaseConfigured} onClick={signInWithGoogle}>
-          <span className="google-g" aria-hidden="true">G</span>
-          {busy ? (isAr?'جارٍ الاتصال بـ Google…':'Connecting to Google…') : (isAr?'المتابعة باستخدام Google':'Continue with Google')}
-          {!busy && <span className="access-gate-arrow">→</span>}
-        </button>
-        <div className="access-gate-security"><ShieldCheck size={16}/><span>{isAr?'تسجيل دخول آمن عبر Google':'Secure sign-in powered by Google'}</span></div>
-        <div className="access-gate-language"><button type="button" onClick={()=>setLang(isAr?'en':'ar')}><Globe2 size={15}/>{isAr?'English':'العربية'}</button></div>
-      </section>
-      <div className="access-gate-foot">© {new Date().getFullYear()} NUSQRA · {isAr?'منصة الأعضاء':'Members only'}</div>
+    return <div className="access-gate marketplace-entry" dir={isAr ? 'rtl' : 'ltr'}>
+      <header className="entry-header">
+        <a className="entry-brand" href="#home" aria-label="NUSQRA home">
+          <img src={nusqraLogo} alt="NUSQRA نسقرا" />
+        </a>
+        <div className="entry-nav"><span>{isAr?'سوق الخدمات المهنية':'Professional marketplace'}</span><span>{isAr?'للأفراد والشركات':'For individuals & businesses'}</span></div>
+        <button type="button" className="entry-language" onClick={()=>setLang(isAr?'en':'ar')}><Globe2 size={16}/>{isAr?'English':'العربية'}</button>
+      </header>
+      <main className="entry-layout">
+        <section className="entry-hero">
+          <div className="entry-brand-large"><img src={nusqraLogo} alt="NUSQRA نسقرا" /></div>
+          <div className="entry-kicker">{isAr?'سوق واحد · فرص أكثر':'ONE MARKETPLACE · MORE OPPORTUNITY'}</div>
+          <h1>{isAr?'اكتشف المحترفين، واستكشف الفرص، وابدأ الآن.':'Find Professionals, Explore Opportunities, Get Started.'}</h1>
+          <p>{isAr?'منصة حديثة تربط العملاء بالمحترفين والشركات لإنجاز الأعمال وتنمية الفرص.':'A modern marketplace connecting clients, professionals and businesses for smarter work and better opportunities.'}</p>
+          <div className="entry-hero-points">
+            <div><Users size={22}/><span>{isAr?'اعثر على المحترفين':'Find professionals'}</span></div>
+            <div><BriefcaseBusiness size={22}/><span>{isAr?'استكشف الفرص':'Explore opportunities'}</span></div>
+            <div><Globe2 size={22}/><span>{isAr?'نمُ معاً':'Grow together'}</span></div>
+          </div>
+          <div className="entry-visual"><img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1200&q=85" alt={isAr?'مساحة عمل رقمية حديثة':'Modern digital workspace'} /><div className="entry-visual-caption"><span> NUSQRA MARKETPLACE </span><strong>{isAr?'المهارات تلتقي بالفرص':'Where skills meet opportunity'}</strong></div></div>
+        </section>
+        <section className="entry-auth-wrap">
+          <div className="entry-auth-card">
+            <div className="entry-auth-logo"><img src={nusqraLogo} alt="NUSQRA" /></div>
+            <div className="entry-auth-eyebrow">{isAr?'بوابة الأعضاء':'MEMBER ACCESS'}</div>
+            <h2 id="access-gate-title">{isAr?'مرحباً بك في نسقرا':'Welcome to NUSQRA'}</h2>
+            <p>{isAr?'سجّل الدخول باستخدام حساب Google للمتابعة إلى السوق.':'Sign in with your Google account to continue to the marketplace.'}</p>
+            {!isSupabaseConfigured && <p className="auth-warning" role="alert">{t.noConfig}</p>}
+            {error && <p className="auth-error" role="alert">{error}</p>}
+            <button type="button" className="google-auth access-gate-google" disabled={busy || !isSupabaseConfigured} onClick={signInWithGoogle}>
+              <span className="google-g" aria-hidden="true">G</span>
+              {busy ? (isAr?'جارٍ الاتصال بـ Google…':'Connecting to Google…') : (isAr?'المتابعة باستخدام Google':'Continue with Google')}
+            </button>
+            <div className="entry-auth-divider"><span>{isAr?'دخول آمن':'SECURE ACCESS'}</span></div>
+            <div className="access-gate-security"><ShieldCheck size={17}/><span>{isAr?'بياناتك محمية وآمنة':'Your data is secure and private'}</span></div>
+          </div>
+          <div className="entry-auth-note">{isAr?'حساب واحد للوصول إلى خدمات وفرص نسقرا':'One account for the NUSQRA services marketplace'}</div>
+        </section>
+      </main>
+      <footer className="entry-footer">© {new Date().getFullYear()} NUSQRA <span>·</span> {isAr?'سوق الخدمات والفرص':'The marketplace for services & opportunities'}</footer>
     </div>;
   }
 
