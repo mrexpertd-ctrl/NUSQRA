@@ -52,3 +52,13 @@ NUSQRA connects customers and professionals. They arrange payment independently;
 - Customers can review proposals submitted to their own job posts.
 - Database Row Level Security enforces customer ownership, professional role membership, open-job eligibility, and one proposal per professional per job.
 - Payments remain independently arranged between customers and professionals; this release does not collect or hold funds.
+
+
+## Proposal decisions, job status and messaging
+
+- Customers can accept or reject submitted proposals on their own open jobs.
+- Accepting one proposal automatically rejects the other submitted proposals for that job and moves the job to `in_progress`.
+- Customers can close or cancel open jobs, reopen closed jobs, and mark in-progress jobs completed. Database triggers validate permitted status transitions.
+- Customers can start a private conversation from a submitted or accepted proposal. Professionals see those conversations in their inbox.
+- Messages are stored in Supabase and delivered live through Realtime, with database row-level security restricting access to conversation participants.
+- Payments remain arranged independently between customers and professionals; no escrow or platform-held funds are part of this release.
