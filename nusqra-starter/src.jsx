@@ -157,12 +157,14 @@ function App() {
       const [p,r,pp,sr] = await Promise.all([
         supabase.from('profiles').select('id,full_name,display_name,country_code,preferred_language,bio,avatar_url,cover_url,profile_style,profile_template,phone_number').eq('id',session.user.id).maybeSingle(),
         supabase.from('user_roles').select('role').eq('user_id',session.user.id),
-        supabase.from('professional_profiles').select('headline,about,years_experience,city,country_code,profile_level,identity_name_confirmed,verification_status').eq('user_id',session.user.id).maybeSingle()
+        supabase.from('professional_profiles').select('headline,about,years_experience,city,country_code,profile_level,identity_name_confirmed,verification_status').eq('user_id',session.user.id).maybeSingle(),
+        supabase.from('staff_roles').select('staff_role,is_active').eq('user_id',session.user.id).maybeSingle()
       ]);
       if (!alive) return;
       if (p.error || r.error) { setError(p.error?.message || r.error?.message || t.authError); return; }
       setProfile(p.data || {});
       setRoles((r.data || []).map(x => x.role));
+      setStaffRole(sr?.data || null);
       setProfessional(pp.data || null);
       setProfileForm({
         full_name:p.data?.full_name || '', bio:p.data?.bio || '',
@@ -234,7 +236,7 @@ function App() {
     let alive=true;
     (async()=>{const {data:pros,error:e}=await supabase.from('professional_profiles').select('user_id,headline,about,years_experience,city,country_code,profile_level,verification_status,verification_note,identity_name_confirmed').in('verification_status',['pending_review','rejected']).order('created_at',{ascending:false});if(e){if(alive)setError(e.message);return;}const ids=(pros||[]).map(p=>p.user_id);if(!ids.length){if(alive)setAdminReviewQueue([]);return;}const [pr,cr,po,pc]=await Promise.all([supabase.from('profiles').select('id,full_name,avatar_url,country_code').in('id',ids),supabase.from('professional_credentials').select('id,professional_user_id,category_id,title,issuer,credential_number,document_path,status,review_note').in('professional_user_id',ids),supabase.from('professional_portfolio').select('id,professional_user_id,category_id,title,description,media_url,project_url').in('professional_user_id',ids),supabase.from('professional_categories').select('professional_user_id,category_id').in('professional_user_id',ids)]);if(!alive)return;if(pr.error||cr.error||po.error||pc.error){setError(pr.error?.message||cr.error?.message||po.error?.message||pc.error?.message);return;}const profilesById=Object.fromEntries((pr.data||[]).map(x=>[x.id,x]));const docs=await Promise.all((cr.data||[]).map(async x=>{const {data}=await supabase.storage.from('professional-documents').createSignedUrl(x.document_path,300);return {...x,signed_url:data?.signedUrl||null};}));const group=(rows,key)=>rows.reduce((a,x)=>{(a[x[key]] ||= []).push(x);return a;},{});const crBy=group(docs,'professional_user_id'),poBy=group(po.data||[],'professional_user_id'),catBy=group(pc.data||[],'professional_user_id');setAdminReviewQueue((pros||[]).map(p=>({...p,profile:profilesById[p.user_id],credentials:crBy[p.user_id]||[],portfolio:poBy[p.user_id]||[],categoryIds:(catBy[p.user_id]||[]).map(x=>x.category_id)})).filter(x=>x.profile));})();
     return()=>{alive=false;};
-  },[page,roles]);
+  },[page,canModerateProfiles]);
 
 
   async function loadAdminCentre(){
@@ -250,7 +252,7 @@ function App() {
     const failed=results.find(x=>x.error);if(failed){setError(failed.error.message);return;}
     for(const x of results){if(x.key==='metrics')setAdminMetrics(x.data||{});if(x.key==='accounts')setAdminAccounts(x.data||[]);if(x.key==='cases')setAdminCases(x.data||[]);if(x.key==='tickets')setAdminTickets(x.data||[]);if(x.key==='ratings')setAdminRatings(x.data||[]);if(x.key==='staff')setAdminStaff(x.data||[]);}
   }
-  useEffect(()=>{if(page==='admin'&&isStaff)loadAdminCentre();},[page,isStaff,staffRole?.staff_role]);
+  useEffect(()=>{if(page==='admin'&&isStaff){setAdminTab(isSuperAdmin?'overview':staffRole?.staff_role==='class2_admin'?'cases':'support');loadAdminCentre();}},[page,isStaff,staffRole?.staff_role]);
   async function changeAccountStatus(userId,status,restrictions={}){
     const reason=(adminReason[userId]||'').trim();
     if(!reason){setError(isAr?'أدخل سبب الإجراء أولاً.':'Enter a reason before applying this action.');return;}
@@ -601,7 +603,7 @@ function App() {
       {page === 'admin' && isStaff && <section className="section admin-centre">
         <div className="admin-centre-head"><div><div className="section-label">NUSQRA · CONTROL ROOM</div><h2>{isAr?'مركز إدارة نسقرا':'Administration Centre'}</h2><p className="section-intro">{isAr?'إدارة المنصة والمستخدمين والمراجعات والدعم من لوحة مستقلة.':'Independent control room for platform operations, safety, support and performance.'}</p></div><span className="admin-role-pill">{staffRole.staff_role.replace('_',' ').toUpperCase()}</span></div>
         <nav className="admin-tabs">
-          {['overview',...(isSuperAdmin||staffRole.staff_role==='class2_admin'?['accounts','cases']:[]),...(isSuperAdmin?['staff','ratings']:[]),...(isSuperAdmin||staffRole.staff_role==='moderator'?['support']:[])].map(tab=><button key={tab} className={adminTab===tab?'active':''} onClick={()=>setAdminTab(tab)} type="button">{tab==='overview'?'Overview':tab==='accounts'?'Accounts':tab==='staff'?'Staff access':tab==='cases'?'Case studies':tab==='support'?'Customer support':'Skill stars'}</button>)}
+          {[...(isSuperAdmin?['overview','accounts','staff','cases','support','ratings']:staffRole.staff_role==='class2_admin'?['accounts','cases']:['support'])].map(tab=><button key={tab} className={adminTab===tab?'active':''} onClick={()=>setAdminTab(tab)} type="button">{tab==='overview'?'Overview':tab==='accounts'?'Accounts':tab==='staff'?'Staff access':tab==='cases'?'Case studies':tab==='support'?'Customer support':'Skill stars'}</button>)}
           {canModerateProfiles&&<button type="button" onClick={()=>navigatePage('admin-review')}>Profile review queue</button>}
         </nav>
         {error&&<p className="auth-error" role="alert">{error}</p>}{notice&&<p className="auth-success" role="status">{notice}</p>}
