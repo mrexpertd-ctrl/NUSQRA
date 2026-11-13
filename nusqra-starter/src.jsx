@@ -95,6 +95,8 @@ function App() {
   const [signupCategoryId,setSignupCategoryId] = useState('');
   const [professionalCredentials,setProfessionalCredentials] = useState([]);
   const [professionalPortfolio,setProfessionalPortfolio] = useState([]);
+  const [adminReviewQueue,setAdminReviewQueue] = useState([]);
+  const [adminReviewNotes,setAdminReviewNotes] = useState({});
   const [credentialForm,setCredentialForm] = useState({category_id:'',title:'',issuer:'',credential_number:'',file:null});
   const [portfolioForm,setPortfolioForm] = useState({category_id:'',title:'',description:'',project_url:'',file:null});
   const [jobForm,setJobForm] = useState({title:'',description:'',category_id:'',budget_min:'',budget_max:'',currency:'SAR',country_code:'SA',city:''});
