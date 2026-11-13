@@ -1433,3 +1433,11 @@ footer .brand small{color:#d0b477!important}
 .skill-star-picker{display:flex;gap:5px}
 .skill-star-picker button{border:0;background:transparent;color:#c9c4bb;font-size:27px;line-height:1;padding:2px;cursor:pointer}
 .skill-star-picker button.selected{color:#c39436}
+
+
+.professional-skill-scores{display:grid;gap:7px;margin-top:12px;padding:12px;border-radius:12px;background:rgba(196,161,93,.09);border:1px solid rgba(196,161,93,.25)}
+.professional-skill-scores>strong{font-size:12px}
+.professional-skill-scores>span{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:8px;font-size:11px}
+.professional-skill-scores em{font-style:normal;color:#c39436;letter-spacing:1px;white-space:nowrap}
+.professional-skill-scores small{color:var(--muted,#777)}
+.danger{border-color:#dba5a0!important;color:#a43c36!important}
