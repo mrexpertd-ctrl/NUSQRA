@@ -30,6 +30,7 @@ const dictionary = {
     authError: 'Something went wrong. Please try again.', signInPrompt: 'Already have an account? Log in',
     signUpPrompt: 'New to NUSQRA? Create an account', join: 'Join the marketplace',
     footer: 'A better services marketplace for the Gulf.',
+    marketplace:'Marketplace',postJob:'Post a job',browseJobs:'Open jobs',myJobs:'My job posts',jobTitle:'Job title',jobDescription:'Describe the work (20 characters minimum)',category:'Category',selectCategory:'Select category',minBudget:'Minimum budget',maxBudget:'Maximum budget',currency:'Currency',cityLabel:'City / area',publishJob:'Publish job',submitProposal:'Submit proposal',proposalText:'Explain why you are right for this job (20 characters minimum)',proposedPrice:'Your price',deliveryDays:'Delivery days',sendProposal:'Send proposal',viewProposals:'View proposals',noJobs:'No open jobs yet.',noOwnJobs:'You have not posted any jobs yet.',noProposals:'No proposals yet.',jobPosted:'Your job has been published.',proposalSent:'Your proposal was sent.',duplicateProposal:'You have already submitted a proposal for this job.',budget:'Budget',jobError:'Could not load marketplace data.',ownJob:'You cannot apply to your own job.',
     countries: {SA:'Saudi Arabia',AE:'United Arab Emirates',BH:'Bahrain',KW:'Kuwait',OM:'Oman',QA:'Qatar'}
   },
   ar: {
@@ -54,6 +55,7 @@ const dictionary = {
     authError: 'حدث خطأ. يرجى المحاولة مرة أخرى.', signInPrompt: 'لديك حساب؟ سجّل الدخول',
     signUpPrompt: 'جديد في نسقرا؟ أنشئ حساباً', join: 'انضم إلى السوق',
     footer: 'سوق خدمات أفضل للخليج.',
+    marketplace:'سوق نسقرا',postJob:'انشر طلب خدمة',browseJobs:'الطلبات المفتوحة',myJobs:'طلباتي المنشورة',jobTitle:'عنوان الطلب',jobDescription:'اشرح العمل المطلوب (20 حرفاً على الأقل)',category:'التصنيف',selectCategory:'اختر التصنيف',minBudget:'الميزانية الدنيا',maxBudget:'الميزانية القصوى',currency:'العملة',cityLabel:'المدينة / المنطقة',publishJob:'نشر الطلب',submitProposal:'تقديم عرض',proposalText:'اشرح لماذا أنت مناسب لهذا العمل (20 حرفاً على الأقل)',proposedPrice:'السعر المقترح',deliveryDays:'مدة التنفيذ بالأيام',sendProposal:'إرسال العرض',viewProposals:'عرض العروض',noJobs:'لا توجد طلبات مفتوحة حالياً.',noOwnJobs:'لم تنشر أي طلبات بعد.',noProposals:'لا توجد عروض بعد.',jobPosted:'تم نشر طلبك بنجاح.',proposalSent:'تم إرسال عرضك.',duplicateProposal:'لقد قدمت عرضاً لهذا الطلب مسبقاً.',budget:'الميزانية',jobError:'تعذر تحميل بيانات السوق.',ownJob:'لا يمكنك تقديم عرض على طلبك الخاص.',
     countries: {SA:'السعودية',AE:'الإمارات',BH:'البحرين',KW:'الكويت',OM:'عُمان',QA:'قطر'}
   }
 };
