@@ -10,7 +10,7 @@ import { isSupabaseConfigured, supabase } from './supabaseClient';
 
 const dictionary = {
   en: {
-    nav: ['Explore', 'How it works', 'For professionals'],
+    nav: ['Explore', 'Categories', 'How it works', 'For professionals'],
     hero: 'Where Gulf talent meets opportunity.',
     sub: 'Hire trusted professionals, showcase your expertise, and grow your business in one bilingual marketplace.',
     hire: 'Find a professional', work: 'Explore opportunities', trust: 'Built for confidence',
@@ -30,12 +30,12 @@ const dictionary = {
     signedIn: 'You are signed in.', switched: 'Professional profile enabled.',
     authError: 'Something went wrong. Please try again.', signInPrompt: 'Already have an account? Log in',
     signUpPrompt: 'New to NUSQRA? Create an account', join: 'Join the marketplace',
-    footer: 'A better services marketplace for the Gulf.',
+    footer: 'A better services marketplace for the Gulf.',\n    categoriesTitle:'Explore all services and opportunities',categoriesIntro:'A broad marketplace for individuals and companies across the Gulf, with a dedicated space for investors and founders.',audienceAll:'All categories',audienceIndividuals:'For individuals',audienceCompanies:'For companies',audienceInvestors:'Investors',audienceBoth:'For individuals & companies',investorDisclaimer:'Connect with founders and explore opportunities. NUSQRA does not handle investments or promise returns.',
     marketplace:'Marketplace',myJobsAndOpenJobs:'My posts and open jobs',postJob:'Post a job',browseJobs:'Open jobs',myJobs:'My job posts',jobTitle:'Job title',jobDescription:'Describe the work (20 characters minimum)',category:'Category',selectCategory:'Select category',minBudget:'Minimum budget',maxBudget:'Maximum budget',currency:'Currency',cityLabel:'City / area',publishJob:'Publish job',submitProposal:'Submit proposal',proposalText:'Explain why you are right for this job (20 characters minimum)',proposedPrice:'Your price',deliveryDays:'Delivery days',sendProposal:'Send proposal',viewProposals:'View proposals',noJobs:'No open jobs yet.',noOwnJobs:'You have not posted any jobs yet.',noProposals:'No proposals yet.',jobPosted:'Your job has been published.',proposalSent:'Your proposal was sent.',duplicateProposal:'You have already submitted a proposal for this job.',proposalSubmitted:'Proposal submitted',proposalAccepted:'Proposal accepted',proposalRejected:'Proposal rejected',accept:'Accept',reject:'Reject',closeJob:'Close job',reopenJob:'Reopen job',cancelJob:'Cancel job',completeJob:'Mark completed',messageProfessional:'Message professional',messages:'Messages',noConversations:'No conversations yet. Customers can start a conversation from a proposal.',sendMessage:'Send message',messagePlaceholder:'Write a message…',you:'You',jobStatusUpdated:'Job status updated.',decisionSaved:'Proposal decision saved.',budget:'Budget',jobError:'Could not load marketplace data.',ownJob:'You cannot apply to your own job.',
     countries: {SA:'Saudi Arabia',AE:'United Arab Emirates',BH:'Bahrain',KW:'Kuwait',OM:'Oman',QA:'Qatar'}
   },
   ar: {
-    nav: ['استكشف','كيف تعمل','للمحترفين'],
+    nav: ['استكشف','التصنيفات','كيف تعمل','للمحترفين'],
     hero: 'حيث تلتقي المواهب الخليجية بالفرص.',
     sub: 'وظّف محترفين موثوقين، واعرض خبراتك، وطوّر أعمالك في سوق خدمات ثنائي اللغة.',
     hire: 'ابحث عن محترف', work: 'استكشف الفرص', trust: 'الثقة أساسنا',
@@ -55,7 +55,7 @@ const dictionary = {
     signedIn: 'تم تسجيل الدخول.', switched: 'تم تفعيل الملف المهني.',
     authError: 'حدث خطأ. يرجى المحاولة مرة أخرى.', signInPrompt: 'لديك حساب؟ سجّل الدخول',
     signUpPrompt: 'جديد في نسقرا؟ أنشئ حساباً', join: 'انضم إلى السوق',
-    footer: 'سوق خدمات أفضل للخليج.',
+    footer: 'سوق خدمات أفضل للخليج.',\n    categoriesTitle:'اكتشف جميع الخدمات والفرص',categoriesIntro:'سوق شامل للأفراد والشركات في الخليج، مع مساحة مخصصة للمستثمرين ورواد الأعمال.',audienceAll:'جميع التصنيفات',audienceIndividuals:'للأفراد',audienceCompanies:'للشركات',audienceInvestors:'للمستثمرين',audienceBoth:'للأفراد والشركات',investorDisclaimer:'تواصل مع المؤسسين واستكشف الفرص. لا تدير نسقرا الاستثمارات ولا تضمن العوائد.',
     marketplace:'سوق نسقرا',myJobsAndOpenJobs:'طلباتي والطلبات المفتوحة',postJob:'انشر طلب خدمة',browseJobs:'الطلبات المفتوحة',myJobs:'طلباتي المنشورة',jobTitle:'عنوان الطلب',jobDescription:'اشرح العمل المطلوب (20 حرفاً على الأقل)',category:'التصنيف',selectCategory:'اختر التصنيف',minBudget:'الميزانية الدنيا',maxBudget:'الميزانية القصوى',currency:'العملة',cityLabel:'المدينة / المنطقة',publishJob:'نشر الطلب',submitProposal:'تقديم عرض',proposalText:'اشرح لماذا أنت مناسب لهذا العمل (20 حرفاً على الأقل)',proposedPrice:'السعر المقترح',deliveryDays:'مدة التنفيذ بالأيام',sendProposal:'إرسال العرض',viewProposals:'عرض العروض',noJobs:'لا توجد طلبات مفتوحة حالياً.',noOwnJobs:'لم تنشر أي طلبات بعد.',noProposals:'لا توجد عروض بعد.',jobPosted:'تم نشر طلبك بنجاح.',proposalSent:'تم إرسال عرضك.',duplicateProposal:'لقد قدمت عرضاً لهذا الطلب مسبقاً.',proposalSubmitted:'تم تقديم العرض',proposalAccepted:'تم قبول العرض',proposalRejected:'تم رفض العرض',accept:'قبول',reject:'رفض',closeJob:'إغلاق الطلب',reopenJob:'إعادة فتح الطلب',cancelJob:'إلغاء الطلب',completeJob:'تحديد كمكتمل',messageProfessional:'مراسلة المحترف',messages:'الرسائل',noConversations:'لا توجد محادثات بعد. يمكن للعميل بدء محادثة من أحد العروض.',sendMessage:'إرسال الرسالة',messagePlaceholder:'اكتب رسالة…',you:'أنت',jobStatusUpdated:'تم تحديث حالة الطلب.',decisionSaved:'تم حفظ قرار العرض.',budget:'الميزانية',jobError:'تعذر تحميل بيانات السوق.',ownJob:'لا يمكنك تقديم عرض على طلبك الخاص.',
     countries: {SA:'السعودية',AE:'الإمارات',BH:'البحرين',KW:'الكويت',OM:'عُمان',QA:'قطر'}
   }
@@ -75,7 +75,7 @@ function App() {
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState('');
   const [error, setError] = useState('');
-  const [categories,setCategories] = useState([]);
+  const [categories,setCategories] = useState([]);\n  const [categoryAudience,setCategoryAudience] = useState('all');
   const [jobs,setJobs] = useState([]);
   const [jobForm,setJobForm] = useState({title:'',description:'',category_id:'',budget_min:'',budget_max:'',currency:'SAR',country_code:'SA',city:''});
   const [proposalForms,setProposalForms] = useState({});
@@ -202,10 +202,10 @@ function App() {
     finally { setBusy(false); }
   }
 
-  async function loadMarketplace() {
+  useEffect(() => {\n    if (!supabase) return undefined;\n    let alive = true;\n    supabase.from('categories').select('id,slug,name_en,name_ar,description_en,description_ar').eq('is_active',true).order('sort_order')\n      .then(({data,error:categoryError}) => { if (alive && !categoryError) setCategories(data || []); });\n    return () => { alive = false; };\n  }, []);\n\n  async function loadMarketplace() {
     if (!supabase) return;
     const [c,j,mp] = await Promise.all([
-      supabase.from('categories').select('id,name_en,name_ar').eq('is_active',true).order('sort_order'),
+      supabase.from('categories').select('id,slug,name_en,name_ar,description_en,description_ar').eq('is_active',true).order('sort_order'),
       supabase.from('jobs').select('id,customer_id,category_id,title,description,budget_min,budget_max,currency,country_code,city,status,created_at').order('created_at',{ascending:false}).limit(60),
       roles.includes('professional') ? supabase.from('proposals').select('id,job_id,status').eq('professional_id',session.user.id) : Promise.resolve({data:[],error:null})
     ]);
@@ -347,6 +347,29 @@ function App() {
           <div className="proof"><ShieldCheck size={18}/>{t.trust}<span className="dot"/> <span>Gulf-first · Mobile-first</span></div>
         </div>
         <div className="hero-card"><div className="card-glow"/><div className="hero-monogram">ن</div><div className="hero-card-title">نُسقرا <span>NUSQRA</span></div><div className="hero-card-caption">EXPERTISE · TRUST · OPPORTUNITY</div></div>
+      </section>
+      <section className="section category-section" id="categories">
+        <div className="section-label">NUSQRA · SERVICES DIRECTORY</div>
+        <h2>{t.categoriesTitle}</h2>
+        <p className="section-intro category-intro">{t.categoriesIntro}</p>
+        <div className="audience-tabs" role="group" aria-label="Browse categories by audience">
+          <button type="button" className={categoryAudience==='all'?'active':''} onClick={()=>setCategoryAudience('all')}>{t.audienceAll}</button>
+          <button type="button" className={categoryAudience==='individuals'?'active':''} onClick={()=>setCategoryAudience('individuals')}>{t.audienceIndividuals}</button>
+          <button type="button" className={categoryAudience==='companies'?'active':''} onClick={()=>setCategoryAudience('companies')}>{t.audienceCompanies}</button>
+          <button type="button" className={categoryAudience==='investors'?'active':''} onClick={()=>setCategoryAudience('investors')}>{t.audienceInvestors}</button>
+        </div>
+        <div className="category-grid">
+          {categories.filter(c=>categoryAudience==='all'||(categoryAudience==='investors'?c.slug==='investors-opportunities':c.slug!=='investors-opportunities')).map(c=>{
+            const symbols={'web-technology':'⌘','design-creative':'✦','marketing-sales':'↗','business-services':'▤','automotive-services':'⚙','education-training':'◎','home-maintenance':'⌂','writing-translation':'✎','construction-engineering':'⌁','transport-logistics':'⇢','finance-administration':'＄','hr-recruitment':'♙','healthcare-wellness':'＋','hospitality-events':'◇','industrial-manufacturing':'▦','investors-opportunities':'◈'};
+            return <article className="category-card" key={c.id}>
+              <span className="category-symbol">{symbols[c.slug]||'✧'}</span>
+              <h3>{isAr?c.name_ar:c.name_en}</h3>
+              <p>{isAr?(c.description_ar||''): (c.description_en||'')}</p>
+              <span className="category-audience">{c.slug==='investors-opportunities'?t.audienceInvestors:t.audienceBoth}</span>
+              {c.slug==='investors-opportunities'&&<small className="investor-disclaimer">{t.investorDisclaimer}</small>}
+            </article>;
+          })}
+        </div>
       </section>
       <section className="section" id="features"><div className="section-label">NUSQRA PLATFORM</div><h2>{t.trust}</h2><div className="feature-grid">
         {[ShieldCheck,Users,Crown,Globe2].map((Icon,i)=><article className="feature" key={i}><span className="iconbox"><Icon size={24}/></span><h3>{t.features[i]}</h3><p>{t.featureText[i]}</p></article>)}
