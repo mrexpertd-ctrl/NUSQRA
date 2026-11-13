@@ -1,11 +1,13 @@
-# NUSQRA — Website prototype
+# NUSQRA — bilingual Gulf services marketplace
 
-Responsive React/Vite frontend for the NUSQRA Gulf marketplace.
+Responsive React/Vite frontend connected to the NUSQRA Supabase development project.
 
 ## Run locally
 
 ```bash
 npm install
+cp .env.example .env.local
+# Add the Supabase publishable key to .env.local
 npm run dev
 ```
 
@@ -15,24 +17,28 @@ Build:
 npm run build
 ```
 
-## Included
-- Responsive bilingual (Arabic/English) homepage with RTL layout
-- Marketplace positioning and professional growth information
-- Prototype login and registration dialogs (not connected to authentication yet)
+## Supabase configuration
 
-## Backend status
+Set these Vite environment variables in local development and your hosting provider:
 
-The development database is Supabase project `nusqra-development`. Its schema and migrations are maintained in the repository at `../supabase/migrations/`.
+- `VITE_SUPABASE_URL` — project URL.
+- `VITE_SUPABASE_PUBLISHABLE_KEY` — Supabase publishable key (or legacy anon key while migrating).
 
-The frontend does not yet connect to Supabase. Authentication, live profiles, services, job listings, proposals and messaging UI remain to be implemented.
+The browser client must use only a publishable/anon key. Never put a service-role or secret key in Vite variables, frontend files, GitHub commits, or browser code.
+
+## Accounts
+
+- Email/password registration and sign-in through Supabase Auth.
+- Customer accounts are created by the database signup trigger.
+- Professional registration also creates the professional role and professional profile.
+- Signed-in users can edit their own basic profile; professionals can edit their professional details.
+- Email confirmation may be required depending on the Supabase Auth project settings.
+- Password reset, phone OTP, social login, admin/staff portal, and MFA are not part of this first account release.
+
+## Data and launch notes
+
+The Supabase database migrations are in `../supabase/migrations/`. Keep real customer data out of development until privacy, Saudi PDPL, and cross-border transfer requirements have been reviewed. Singapore is the current development database region.
 
 ## First-release payment model
 
 NUSQRA connects customers and professionals. They arrange payment independently; the platform does not collect or distribute payments in the first release.
-
-## Security notes
-
-- Do not add a Supabase service-role or secret key to frontend code.
-- Use only a publishable key in browser code, supplied through local environment variables.
-- Keep real customer data out of the development database until privacy, cross-border transfer and hosting requirements are reviewed.
-- The staff-access link is a prototype only, not a secured admin portal.
