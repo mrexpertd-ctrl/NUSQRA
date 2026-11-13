@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import nusqraLogo from './nusqra-mark.svg';
+import nusqraLogoDark from './nusqra-mark-dark.svg';
 import nusqraSymbol from './nusqra-symbol.svg';
 import { createRoot } from 'react-dom/client';
 import {
@@ -649,7 +650,7 @@ function App() {
         </section>
         <section className="entry-auth-wrap">
           <div className="entry-auth-card">
-            <div className="entry-auth-logo"><img src={nusqraLogo} alt="NUSQRA" /></div>
+            <div className="entry-auth-logo"><img src={nusqraLogoDark} alt="NUSQRA نسقرا" /></div>
             <div className="entry-auth-eyebrow">{isAr?'بوابة الأعضاء':'MEMBER ACCESS'}</div>
             <h2 id="access-gate-title">{isAr?'مرحباً بك في نسقرا':'Welcome to NUSQRA'}</h2>
             <p>{isAr?'سجّل الدخول باستخدام حساب Google للمتابعة إلى السوق.':'Sign in with your Google account to continue to the marketplace.'}</p>
