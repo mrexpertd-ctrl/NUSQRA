@@ -1,1 +1,29 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 220" role="img" aria-labelledby="title desc"><title id="title">NUSQRA — نسقرا</title><desc id="desc">A modern geometric emerald ribbon N paired with Arabic and Latin wordmarks.</desc><defs><linearGradient id="emerald" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#50e6a1"/><stop offset=".48" stop-color="#0bb875"/><stop offset="1" stop-color="#05613e"/></linearGradient><linearGradient id="white" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff"/><stop offset="1" stop-color="#cbd4cf"/></linearGradient></defs><g transform="translate(18 20)"><path d="M12 48 60 10h54l-48 39 91 79-47 39L12 87Z" fill="url(#emerald)"/><path d="m60 10 49 0 54 45v59l-49-41-91-79Z" fill="#087b51" opacity=".98"/><path d="m12 87 48-38 91 79-48 39Z" fill="#12a96c"/><path d="m60 10 49 0-48 39-49 38V48Z" fill="#28d38a"/><path d="m60 10 54 0 85 70-48 39-91-79Z" fill="url(#emerald)" opacity=".9"/><path d="M17 48 60 14h48l-47 35 91 79-44 36-91-78Z" fill="none" stroke="#a5f3cd" stroke-opacity=".38" stroke-width="3"/></g><g transform="translate(235 0)"><text x="0" y="112" fill="url(#white)" font-family="Amiri, Noto Naskh Arabic, Cairo, serif" font-size="91" font-weight="700" direction="rtl" unicode-bidi="plaintext">نسقرا</text><text x="4" y="169" fill="#16c783" font-family="Inter,Arial,sans-serif" font-size="30" font-weight="600" letter-spacing="15">NUSQRA</text><path d="M4 188h380" stroke="#0c8c5b" stroke-opacity=".6" stroke-width="2"/></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 220" role="img" aria-labelledby="title desc">
+<title id="title">NUSQRA — نسقرا</title>
+<desc id="desc">Emerald geometric hexagon enclosing a bold interlocking N monogram, paired with Arabic and English NUSQRA wordmarks.</desc>
+<defs>
+  <linearGradient id="emerald" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#55f0ad"/>
+    <stop offset=".48" stop-color="#12c982"/>
+    <stop offset="1" stop-color="#08734d"/>
+  </linearGradient>
+  <linearGradient id="edge" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#7af7c1"/>
+    <stop offset="1" stop-color="#07915d"/>
+  </linearGradient>
+  <linearGradient id="word" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#ffffff"/>
+    <stop offset="1" stop-color="#d7e2dc"/>
+  </linearGradient>
+</defs>
+<g transform="translate(16 8)">
+  <path d="M92 4 169 48v88l-77 44-77-44V48Z" fill="none" stroke="url(#edge)" stroke-width="13" stroke-linejoin="round"/>
+  <path d="M48 132V62l26-15 53 83V60l25-15v100l-27 15-52-82v69Z" fill="url(#emerald)" stroke="#9af8ce" stroke-opacity=".32" stroke-width="2" stroke-linejoin="round"/>
+  <path d="m48 62 26-15 53 83v-29L74 33 48 48Z" fill="#75f5bd" opacity=".28"/>
+</g>
+<g>
+  <text x="228" y="105" fill="url(#word)" font-family="Amiri, 'Noto Naskh Arabic', Cairo, serif" font-size="83" font-weight="700" direction="rtl" unicode-bidi="plaintext">نسقرا</text>
+  <text x="235" y="158" fill="#20d18b" font-family="Inter, Arial, sans-serif" font-size="30" font-weight="700" letter-spacing="12">NUSQRA</text>
+  <path d="M235 181H690" stroke="#0e9d68" stroke-opacity=".55" stroke-width="2"/>
+</g>
+</svg>
