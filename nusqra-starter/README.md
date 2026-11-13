@@ -26,6 +26,8 @@ Set these Vite environment variables in local development and your hosting provi
 
 The browser client must use only a publishable/anon key. Never put a service-role or secret key in Vite variables, frontend files, GitHub commits, or browser code.
 
+In Supabase Dashboard → Authentication → URL Configuration, set the Site URL to the exact frontend URL you are testing. For local Vite testing, use `http://localhost:5173`; add `http://localhost:5173/**` to the Redirect URLs allow list. When a real domain is selected, replace the Site URL with that domain and add its callback/redirect paths as well.
+
 ## Accounts
 
 - Email/password registration and sign-in through Supabase Auth.
