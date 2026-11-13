@@ -73,7 +73,12 @@ function App() {
   const [roles, setRoles] = useState([]);
   const [professional, setProfessional] = useState(null);
   const [form, setForm] = useState({full_name:'',email:'',password:'',account_type:'customer',country_code:'SA'});
-  const [profileForm, setProfileForm] = useState({full_name:'',bio:'',country_code:'SA',headline:'',about:'',years_experience:'',city:''});
+  const [authMethod,setAuthMethod] = useState('email');
+  const [phone,setPhone] = useState('');
+  const [otp,setOtp] = useState('');
+  const [otpSent,setOtpSent] = useState(false);
+  const [photoFiles,setPhotoFiles] = useState({avatar:null,cover:null});
+  const [profileForm, setProfileForm] = useState({full_name:'',bio:'',country_code:'SA',headline:'',about:'',years_experience:'',city:'',avatar_url:'',cover_url:'',profile_style:'simple',phone_number:''});
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState('');
   const [error, setError] = useState('');
@@ -111,7 +116,7 @@ function App() {
     let alive = true;
     (async () => {
       const [p,r,pp] = await Promise.all([
-        supabase.from('profiles').select('id,full_name,display_name,country_code,preferred_language,bio').eq('id',session.user.id).maybeSingle(),
+        supabase.from('profiles').select('id,full_name,display_name,country_code,preferred_language,bio,avatar_url,cover_url,profile_style,phone_number').eq('id',session.user.id).maybeSingle(),
         supabase.from('user_roles').select('role').eq('user_id',session.user.id),
         supabase.from('professional_profiles').select('headline,about,years_experience,city,country_code').eq('user_id',session.user.id).maybeSingle()
       ]);
@@ -122,7 +127,7 @@ function App() {
       setProfessional(pp.data || null);
       setProfileForm({
         full_name:p.data?.full_name || '', bio:p.data?.bio || '',
-        country_code:p.data?.country_code || 'SA',
+        country_code:p.data?.country_code || 'SA', avatar_url:p.data?.avatar_url || '', cover_url:p.data?.cover_url || '', profile_style:p.data?.profile_style || 'simple', phone_number:p.data?.phone_number || '',
         headline:pp.data?.headline || '', about:pp.data?.about || '',
         years_experience:pp.data?.years_experience ?? '', city:pp.data?.city || ''
       });
@@ -133,24 +138,39 @@ function App() {
   const setField = (key,value) => setForm(old => ({...old,[key]:value}));
   const setProfileField = (key,value) => setProfileForm(old => ({...old,[key]:value}));
 
+  const gulfDialCodes = [{code:'SA',dial:'+966',name:'Saudi Arabia'},{code:'AE',dial:'+971',name:'UAE'},{code:'BH',dial:'+973',name:'Bahrain'},{code:'KW',dial:'+965',name:'Kuwait'},{code:'OM',dial:'+968',name:'Oman'},{code:'QA',dial:'+974',name:'Qatar'}];
+  const selectedDial = gulfDialCodes.find(x=>x.code===form.country_code)?.dial || '+966';
+  function normalizedPhone(){const digits=phone.replace(/[^0-9]/g,'').replace(/^0+/,'');return selectedDial+digits;}
   async function submitAuth(event) {
     event.preventDefault(); setError(''); setNotice('');
     if (!isSupabaseConfigured || !supabase) { setError(t.noConfig); return; }
-    if (!form.email || !form.password || (authMode === 'register' && !form.full_name.trim())) { setError(t.missing); return; }
     setBusy(true);
     try {
+      if (authMethod === 'google') {
+        const {error:e}=await supabase.auth.signInWithOAuth({provider:'google',options:{redirectTo:window.location.origin}});
+        if(e) throw e;
+        return;
+      }
+      if (authMethod === 'phone') {
+        const fullPhone=normalizedPhone();
+        if(phone.replace(/[^0-9]/g,'').length<7) throw new Error(isAr?'أدخل رقم هاتف صحيحاً.':'Enter a valid Gulf mobile number.');
+        if(!otpSent){
+          const {error:e}=await supabase.auth.signInWithOtp({phone:fullPhone,options:{channel:'sms',shouldCreateUser:authMode==='register',data:{full_name:form.full_name.trim(),account_type:form.account_type,country_code:form.country_code,preferred_language:lang}}});
+          if(e) throw e;
+          setOtpSent(true);setNotice(isAr?'أرسلنا رمز التحقق عبر الرسائل النصية.':'We sent an SMS verification code.');
+        } else {
+          if(!otp.trim()) throw new Error(isAr?'أدخل رمز التحقق.':'Enter the verification code.');
+          const {data,error:e}=await supabase.auth.verifyOtp({phone:fullPhone,token:otp.trim(),type:'sms'});
+          if(e) throw e;
+          setSession(data.session);setAuthMode(null);setOtpSent(false);setOtp('');
+          setNotice(isAr?'تم التحقق وتسجيل الدخول.':'Phone verified. You are signed in.');
+        }
+        return;
+      }
+      if (!form.email || (authMode==='register' && !form.full_name.trim())) { setError(t.missing); return; }
       if (authMode === 'register') {
         if (form.password.length < 8) throw new Error(isAr ? 'يجب أن تتكون كلمة المرور من 8 أحرف على الأقل.' : 'Password must be at least 8 characters.');
-        const {data,error:signUpError} = await supabase.auth.signUp({
-          email:form.email.trim(),
-          password:form.password,
-          options:{data:{
-            full_name:form.full_name.trim(),
-            account_type:form.account_type,
-            country_code:form.country_code,
-            preferred_language:lang
-          }}
-        });
+        const {data,error:signUpError} = await supabase.auth.signUp({email:form.email.trim(),password:form.password,options:{data:{full_name:form.full_name.trim(),account_type:form.account_type,country_code:form.country_code,preferred_language:lang}}});
         if (signUpError) throw signUpError;
         if (data.session) { setSession(data.session); setAuthMode(null); setNotice(t.signedIn); }
         else { setNotice(t.signedUp); setAuthMode('login'); }
@@ -167,25 +187,37 @@ function App() {
     event.preventDefault(); if (!supabase || !session) return;
     setBusy(true); setError(''); setNotice('');
     try {
+      const upload = async (file,kind) => {
+        if(!file) return profileForm[kind==='avatar'?'avatar_url':'cover_url'] || null;
+        if(!['image/jpeg','image/png','image/webp'].includes(file.type) || file.size>5*1024*1024) throw new Error(isAr?'استخدم صورة JPG أو PNG أو WEBP بحجم أقل من 5 ميجابايت.':'Use JPG, PNG or WEBP images up to 5 MB.');
+        const ext=file.name.split('.').pop().toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg';
+        const path=session.user.id+'/'+kind+'-'+Date.now()+'.'+ext;
+        const {error:e}=await supabase.storage.from('profile-media').upload(path,file,{upsert:true,contentType:file.type});
+        if(e) throw e;
+        return supabase.storage.from('profile-media').getPublicUrl(path).data.publicUrl;
+      };
+      const avatarUrl=await upload(photoFiles.avatar,'avatar');
+      const coverUrl=await upload(photoFiles.cover,'cover');
       const {error:pError} = await supabase.from('profiles').update({
         full_name:profileForm.full_name.trim(), bio:profileForm.bio.trim() || null,
-        country_code:profileForm.country_code, updated_at:new Date().toISOString()
+        country_code:profileForm.country_code, avatar_url:avatarUrl, cover_url:coverUrl,
+        profile_style:profileForm.profile_style, phone_number:profileForm.phone_number || null,
+        updated_at:new Date().toISOString()
       }).eq('id',session.user.id);
       if (pError) throw pError;
       if (isProfessional) {
         const {error:ppError} = await supabase.from('professional_profiles').update({
-          headline:profileForm.headline.trim() || null,
-          about:profileForm.about.trim() || null,
+          headline:profileForm.headline.trim() || null,about:profileForm.about.trim() || null,
           years_experience:profileForm.years_experience === '' ? null : Number(profileForm.years_experience),
-          city:profileForm.city.trim() || null,
-          country_code:profileForm.country_code,
-          updated_at:new Date().toISOString()
+          city:profileForm.city.trim() || null,country_code:profileForm.country_code,updated_at:new Date().toISOString()
         }).eq('user_id',session.user.id);
         if (ppError) throw ppError;
       }
-      setNotice(t.saved);
-      setProfile({...profile,full_name:profileForm.full_name,bio:profileForm.bio,country_code:profileForm.country_code});
+      setPhotoFiles({avatar:null,cover:null});
+      setProfile({...profile,full_name:profileForm.full_name,bio:profileForm.bio,country_code:profileForm.country_code,avatar_url:avatarUrl,cover_url:coverUrl,profile_style:profileForm.profile_style});
+      setProfileForm(v=>({...v,avatar_url:avatarUrl||'',cover_url:coverUrl||''}));
       if (isProfessional) setProfessional({...professional,...profileForm});
+      setNotice(t.saved);
     } catch (e) { setError(e.message || t.authError); }
     finally { setBusy(false); }
   }
@@ -456,9 +488,23 @@ function App() {
           {!isProfessional && <button className="btn secondary enable-pro" disabled={busy} onClick={enableProfessional}><BriefcaseBusiness size={16}/>{t.enablePro}</button>}
           <form className="profile-form" onSubmit={saveProfile}>
             <h3>{t.account}</h3>
+            <div className={'profile-preview '+(profileForm.profile_style==='premium'?'premium-profile':'simple-profile')}>
+              {profileForm.cover_url && <img className="profile-cover-preview" src={profileForm.cover_url} alt="Profile cover"/>}
+              <div className="profile-avatar-preview">{profileForm.avatar_url?<img src={profileForm.avatar_url} alt="Profile"/>:<UserRound size={34}/>}</div>
+              <strong>{profileForm.full_name || 'NUSQRA Member'}</strong><span>{profileForm.profile_style==='premium'?'PREMIUM PROFILE':'SIMPLE PROFILE'}</span>
+            </div>
+            <div className="profile-style-picker">
+              <label><input type="radio" name="profile_style" value="simple" checked={profileForm.profile_style==='simple'} onChange={()=>setProfileField('profile_style','simple')}/><span><b>Simple Profile</b><small>Clean, elegant and professional</small></span></label>
+              <label><input type="radio" name="profile_style" value="premium" checked={profileForm.profile_style==='premium'} onChange={()=>setProfileField('profile_style','premium')}/><span><b>Premium Profile</b><small>Featured emerald and gold presentation</small></span></label>
+            </div>
+            <div className="profile-media-fields">
+              <label>Profile photo (JPG, PNG, WEBP · max 5 MB)<input type="file" accept="image/jpeg,image/png,image/webp" onChange={e=>setPhotoFiles(v=>({...v,avatar:e.target.files?.[0]||null}))}/></label>
+              <label>Cover photo (JPG, PNG, WEBP · max 5 MB)<input type="file" accept="image/jpeg,image/png,image/webp" onChange={e=>setPhotoFiles(v=>({...v,cover:e.target.files?.[0]||null}))}/></label>
+            </div>
             <label>{t.fullName}<input required value={profileForm.full_name} onChange={e=>setProfileField('full_name',e.target.value)} /></label>
             <label>{t.country}<select value={profileForm.country_code} onChange={e=>setProfileField('country_code',e.target.value)}>{countryCodes.map(code=><option key={code} value={code}>{t.countries[code]}</option>)}</select></label>
             <label>{t.bio}<textarea rows="3" value={profileForm.bio} onChange={e=>setProfileField('bio',e.target.value)}/></label>
+            isProfessional
             {isProfessional && <div className="professional-fields"><h3>{t.proDetails}</h3>
               <label>{t.headline}<input value={profileForm.headline} onChange={e=>setProfileField('headline',e.target.value)}/></label>
               <label>{t.city}<input value={profileForm.city} onChange={e=>setProfileField('city',e.target.value)}/></label>
@@ -466,7 +512,7 @@ function App() {
               <label>{t.bio}<textarea rows="3" value={profileForm.about} onChange={e=>setProfileField('about',e.target.value)}/></label>
             </div>}
             <button className="btn primary" type="submit" disabled={busy}>{busy?<LoaderCircle className="spin" size={17}/>:<CheckCircle2 size={17}/>} {t.save}</button>
-          </form>
+          </form>>
         </div>
       </section>}
     </main>
@@ -477,17 +523,30 @@ function App() {
         <div className="brand"><span className="mark">N</span><span>NUSQRA<small>نُسقرا</small></span></div>
         <h2>{authMode==='register'?t.create:t.welcome}</h2>
         {!isSupabaseConfigured && <p className="auth-warning">{t.noConfig}</p>}
+        <div className="auth-method-tabs">
+          <button type="button" className={authMethod==='email'?'active':''} onClick={()=>{setAuthMethod('email');setError('');}}>Email</button>
+          <button type="button" className={authMethod==='phone'?'active':''} onClick={()=>{setAuthMethod('phone');setError('');}}>Phone</button>
+        </div>
+        <button type="button" className="google-auth" disabled={busy||!isSupabaseConfigured} onClick={async()=>{setAuthMethod('google');setError('');setBusy(true);try{const {error:e}=await supabase.auth.signInWithOAuth({provider:'google',options:{redirectTo:window.location.origin}});if(e)throw e;}catch(e){setError(e.message||t.authError);setBusy(false);}}}><span className="google-g">G</span> Continue with Google</button>
+        <div className="auth-divider"><span>or continue with</span></div>
         <form onSubmit={submitAuth}>
           {authMode==='register' && <>
             <label>{t.fullName}<input required autoComplete="name" value={form.full_name} onChange={e=>setField('full_name',e.target.value)} /></label>
             <label>{t.country}<select value={form.country_code} onChange={e=>setField('country_code',e.target.value)}>{countryCodes.map(code=><option key={code} value={code}>{t.countries[code]}</option>)}</select></label>
             <label>{t.roles}<select value={form.account_type} onChange={e=>setField('account_type',e.target.value)}><option value="customer">{t.customer}</option><option value="professional">{t.professional}</option></select></label>
           </>}
-          <label>{t.email}<input type="email" required autoComplete="email" value={form.email} onChange={e=>setField('email',e.target.value)}/></label>
-          <label>{t.password}<input type="password" required minLength="8" autoComplete={authMode==='register'?'new-password':'current-password'} value={form.password} onChange={e=>setField('password',e.target.value)}/></label>
+          {authMethod==='phone' ? <>
+            <label>Gulf country code<select value={form.country_code} onChange={e=>setField('country_code',e.target.value)}>{gulfDialCodes.map(x=><option key={x.code} value={x.code}>{x.name} ({x.dial})</option>)}</select></label>
+            <label>Mobile number<input type="tel" inputMode="tel" autoComplete="tel-national" placeholder="5xxxxxxxx" value={phone} onChange={e=>setPhone(e.target.value)} required/></label>
+            {otpSent && <label>SMS verification code<input inputMode="numeric" autoComplete="one-time-code" value={otp} onChange={e=>setOtp(e.target.value)} required/></label>}
+          </> : <>
+            <label>{t.email}<input type="email" required autoComplete="email" value={form.email} onChange={e=>setField('email',e.target.value)}/></label>
+            <label>{t.password}<input type="password" required minLength="8" autoComplete={authMode==='register'?'new-password':'current-password'} value={form.password} onChange={e=>setField('password',e.target.value)}/></label>
+          </>}
           {error && <p className="auth-error" role="alert">{error}</p>}
           {notice && <p className="auth-success" role="status">{notice}</p>}
-          <button className="btn primary" type="submit" disabled={busy || !isSupabaseConfigured}>{busy?<LoaderCircle className="spin" size={17}/>:null}{busy?t.working:authMode==='register'?t.signup:t.login}</button>
+          <button className="btn primary" type="submit" disabled={busy || !isSupabaseConfigured}>{busy?<LoaderCircle className="spin" size={17}/>:null}{busy?t.working:authMethod==='phone'?(otpSent?'Verify code':'Send SMS code'):authMode==='register'?t.signup:t.login}</button>
+          {authMethod==='phone'&&otpSent&&<button className="auth-switch" type="button" onClick={()=>{setOtpSent(false);setOtp('');}}>Change phone number</button>}
         </form>
         <button className="auth-switch" onClick={()=>{setAuthMode(authMode==='login'?'register':'login');setError('');setNotice('')}}>{authMode==='login'?t.signUpPrompt:t.signInPrompt}</button>
       </section>
