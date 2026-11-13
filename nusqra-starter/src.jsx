@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import {
   Globe2, ShieldCheck, Users, ArrowRight, ArrowLeft, Crown, Menu, X,
-  BriefcaseBusiness, LogOut, UserRound, CheckCircle2, LoaderCircle
+  BriefcaseBusiness, LogOut, UserRound, CheckCircle2, LoaderCircle,
+  MessageCircle, Send, Check, XCircle, RefreshCw
 } from 'lucide-react';
 import './style.css';
 import { isSupabaseConfigured, supabase } from './supabaseClient';
@@ -30,7 +31,7 @@ const dictionary = {
     authError: 'Something went wrong. Please try again.', signInPrompt: 'Already have an account? Log in',
     signUpPrompt: 'New to NUSQRA? Create an account', join: 'Join the marketplace',
     footer: 'A better services marketplace for the Gulf.',
-    marketplace:'Marketplace',myJobsAndOpenJobs:'My posts and open jobs',postJob:'Post a job',browseJobs:'Open jobs',myJobs:'My job posts',jobTitle:'Job title',jobDescription:'Describe the work (20 characters minimum)',category:'Category',selectCategory:'Select category',minBudget:'Minimum budget',maxBudget:'Maximum budget',currency:'Currency',cityLabel:'City / area',publishJob:'Publish job',submitProposal:'Submit proposal',proposalText:'Explain why you are right for this job (20 characters minimum)',proposedPrice:'Your price',deliveryDays:'Delivery days',sendProposal:'Send proposal',viewProposals:'View proposals',noJobs:'No open jobs yet.',noOwnJobs:'You have not posted any jobs yet.',noProposals:'No proposals yet.',jobPosted:'Your job has been published.',proposalSent:'Your proposal was sent.',duplicateProposal:'You have already submitted a proposal for this job.',budget:'Budget',jobError:'Could not load marketplace data.',ownJob:'You cannot apply to your own job.',
+    marketplace:'Marketplace',myJobsAndOpenJobs:'My posts and open jobs',postJob:'Post a job',browseJobs:'Open jobs',myJobs:'My job posts',jobTitle:'Job title',jobDescription:'Describe the work (20 characters minimum)',category:'Category',selectCategory:'Select category',minBudget:'Minimum budget',maxBudget:'Maximum budget',currency:'Currency',cityLabel:'City / area',publishJob:'Publish job',submitProposal:'Submit proposal',proposalText:'Explain why you are right for this job (20 characters minimum)',proposedPrice:'Your price',deliveryDays:'Delivery days',sendProposal:'Send proposal',viewProposals:'View proposals',noJobs:'No open jobs yet.',noOwnJobs:'You have not posted any jobs yet.',noProposals:'No proposals yet.',jobPosted:'Your job has been published.',proposalSent:'Your proposal was sent.',duplicateProposal:'You have already submitted a proposal for this job.',proposalSubmitted:'Proposal submitted',proposalAccepted:'Proposal accepted',proposalRejected:'Proposal rejected',accept:'Accept',reject:'Reject',closeJob:'Close job',reopenJob:'Reopen job',cancelJob:'Cancel job',completeJob:'Mark completed',messageProfessional:'Message professional',messages:'Messages',noConversations:'No conversations yet. Customers can start a conversation from a proposal.',sendMessage:'Send message',messagePlaceholder:'Write a message…',you:'You',jobStatusUpdated:'Job status updated.',decisionSaved:'Proposal decision saved.',budget:'Budget',jobError:'Could not load marketplace data.',ownJob:'You cannot apply to your own job.',
     countries: {SA:'Saudi Arabia',AE:'United Arab Emirates',BH:'Bahrain',KW:'Kuwait',OM:'Oman',QA:'Qatar'}
   },
   ar: {
@@ -55,7 +56,7 @@ const dictionary = {
     authError: 'حدث خطأ. يرجى المحاولة مرة أخرى.', signInPrompt: 'لديك حساب؟ سجّل الدخول',
     signUpPrompt: 'جديد في نسقرا؟ أنشئ حساباً', join: 'انضم إلى السوق',
     footer: 'سوق خدمات أفضل للخليج.',
-    marketplace:'سوق نسقرا',myJobsAndOpenJobs:'طلباتي والطلبات المفتوحة',postJob:'انشر طلب خدمة',browseJobs:'الطلبات المفتوحة',myJobs:'طلباتي المنشورة',jobTitle:'عنوان الطلب',jobDescription:'اشرح العمل المطلوب (20 حرفاً على الأقل)',category:'التصنيف',selectCategory:'اختر التصنيف',minBudget:'الميزانية الدنيا',maxBudget:'الميزانية القصوى',currency:'العملة',cityLabel:'المدينة / المنطقة',publishJob:'نشر الطلب',submitProposal:'تقديم عرض',proposalText:'اشرح لماذا أنت مناسب لهذا العمل (20 حرفاً على الأقل)',proposedPrice:'السعر المقترح',deliveryDays:'مدة التنفيذ بالأيام',sendProposal:'إرسال العرض',viewProposals:'عرض العروض',noJobs:'لا توجد طلبات مفتوحة حالياً.',noOwnJobs:'لم تنشر أي طلبات بعد.',noProposals:'لا توجد عروض بعد.',jobPosted:'تم نشر طلبك بنجاح.',proposalSent:'تم إرسال عرضك.',duplicateProposal:'لقد قدمت عرضاً لهذا الطلب مسبقاً.',budget:'الميزانية',jobError:'تعذر تحميل بيانات السوق.',ownJob:'لا يمكنك تقديم عرض على طلبك الخاص.',
+    marketplace:'سوق نسقرا',myJobsAndOpenJobs:'طلباتي والطلبات المفتوحة',postJob:'انشر طلب خدمة',browseJobs:'الطلبات المفتوحة',myJobs:'طلباتي المنشورة',jobTitle:'عنوان الطلب',jobDescription:'اشرح العمل المطلوب (20 حرفاً على الأقل)',category:'التصنيف',selectCategory:'اختر التصنيف',minBudget:'الميزانية الدنيا',maxBudget:'الميزانية القصوى',currency:'العملة',cityLabel:'المدينة / المنطقة',publishJob:'نشر الطلب',submitProposal:'تقديم عرض',proposalText:'اشرح لماذا أنت مناسب لهذا العمل (20 حرفاً على الأقل)',proposedPrice:'السعر المقترح',deliveryDays:'مدة التنفيذ بالأيام',sendProposal:'إرسال العرض',viewProposals:'عرض العروض',noJobs:'لا توجد طلبات مفتوحة حالياً.',noOwnJobs:'لم تنشر أي طلبات بعد.',noProposals:'لا توجد عروض بعد.',jobPosted:'تم نشر طلبك بنجاح.',proposalSent:'تم إرسال عرضك.',duplicateProposal:'لقد قدمت عرضاً لهذا الطلب مسبقاً.',proposalSubmitted:'تم تقديم العرض',proposalAccepted:'تم قبول العرض',proposalRejected:'تم رفض العرض',accept:'قبول',reject:'رفض',closeJob:'إغلاق الطلب',reopenJob:'إعادة فتح الطلب',cancelJob:'إلغاء الطلب',completeJob:'تحديد كمكتمل',messageProfessional:'مراسلة المحترف',messages:'الرسائل',noConversations:'لا توجد محادثات بعد. يمكن للعميل بدء محادثة من أحد العروض.',sendMessage:'إرسال الرسالة',messagePlaceholder:'اكتب رسالة…',you:'أنت',jobStatusUpdated:'تم تحديث حالة الطلب.',decisionSaved:'تم حفظ قرار العرض.',budget:'الميزانية',jobError:'تعذر تحميل بيانات السوق.',ownJob:'لا يمكنك تقديم عرض على طلبك الخاص.',
     countries: {SA:'السعودية',AE:'الإمارات',BH:'البحرين',KW:'الكويت',OM:'عُمان',QA:'قطر'}
   }
 };
@@ -79,7 +80,12 @@ function App() {
   const [jobForm,setJobForm] = useState({title:'',description:'',category_id:'',budget_min:'',budget_max:'',currency:'SAR',country_code:'SA',city:''});
   const [proposalForms,setProposalForms] = useState({});
   const [jobProposals,setJobProposals] = useState({});
+  const [myProposals,setMyProposals] = useState({});
   const [expandedJob,setExpandedJob] = useState(null);
+  const [conversations,setConversations] = useState([]);
+  const [selectedConversation,setSelectedConversation] = useState(null);
+  const [messages,setMessages] = useState([]);
+  const [messageDraft,setMessageDraft] = useState('');
   const t = dictionary[lang];
   const isAr = lang === 'ar';
   const isProfessional = roles.includes('professional');
@@ -198,15 +204,38 @@ function App() {
 
   async function loadMarketplace() {
     if (!supabase) return;
-    const [c,j] = await Promise.all([
+    const [c,j,mp] = await Promise.all([
       supabase.from('categories').select('id,name_en,name_ar').eq('is_active',true).order('sort_order'),
-      supabase.from('jobs').select('id,customer_id,category_id,title,description,budget_min,budget_max,currency,country_code,city,status,created_at').order('created_at',{ascending:false}).limit(60)
+      supabase.from('jobs').select('id,customer_id,category_id,title,description,budget_min,budget_max,currency,country_code,city,status,created_at').order('created_at',{ascending:false}).limit(60),
+      roles.includes('professional') ? supabase.from('proposals').select('id,job_id,status').eq('professional_id',session.user.id) : Promise.resolve({data:[],error:null})
     ]);
-    if(c.error || j.error){setError(c.error?.message || j.error?.message || t.jobError);return;}
-    setCategories(c.data || []);setJobs(j.data || []);
+    if(c.error || j.error || mp.error){setError(c.error?.message || j.error?.message || mp.error?.message || t.jobError);return;}
+    setCategories(c.data || []);setJobs(j.data || []);setMyProposals(Object.fromEntries((mp.data||[]).map(p=>[p.job_id,p])));
   }
 
-  useEffect(()=>{if(session && supabase) loadMarketplace();else{setCategories([]);setJobs([]);setJobProposals({});}},[session,roles]);
+  useEffect(()=>{if(session && supabase) loadMarketplace();else{setCategories([]);setJobs([]);setJobProposals({});setMyProposals({});}},[session,roles]);
+
+  async function loadConversations(){
+    if(!supabase||!session)return;
+    const {data,error:e}=await supabase.from('conversations').select('id,job_id,customer_id,professional_id,created_at,job:jobs!conversations_job_id_fkey(title),customer:profiles!conversations_customer_id_fkey(full_name),professional:profiles!conversations_professional_id_fkey(full_name)').order('created_at',{ascending:false});
+    if(e){setError(e.message);return;}setConversations(data||[]);
+  }
+  useEffect(()=>{if(session&&supabase)loadConversations();else{setConversations([]);setSelectedConversation(null);setMessages([]);}},[session]);
+
+  useEffect(()=>{
+    if(!selectedConversation||!supabase){setMessages([]);return undefined;}
+    let alive=true;
+    const channel=supabase.channel('nusqra-conversation-'+selectedConversation.id)
+      .on('postgres_changes',{event:'INSERT',schema:'public',table:'messages',filter:'conversation_id=eq.'+selectedConversation.id},payload=>{
+        const row=payload.new;
+        setMessages(old=>old.some(m=>m.id===row.id)?old:[...old,row]);
+      }).subscribe();
+    (async()=>{
+      const {data,error:e}=await supabase.from('messages').select('id,conversation_id,sender_id,body,created_at').eq('conversation_id',selectedConversation.id).order('created_at',{ascending:true});
+      if(!alive)return;if(e){setError(e.message);return;}setMessages(data||[]);
+    })();
+    return()=>{alive=false;supabase.removeChannel(channel);};
+  },[selectedConversation?.id]);
 
   async function publishJob(event){
     event.preventDefault();
@@ -239,8 +268,46 @@ function App() {
   async function toggleProposals(job){
     if(expandedJob===job.id){setExpandedJob(null);return;}
     setExpandedJob(job.id);if(!supabase)return;
-    const {data,error:e}=await supabase.from('proposals').select('id,cover_letter,proposed_price,currency,delivery_days,status,professional:profiles!proposals_professional_id_fkey(full_name)').eq('job_id',job.id).order('created_at',{ascending:false});
+    const {data,error:e}=await supabase.from('proposals').select('id,professional_id,cover_letter,proposed_price,currency,delivery_days,status,professional:profiles!proposals_professional_id_fkey(full_name)').eq('job_id',job.id).order('created_at',{ascending:false});
     if(e){setError(e.message);return;}setJobProposals(old=>({...old,[job.id]:data||[]}));
+  }
+
+  async function decideProposal(proposal,status){
+    if(!supabase||!session)return;setBusy(true);setError('');setNotice('');
+    try{
+      const {data,error:e}=await supabase.from('proposals').update({status,updated_at:new Date().toISOString()}).eq('id',proposal.id).eq('status','submitted').select('id,status').maybeSingle();
+      if(e)throw e;if(!data)throw new Error(isAr?'تعذر اتخاذ القرار؛ قد يكون العرض قد تغير بالفعل.':'Could not update this proposal; it may already have changed.');
+      await loadMarketplace();if(expandedJob){const job=jobs.find(j=>j.id===expandedJob);if(job)await toggleProposals(job);}
+      setNotice(t.decisionSaved);
+    }catch(e){setError(e.message||t.authError);}finally{setBusy(false);}
+  }
+
+  async function updateJobStatus(job,status){
+    if(!supabase||!session)return;setBusy(true);setError('');setNotice('');
+    try{const {error:e}=await supabase.from('jobs').update({status,updated_at:new Date().toISOString()}).eq('id',job.id);if(e)throw e;await loadMarketplace();setNotice(t.jobStatusUpdated);}
+    catch(e){setError(e.message||t.authError);}finally{setBusy(false);}
+  }
+
+  async function openConversation(job,professionalId){
+    if(!supabase||!session)return;setBusy(true);setError('');
+    try{
+      let {data,error:e}=await supabase.from('conversations').select('id,job_id,customer_id,professional_id,created_at').eq('job_id',job.id).eq('customer_id',session.user.id).eq('professional_id',professionalId).maybeSingle();
+      if(e)throw e;
+      if(!data){const result=await supabase.from('conversations').insert({job_id:job.id,customer_id:session.user.id,professional_id:professionalId}).select('id,job_id,customer_id,professional_id,created_at').single();
+        if(result.error&&result.error.code==='23505'){const retry=await supabase.from('conversations').select('id,job_id,customer_id,professional_id,created_at').eq('job_id',job.id).eq('customer_id',session.user.id).eq('professional_id',professionalId).single();if(retry.error)throw retry.error;data=retry.data;}
+        else if(result.error)throw result.error;else data=result.data;
+      }
+      setSelectedConversation(data);await loadConversations();
+    }catch(e){setError(e.message||t.authError);}finally{setBusy(false);}
+  }
+
+  async function sendMessage(event){
+    event.preventDefault();const body=messageDraft.trim();if(!supabase||!session||!selectedConversation||!body)return;
+    if(body.length>4000){setError(isAr?'الرسالة طويلة جداً.':'Message is too long.');return;}
+    setBusy(true);setError('');
+    try{const {error:e}=await supabase.from('messages').insert({conversation_id:selectedConversation.id,sender_id:session.user.id,body});if(e)throw e;setMessageDraft('');
+      const {data,error:loadError}=await supabase.from('messages').select('id,conversation_id,sender_id,body,created_at').eq('conversation_id',selectedConversation.id).order('created_at',{ascending:true});if(loadError)throw loadError;setMessages(data||[]);await loadConversations();
+    }catch(e){setError(e.message||t.authError);}finally{setBusy(false);}
   }
 
   async function signOut() {
@@ -327,12 +394,15 @@ function App() {
                     </div>
                     <button className="btn primary" type="submit" disabled={busy}>{t.sendProposal}</button>
                   </form>}
+                  {job.customer_id===session.user.id&&<div className="job-management">{job.status==='open'&&<><button className="btn secondary" type="button" disabled={busy} onClick={()=>updateJobStatus(job,'closed')}>{t.closeJob}</button><button className="btn secondary" type="button" disabled={busy} onClick={()=>updateJobStatus(job,'cancelled')}>{t.cancelJob}</button></>}{job.status==='closed'&&<><button className="btn secondary" type="button" disabled={busy} onClick={()=>updateJobStatus(job,'open')}>{t.reopenJob}</button><button className="btn secondary" type="button" disabled={busy} onClick={()=>updateJobStatus(job,'cancelled')}>{t.cancelJob}</button></>}{job.status==='in_progress'&&<button className="btn primary" type="button" disabled={busy} onClick={()=>updateJobStatus(job,'completed')}>{t.completeJob}</button>}</div>}
+                  {isProfessional&&myProposals[job.id]&&<p className="my-proposal-status">{t.proposalSubmitted}: <strong>{myProposals[job.id].status==='accepted'?t.proposalAccepted:myProposals[job.id].status==='rejected'?t.proposalRejected:myProposals[job.id].status}</strong></p>}
                   {job.customer_id===session.user.id&&<div className="proposal-review">
                     <button className="btn secondary" type="button" onClick={()=>toggleProposals(job)}>{t.viewProposals}</button>
                     {expandedJob===job.id&&<div className="proposal-list">
                       {(jobProposals[job.id]||[]).length===0?<p className="market-empty">{t.noProposals}</p>:(jobProposals[job.id]||[]).map(p=><div className="proposal-card" key={p.id}>
                         <strong>{p.professional?.full_name||t.professional}</strong><p>{p.cover_letter}</p>
                         <small>{p.proposed_price??'—'} {p.currency} · {p.delivery_days??'—'} {t.deliveryDays} · {p.status}</small>
+                        <div className="proposal-actions">{p.status==='submitted'&&job.status==='open'&&<><button className="btn primary" type="button" disabled={busy} onClick={()=>decideProposal(p,'accepted')}>{t.accept}</button><button className="btn secondary" type="button" disabled={busy} onClick={()=>decideProposal(p,'rejected')}>{t.reject}</button></>}{(p.status==='submitted'||p.status==='accepted')&&<button className="btn secondary" type="button" disabled={busy} onClick={()=>openConversation(job,p.professional_id)}><MessageCircle size={15}/>{t.messageProfessional}</button>}</div>
                       </div>)}
                     </div>}
                   </div>}
@@ -341,6 +411,7 @@ function App() {
           </div>
         </div>
       </section>}
+      {session && <section className="section marketplace-section messaging-section" id="messages"><div className="section-label">NUSQRA · PRIVATE</div><h2>{t.messages}</h2><div className="messaging-layout"><aside className="conversation-list">{conversations.length===0?<p className="market-empty">{t.noConversations}</p>:conversations.map(c=><button type="button" className={'conversation-item'+(selectedConversation?.id===c.id?' active':'')} key={c.id} onClick={()=>setSelectedConversation(c)}><strong>{c.job?.title||t.marketplace}</strong><span>{session.user.id===c.customer_id?(c.professional?.full_name||t.professional):(c.customer?.full_name||t.customer)}</span></button>)}</aside><div className="chat-panel">{selectedConversation?<><div className="chat-heading"><strong>{selectedConversation.job?.title||conversations.find(c=>c.id===selectedConversation.id)?.job?.title||t.marketplace}</strong><span>{session.user.id===selectedConversation.customer_id?(conversations.find(c=>c.id===selectedConversation.id)?.professional?.full_name||t.professional):(conversations.find(c=>c.id===selectedConversation.id)?.customer?.full_name||t.customer)}</span></div><div className="message-list">{messages.map(m=><div key={m.id} className={'message-bubble'+(m.sender_id===session.user.id?' mine':'')}><p>{m.body}</p><time>{new Date(m.created_at).toLocaleString(lang==='ar'?'ar-SA':'en-US')}</time></div>)}</div><form className="message-compose" onSubmit={sendMessage}><textarea rows="2" maxLength="4000" required placeholder={t.messagePlaceholder} value={messageDraft} onChange={e=>setMessageDraft(e.target.value)}/><button className="btn primary" type="submit" disabled={busy||!messageDraft.trim()}><Send size={16}/>{t.sendMessage}</button></form></>:<p className="market-empty">{t.noConversations}</p>}</div></div></section>}
       {session && <section className="section account-section" id="account">
         <div className="section-label">NUSQRA · {t.dashboard.toUpperCase()}</div><h2>{t.dashboard}</h2>
         <div className="account-card">
