@@ -90,6 +90,8 @@ function App() {
   const [categoryAudience,setCategoryAudience] = useState('all');
   const [jobs,setJobs] = useState([]);
   const [professionalDirectory,setProfessionalDirectory] = useState([]);
+  const [selectedCategoryId,setSelectedCategoryId] = useState('');
+  const [professionalCategoryIds,setProfessionalCategoryIds] = useState([]);
   const [jobForm,setJobForm] = useState({title:'',description:'',category_id:'',budget_min:'',budget_max:'',currency:'SAR',country_code:'SA',city:''});
   const [proposalForms,setProposalForms] = useState({});
   const [jobProposals,setJobProposals] = useState({});
@@ -225,6 +227,9 @@ function App() {
           city:profileForm.city.trim() || null,country_code:profileForm.country_code,updated_at:new Date().toISOString()
         }).eq('user_id',session.user.id);
         if (ppError) throw ppError;
+        const {error:deleteCategoriesError}=await supabase.from('professional_categories').delete().eq('professional_user_id',session.user.id);
+        if(deleteCategoriesError)throw deleteCategoriesError;
+        if(professionalCategoryIds.length){const {error:insertCategoriesError}=await supabase.from('professional_categories').insert(professionalCategoryIds.map(category_id=>({professional_user_id:session.user.id,category_id})));if(insertCategoriesError)throw insertCategoriesError;}
       }
       setPhotoFiles({avatar:null,cover:null});
       setProfile({...profile,full_name:profileForm.full_name,bio:profileForm.bio,country_code:profileForm.country_code,avatar_url:avatarUrl,cover_url:coverUrl,profile_style:profileForm.profile_style,profile_template:profileForm.profile_template});
@@ -272,10 +277,24 @@ function App() {
   useEffect(()=>{if(supabase && (session || page==='marketplace')) loadMarketplace();else if(!session){setCategories([]);setJobs([]);setJobProposals({});setMyProposals({});}},[session,roles,page]);
 
   useEffect(()=>{
+    if(!session||!supabase||!isProfessional){setProfessionalCategoryIds([]);return;}
+    let alive=true;
+    supabase.from('professional_categories').select('category_id').eq('professional_user_id',session.user.id).then(({data,error:e})=>{if(!alive)return;if(e){setError(e.message);return;}setProfessionalCategoryIds((data||[]).map(x=>x.category_id));});
+    return()=>{alive=false;};
+  },[session,isProfessional]);
+
+  useEffect(()=>{
     if(page!=='professionals'||!supabase)return;
     let alive=true;
     (async()=>{
-      const {data:proRows,error:proError}=await supabase.from('professional_profiles').select('user_id,headline,about,years_experience,city,country_code').limit(60);
+      let categoryRows=[];
+      if(selectedCategoryId){const {data,error:e}=await supabase.from('professional_categories').select('professional_user_id,category_id').eq('category_id',selectedCategoryId);if(e){if(alive)setError(e.message);return;}categoryRows=data||[];}
+      else {const {data,error:e}=await supabase.from('professional_categories').select('professional_user_id,category_id');if(e){if(alive)setError(e.message);return;}categoryRows=data||[];}
+      const categoryUserIds=[...new Set(categoryRows.map(x=>x.professional_user_id))];
+      if(selectedCategoryId&&!categoryUserIds.length){if(alive)setProfessionalDirectory([]);return;}
+      let query=supabase.from('professional_profiles').select('user_id,headline,about,years_experience,city,country_code').limit(60);
+      if(selectedCategoryId)query=query.in('user_id',categoryUserIds);
+      const {data:proRows,error:proError}=await query;
       if(proError){if(alive)setError(proError.message);return;}
       const ids=(proRows||[]).map(p=>p.user_id);
       if(!ids.length){if(alive)setProfessionalDirectory([]);return;}
@@ -283,10 +302,11 @@ function App() {
       if(!alive)return;
       if(profilesError){setError(profilesError.message);return;}
       const byId=Object.fromEntries((profilesRows||[]).map(p=>[p.id,p]));
-      setProfessionalDirectory((proRows||[]).map(p=>({...p,profile:byId[p.user_id]})).filter(p=>p.profile));
+      const tagsByUser={};categoryRows.forEach(x=>{(tagsByUser[x.professional_user_id] ||= []).push(x.category_id);});
+      setProfessionalDirectory((proRows||[]).map(p=>({...p,profile:byId[p.user_id],categoryIds:tagsByUser[p.user_id]||[]})).filter(p=>p.profile));
     })();
     return()=>{alive=false;};
-  },[page]);
+  },[page,selectedCategoryId]);
 
   async function loadConversations(){
     if(!supabase||!session)return;
@@ -468,17 +488,17 @@ function App() {
               'industrial-manufacturing':'https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&w=900&q=82',
               'investors-opportunities':'https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?auto=format&fit=crop&w=900&q=82'
             };
-            return <article className="category-card" key={c.id}>
+            return <button type="button" className="category-card category-select-card" key={c.id} onClick={()=>{setSelectedCategoryId(c.id);navigatePage('professionals');}}>
               <div className="category-image"><img src={images[c.slug]||images['business-services']} alt={isAr?c.name_ar:c.name_en} loading="lazy" decoding="async"/><span className="category-symbol">{symbols[c.slug]||'✧'}</span></div>
               <h3>{isAr?c.name_ar:c.name_en}</h3>
               <p>{isAr?(c.description_ar||''): (c.description_en||'')}</p>
-              <span className="category-audience">{c.slug==='investors-opportunities'?t.audienceInvestors:t.audienceBoth}</span>
+              <span className="category-audience">{c.slug==='investors-opportunities'?t.audienceInvestors:(isAr?'اختر لعرض المحترفين':'Select to view professionals')}</span>
               {c.slug==='investors-opportunities'&&<small className="investor-disclaimer">{t.investorDisclaimer}</small>}
-            </article>;
+            </button>;
           })}
         </div>}
       </section>}
-      {page === 'professionals' && <section className="section professional-directory"><div className="section-label">NUSQRA · PROFESSIONAL DIRECTORY</div><h2>{isAr?'اكتشف المحترفين':'Find professionals'}</h2><p className="section-intro">{isAr?'تعرّف على المحترفين المسجلين وخبراتهم في الخليج.':'Discover professionals who have created a NUSQRA profile and explore their skills across the Gulf.'}</p>{error&&<p className="auth-error" role="alert">{error}</p>}{professionalDirectory.length===0?<p className="market-empty">{isAr?'لا توجد ملفات مهنية منشورة بعد.':'No professional profiles are listed yet.'}</p>:<div className="professional-directory-grid">{professionalDirectory.map(p=><article className="professional-directory-card" key={p.user_id}>{p.profile.avatar_url?<img src={p.profile.avatar_url} alt=""/>:<div className="professional-avatar">{(p.profile.display_name||p.profile.full_name||'N').slice(0,1).toUpperCase()}</div>}<div className="professional-directory-copy"><h3>{p.profile.display_name||p.profile.full_name||t.professional}</h3><strong>{p.headline|| (isAr?'محترف في نسقرا':'NUSQRA professional')}</strong><p>{p.about||p.profile.bio||''}</p><small>{[p.city,p.country_code||p.profile.country_code].filter(Boolean).join(' · ')}{p.years_experience?` · ${p.years_experience} ${isAr?'سنوات خبرة':'years experience'}`:''}</small></div></article>)}</div>}<div className="buttons"><button className="btn secondary" onClick={()=>navigatePage('marketplace')}>{isAr?'استكشف فرص العمل':'Explore opportunities'}</button></div></section>}
+      {page === 'professionals' && <section className="section professional-directory"><div className="section-label">NUSQRA · PROFESSIONAL DIRECTORY</div><h2>{isAr?'المحترفون حسب التصنيف':'Professionals by category'}</h2><p className="section-intro">{selectedCategoryId?(isAr?'المحترفون الذين يقدمون الخدمة في التصنيف المحدد.':'Professionals who offer services in your selected category.'):(isAr?'اختر تصنيفاً أولاً لعرض المحترفين المناسبين.':'Choose a service category first to see matching professionals.')}</p><div className="professional-directory-toolbar">{selectedCategoryId&&<strong>{(()=>{const c=categories.find(x=>x.id===selectedCategoryId);return c?(isAr?c.name_ar:c.name_en):'';})()}</strong>}<button className="btn secondary" type="button" onClick={()=>navigatePage('categories')}>{isAr?'تغيير التصنيف':'Change category'}</button>{selectedCategoryId&&<button className="btn primary" type="button" onClick={()=>{setJobForm(v=>({...v,category_id:selectedCategoryId}));navigatePage('marketplace');}}>{isAr?'انشر طلباً بهذا التصنيف':'Post a job in this category'}</button>}</div>{error&&<p className="auth-error" role="alert">{error}</p>}{professionalDirectory.length===0?<p className="market-empty">{selectedCategoryId?(isAr?'لا يوجد محترفون مسجلون في هذا التصنيف بعد.':'No professionals have selected this category yet.'):(isAr?'اختر تصنيفاً لعرض المحترفين.':'Select a category to view professionals.')}</p>:<div className="professional-directory-grid">{professionalDirectory.map(p=><article className="professional-directory-card" key={p.user_id}>{p.profile.avatar_url?<img src={p.profile.avatar_url} alt=""/>:<div className="professional-avatar">{(p.profile.display_name||p.profile.full_name||'N').slice(0,1).toUpperCase()}</div>}<div className="professional-directory-copy"><h3>{p.profile.display_name||p.profile.full_name||t.professional}</h3><strong>{p.headline|| (isAr?'محترف في نسقرا':'NUSQRA professional')}</strong><p>{p.about||p.profile.bio||''}</p><small>{[p.city,p.country_code||p.profile.country_code].filter(Boolean).join(' · ')}{p.years_experience?` · ${p.years_experience} ${isAr?'سنوات خبرة':'years experience'}`:''}</small><div className="professional-category-tags">{(p.categoryIds||[]).map(id=>{const c=categories.find(x=>x.id===id);return c?<span key={id}>{isAr?c.name_ar:c.name_en}</span>:null;})}</div></div></article>)}</div>}<div className="buttons"><button className="btn secondary" onClick={()=>navigatePage('marketplace')}>{isAr?'استكشف فرص العمل':'Explore opportunities'}</button></div></section>}
       {page === 'explore' && <section className="section" id="explore"><div className="section-label">NUSQRA PLATFORM</div><h2>{t.trust}</h2><div className="feature-grid">
         {[ShieldCheck,Users,Crown,Globe2].map((Icon,i)=><article className="feature" key={i}><span className="iconbox"><Icon size={24}/></span><h3>{t.features[i]}</h3><p>{t.featureText[i]}</p></article>)}
       </div></section>}
@@ -572,6 +592,7 @@ function App() {
               <label>{t.city}<input maxLength="100" value={profileForm.city} onChange={e=>setProfileField('city',e.target.value)}/></label>
               <label>{t.experience}<input type="number" min="0" max="60" value={profileForm.years_experience} onChange={e=>setProfileField('years_experience',e.target.value)}/></label>
               <label>{isAr?'نبذة مهنية':'Professional summary'}<textarea rows="5" maxLength="3000" value={profileForm.about} onChange={e=>setProfileField('about',e.target.value)}/></label>
+              <div className="professional-category-editor"><strong>{isAr?'التصنيفات التي تقدم خدماتها':'Services you provide'}</strong><p>{isAr?'اختر جميع التصنيفات التي تناسب خبرتك ليظهر ملفك للعملاء المناسبين.':'Choose every category that matches your services so customers can find your profile.'}</p><div className="professional-category-options">{categories.filter(c=>c.slug!=='investors-opportunities').map(c=><label key={c.id}><input type="checkbox" checked={professionalCategoryIds.includes(c.id)} onChange={e=>setProfessionalCategoryIds(old=>e.target.checked?[...old,c.id]:old.filter(id=>id!==c.id))}/><span>{isAr?c.name_ar:c.name_en}</span></label>)}</div></div>
             </div>}
             {profileTab==='appearance' && <div className="profile-tab-panel">
               <div className="profile-template-intro"><strong>{isAr?'اختر قالب الملف':'Choose your profile template'}</strong><span>{isAr?'يمكنك تغيير القالب في أي وقت.':'You can change your template at any time.'}</span></div>
