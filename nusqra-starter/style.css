@@ -1674,3 +1674,17 @@ footer .brand .mark{background:linear-gradient(145deg,#0b9862,#06402e)}
 .google-auth.access-gate-google{display:flex!important;visibility:visible!important;opacity:1!important;min-height:62px!important;cursor:pointer}
 .google-auth.access-gate-google:disabled{opacity:.72!important;cursor:wait}
 .google-g{font-family:Arial,sans-serif;font-weight:800;background:conic-gradient(from -45deg,#4285f4 0 25%,#34a853 25% 50%,#fbbc05 50% 75%,#ea4335 75%);color:transparent;background-clip:text;-webkit-background-clip:text}
+
+
+/* Softer Google sign-in frame: restrained sage border, no bright emerald glow. */
+.entry-auth-card{
+  border:1px solid rgba(174,193,181,.72);
+  box-shadow:0 24px 72px rgba(0,0,0,.38),0 0 26px rgba(174,193,181,.055);
+}
+.entry-auth-card .access-gate-google{
+  border-color:#d9e1dc!important;
+  box-shadow:0 5px 18px rgba(11,50,30,.075);
+}
+.entry-auth-card .access-gate-google:hover:not(:disabled){
+  box-shadow:0 9px 22px rgba(11,50,30,.11);
+}
