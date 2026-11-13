@@ -73,6 +73,7 @@ function App() {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [authMode, setAuthMode] = useState(null);
   const [session, setSession] = useState(null);
+  const [authReady, setAuthReady] = useState(false);
   const [profile, setProfile] = useState(null);
   const [roles, setRoles] = useState([]);
   const [professional, setProfessional] = useState(null);
@@ -151,11 +152,14 @@ function App() {
   const navigatePage = (next) => { setPage(next); setSettingsOpen(next === 'settings'); setMenu(false); window.location.hash = next; window.scrollTo(0,0); };
 
   useEffect(() => {
-    if (!supabase) return undefined;
+    if (!supabase) { setAuthReady(true); return undefined; }
     let alive = true;
-    supabase.auth.getSession().then(({data}) => { if (alive) setSession(data.session); });
+    supabase.auth.getSession().then(({data}) => {
+      if (alive) { setSession(data.session); setAuthReady(true); }
+    }).catch(() => { if (alive) setAuthReady(true); });
     const {data:{subscription}} = supabase.auth.onAuthStateChange((_event, nextSession) => {
       setSession(nextSession);
+      setAuthReady(true);
     });
     return () => { alive = false; subscription.unsubscribe(); };
   }, []);
@@ -208,6 +212,23 @@ function App() {
 
   const setField = (key,value) => setForm(old => ({...old,[key]:value}));
   const setProfileField = (key,value) => setProfileForm(old => ({...old,[key]:value}));
+
+  async function signInWithGoogle() {
+    if (!supabase || !isSupabaseConfigured || busy) return;
+    setError('');
+    setNotice('');
+    setBusy(true);
+    try {
+      const {error:oauthError} = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: { redirectTo: window.location.origin }
+      });
+      if (oauthError) throw oauthError;
+    } catch (e) {
+      setError(e.message || t.authError);
+      setBusy(false);
+    }
+  }
 
   const gulfDialCodes = [{code:'SA',dial:'+966',name:'Saudi Arabia'},{code:'AE',dial:'+971',name:'UAE'},{code:'BH',dial:'+973',name:'Bahrain'},{code:'KW',dial:'+965',name:'Kuwait'},{code:'OM',dial:'+968',name:'Oman'},{code:'QA',dial:'+974',name:'Qatar'}];
   const selectedDial = gulfDialCodes.find(x=>x.code===form.country_code)?.dial || '+966';
@@ -262,7 +283,7 @@ function App() {
   },[session,isProfessional]);
 
   useEffect(()=>{
-    if(page!=='admin-review'||!canModerateProfiles||!supabase)return;
+    if(!session||page!=='admin-review'||!canModerateProfiles||!supabase)return;
     let alive=true;
     (async()=>{const {data:pros,error:e}=await supabase.from('professional_profiles').select('user_id,headline,about,years_experience,city,country_code,profile_level,verification_status,verification_note,identity_name_confirmed').in('verification_status',['pending_review','rejected']).order('created_at',{ascending:false});if(e){if(alive)setError(e.message);return;}const ids=(pros||[]).map(p=>p.user_id);if(!ids.length){if(alive)setAdminReviewQueue([]);return;}const [pr,cr,po,pc]=await Promise.all([supabase.from('profiles').select('id,full_name,avatar_url,country_code').in('id',ids),supabase.from('professional_credentials').select('id,professional_user_id,category_id,title,issuer,credential_number,document_path,status,review_note').in('professional_user_id',ids),supabase.from('professional_portfolio').select('id,professional_user_id,category_id,title,description,media_url,project_url,review_status').in('professional_user_id',ids),supabase.from('professional_categories').select('professional_user_id,category_id').in('professional_user_id',ids)]);if(!alive)return;if(pr.error||cr.error||po.error||pc.error){setError(pr.error?.message||cr.error?.message||po.error?.message||pc.error?.message);return;}const profilesById=Object.fromEntries((pr.data||[]).map(x=>[x.id,x]));const docs=await Promise.all((cr.data||[]).map(async x=>{const {data}=await supabase.storage.from('professional-documents').createSignedUrl(x.document_path,300);return {...x,signed_url:data?.signedUrl||null};}));const group=(rows,key)=>rows.reduce((a,x)=>{(a[x[key]] ||= []).push(x);return a;},{});const crBy=group(docs,'professional_user_id'),poBy=group(po.data||[],'professional_user_id'),catBy=group(pc.data||[],'professional_user_id');setAdminReviewQueue((pros||[]).map(p=>({...p,profile:profilesById[p.user_id],credentials:crBy[p.user_id]||[],portfolio:poBy[p.user_id]||[],categoryIds:(catBy[p.user_id]||[]).map(x=>x.category_id)})).filter(x=>x.profile));})();
     return()=>{alive=false;};
@@ -433,15 +454,15 @@ function App() {
   }
 
   useEffect(() => {
-    if (!supabase) return undefined;
+    if (!session || !supabase) return undefined;
     let alive = true;
     supabase.from('categories').select('id,slug,name_en,name_ar,description_en,description_ar').eq('is_active',true).order('sort_order')
       .then(({data,error:categoryError}) => { if (alive && !categoryError) setCategories(data || []); });
     return () => { alive = false; };
-  }, []);
+  }, [session]);
 
   async function loadMarketplace() {
-    if (!supabase) return;
+    if (!session || !supabase) return;
     const [c,j,mp] = await Promise.all([
       supabase.from('categories').select('id,slug,name_en,name_ar,description_en,description_ar').eq('is_active',true).order('sort_order'),
       supabase.from('jobs').select('id,customer_id,category_id,title,description,budget_min,budget_max,currency,country_code,city,status,created_at').order('created_at',{ascending:false}).limit(60),
@@ -451,7 +472,7 @@ function App() {
     setCategories(c.data || []);setJobs(j.data || []);setMyProposals(Object.fromEntries((mp.data||[]).map(p=>[p.job_id,p])));
   }
 
-  useEffect(()=>{if(supabase && (session || page==='marketplace')) loadMarketplace();else if(!session){setCategories([]);setJobs([]);setJobProposals({});setMyProposals({});}},[session,roles,page]);
+  useEffect(()=>{if(session && supabase) loadMarketplace();else if(!session){setCategories([]);setJobs([]);setJobProposals({});setMyProposals({});}},[session,roles,page]);
 
   useEffect(()=>{
     if(!session||!supabase||!isProfessional){setProfessionalCategoryIds([]);return;}
@@ -461,7 +482,7 @@ function App() {
   },[session,isProfessional]);
 
   useEffect(()=>{
-    if(page!=='professionals'||!supabase)return;
+    if(!session||page!=='professionals'||!supabase)return;
     if(!selectedCategoryId){setProfessionalDirectory([]);return undefined;}
     let alive=true;
     (async()=>{
@@ -595,6 +616,31 @@ function App() {
     setBusy(true); const {error:signOutError} = await supabase.auth.signOut(); setBusy(false);
     if (signOutError) setError(signOutError.message);
     else { setSession(null); setNotice(''); setAuthMode(null); }
+  }
+
+  if (!authReady) {
+    return <div className="access-gate" dir={isAr ? 'rtl' : 'ltr'}><section className="access-gate-card" aria-live="polite"><div className="access-gate-mark">N</div><h1>NUSQRA</h1><p>{isAr?'جارٍ التحقق من جلسة الدخول…':'Checking your secure sign-in…'}</p><LoaderCircle className="spin access-gate-loader" size={24}/></section></div>;
+  }
+
+  if (!session) {
+    return <div className="access-gate" dir={isAr ? 'rtl' : 'ltr'}>
+      <section className="access-gate-card" aria-labelledby="access-gate-title">
+        <div className="access-gate-brand"><span className="access-gate-mark">N</span><span>NUSQRA<small>نُسقرا</small></span></div>
+        <div className="access-gate-eyebrow">{isAr?'بوابة الدخول الآمن':'PRIVATE MEMBER ACCESS'}</div>
+        <h1 id="access-gate-title">{isAr?'مرحباً بك في نسقرا':'Your next opportunity starts here.'}</h1>
+        <p>{isAr?'يجب تسجيل الدخول باستخدام حساب Google للوصول إلى نسقرا. إذا كانت هذه زيارتك الأولى، فسيتم إنشاء حسابك تلقائياً.':'NUSQRA is available to signed-in members only. Continue with your Google account to sign in or create your account automatically.'}</p>
+        {!isSupabaseConfigured && <p className="auth-warning" role="alert">{t.noConfig}</p>}
+        {error && <p className="auth-error" role="alert">{error}</p>}
+        <button type="button" className="google-auth access-gate-google" disabled={busy || !isSupabaseConfigured} onClick={signInWithGoogle}>
+          <span className="google-g" aria-hidden="true">G</span>
+          {busy ? (isAr?'جارٍ الاتصال بـ Google…':'Connecting to Google…') : (isAr?'المتابعة باستخدام Google':'Continue with Google')}
+          {!busy && <span className="access-gate-arrow">→</span>}
+        </button>
+        <div className="access-gate-security"><ShieldCheck size={16}/><span>{isAr?'تسجيل دخول آمن عبر Google':'Secure sign-in powered by Google'}</span></div>
+        <div className="access-gate-language"><button type="button" onClick={()=>setLang(isAr?'en':'ar')}><Globe2 size={15}/>{isAr?'English':'العربية'}</button></div>
+      </section>
+      <div className="access-gate-foot">© {new Date().getFullYear()} NUSQRA · {isAr?'منصة الأعضاء':'Members only'}</div>
+    </div>;
   }
 
   return <div dir={isAr ? 'rtl' : 'ltr'}>
