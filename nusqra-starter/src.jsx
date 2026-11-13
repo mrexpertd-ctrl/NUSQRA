@@ -111,6 +111,12 @@ function App() {
   const [selectedTicket,setSelectedTicket] = useState(null);
   const [ticketMessages,setTicketMessages] = useState([]);
   const [ticketReply,setTicketReply] = useState('');
+  const [supportSubject,setSupportSubject] = useState('');
+  const [supportBody,setSupportBody] = useState('');
+  const [mySupportTickets,setMySupportTickets] = useState([]);
+  const [mySupportMessages,setMySupportMessages] = useState([]);
+  const [mySelectedTicket,setMySelectedTicket] = useState(null);
+  const [mySupportReply,setMySupportReply] = useState('');
   const [adminReviewNotes,setAdminReviewNotes] = useState({});
   const [credentialForm,setCredentialForm] = useState({category_id:'',title:'',issuer:'',credential_number:'',file:null});
   const [portfolioForm,setPortfolioForm] = useState({category_id:'',title:'',description:'',project_url:'',file:null});
@@ -239,6 +245,35 @@ function App() {
     return()=>{alive=false;};
   },[page,canModerateProfiles]);
 
+
+
+  useEffect(()=>{
+    if(page!=='support'||!session||!supabase)return;
+    let alive=true;
+    (async()=>{const {data,error:e}=await supabase.from('support_tickets').select('id,subject,category,priority,status,created_at,updated_at').eq('requester_id',session.user.id).order('updated_at',{ascending:false});if(!alive)return;if(e){setError(e.message);return;}setMySupportTickets(data||[]);})();
+    return()=>{alive=false;};
+  },[page,session]);
+  async function openMySupportTicket(ticket){
+    setMySelectedTicket(ticket);
+    const {data,error:e}=await supabase.from('support_messages').select('id,sender_id,body,created_at').eq('ticket_id',ticket.id).eq('is_internal_note',false).order('created_at');
+    if(e){setError(e.message);return;}setMySupportMessages(data||[]);
+  }
+  async function createSupportTicket(event){
+    event.preventDefault();if(!session||!supportSubject.trim()||!supportBody.trim())return;
+    setBusy(true);setError('');
+    try{
+      const {data,error:e}=await supabase.from('support_tickets').insert({requester_id:session.user.id,subject:supportSubject.trim(),category:'general'}).select('id,subject,category,priority,status,created_at,updated_at').single();
+      if(e)throw e;
+      const {error:me}=await supabase.from('support_messages').insert({ticket_id:data.id,sender_id:session.user.id,body:supportBody.trim()});
+      if(me)throw me;
+      setSupportSubject('');setSupportBody('');setMySupportTickets(old=>[data,...old]);setMySelectedTicket(data);setMySupportMessages([{id:crypto.randomUUID(),sender_id:session.user.id,body:supportBody.trim(),created_at:new Date().toISOString()}]);setNotice(isAr?'تم إرسال طلب الدعم.':'Your support request has been submitted.');
+    }catch(e){setError(e.message||t.authError);}finally{setBusy(false);}
+  }
+  async function replyMySupportTicket(event){
+    event.preventDefault();if(!mySelectedTicket||!mySupportReply.trim())return;
+    const {error:e}=await supabase.from('support_messages').insert({ticket_id:mySelectedTicket.id,sender_id:session.user.id,body:mySupportReply.trim()});
+    if(e){setError(e.message);return;}setMySupportReply('');await openMySupportTicket(mySelectedTicket);
+  }
 
   async function loadAdminCentre(){
     if(!supabase||!isStaff)return;
@@ -601,6 +636,12 @@ function App() {
         </div>}
       </section>}
 
+
+      {page === 'support' && session && <section className="section marketplace-section admin-customer-support">
+        <div className="section-label">NUSQRA · CUSTOMER CARE</div><h2>Customer support</h2><p className="section-intro">Send a message to the NUSQRA support team and follow your case.</p>
+        <div className="admin-support-layout"><div className="admin-panel"><h3>Open a support request</h3><form className="market-form" onSubmit={createSupportTicket}><label>Subject<input required maxLength="160" value={supportSubject} onChange={e=>setSupportSubject(e.target.value)}/></label><label>How can we help?<textarea required rows="5" maxLength="5000" value={supportBody} onChange={e=>setSupportBody(e.target.value)}/></label><button className="btn primary" type="submit" disabled={busy}>Send to support</button></form><h3>Your requests</h3>{mySupportTickets.length===0?<p className="market-empty">You have no support requests yet.</p>:mySupportTickets.map(ticket=><button type="button" className={'admin-ticket '+(mySelectedTicket?.id===ticket.id?'active':'')} key={ticket.id} onClick={()=>openMySupportTicket(ticket)}><strong>{ticket.subject}</strong><span>{ticket.status}</span><small>{new Date(ticket.updated_at).toLocaleString()}</small></button>)}</div><div className="admin-panel admin-ticket-detail">{mySelectedTicket?<><h3>{mySelectedTicket.subject}</h3><p>{mySelectedTicket.status}</p><div className="admin-ticket-messages">{mySupportMessages.map(m=><div key={m.id} className={m.sender_id===session.user.id?'staff-own':''}><p>{m.body}</p><small>{new Date(m.created_at).toLocaleString()}</small></div>)}</div>{!['resolved','closed'].includes(mySelectedTicket.status)&&<form onSubmit={replyMySupportTicket}><textarea rows="3" required value={mySupportReply} onChange={e=>setMySupportReply(e.target.value)} placeholder="Write a reply…"/><button className="btn primary" type="submit">Send reply</button></form>}</>:<p className="market-empty">Select one of your support requests to see replies.</p>}</div></div>
+      </section>}
+
       {page === 'admin' && isStaff && <section className="section admin-centre">
         <div className="admin-centre-head"><div><div className="section-label">NUSQRA · CONTROL ROOM</div><h2>{isAr?'مركز إدارة نسقرا':'Administration Centre'}</h2><p className="section-intro">{isAr?'إدارة المنصة والمستخدمين والمراجعات والدعم من لوحة مستقلة.':'Independent control room for platform operations, safety, support and performance.'}</p></div><span className="admin-role-pill">{staffRole.staff_role.replace('_',' ').toUpperCase()}</span></div>
         <nav className="admin-tabs">
@@ -688,7 +729,7 @@ function App() {
         <div className="section-label">NUSQRA · {t.dashboard.toUpperCase()}</div><h2>{t.dashboard}</h2>
         <div className="account-card">
           <div className="account-heading"><div><h3>{profileForm.full_name || session.user.email}</h3><p>{session.user.email}</p></div><div className="settings-actions"><button className="btn secondary" type="button" onClick={()=>navigatePage('home')}>{isAr?"العودة للرئيسية":"Back to home"}</button><button className="btn secondary" onClick={signOut}><LogOut size={16}/>{t.logout}</button></div></div>
-          <div className="role-list"><strong>{t.roles}:</strong>{roles.map(role=><span className="role-chip" key={role}>{role==='customer'?t.customer:role==='admin'?'Admin':t.professional}</span>)}{isStaff&&<button className="btn primary" type="button" onClick={()=>navigatePage('admin')}>{isAr?'مركز الإدارة':'Administration Centre'}</button>}</div>
+          <div className="role-list"><strong>{t.roles}:</strong>{roles.map(role=><span className="role-chip" key={role}>{role==='customer'?t.customer:role==='admin'?'Admin':t.professional}</span>)}{isStaff&&<button className="btn primary" type="button" onClick={()=>navigatePage('admin')}>{isAr?'مركز الإدارة':'Administration Centre'}</button>}<button className="btn secondary" type="button" onClick={()=>navigatePage('support')}>Customer support</button></div>
           {!isProfessional && <button className="btn secondary enable-pro" disabled={busy} onClick={enableProfessional}><BriefcaseBusiness size={16}/>{t.enablePro}</button>}
           <form className="profile-form profile-studio" onSubmit={saveProfile}>
             <div className="profile-studio-heading"><div><span className="profile-studio-kicker">{isAr?'استوديو الهوية الشخصية':'NUSQRA · PROFILE DESIGN STUDIO'}</span><h3>{isAr?'صمّم حضورك المهني':'Build a profile that stands out'}</h3><p>{isAr?'خصص صورتك ومعلوماتك ومظهرك، ثم راجع النتيجة قبل النشر.':'Personalize your identity, details and visual style, then preview before saving.'}</p></div><button className="btn secondary preview-open" type="button" onClick={()=>setPreviewOpen(true)}>{isAr?'معاينة الملف':'Live preview'}</button></div>
