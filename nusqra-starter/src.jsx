@@ -67,6 +67,7 @@ const countryCodes = ['SA','AE','BH','KW','OM','QA'];
 function App() {
   const [lang, setLang] = useState('en');
   const [menu, setMenu] = useState(false);
+  const [page, setPage] = useState(() => window.location.hash.replace('#','') || 'home');
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [profileTab, setProfileTab] = useState('identity');
   const [previewOpen, setPreviewOpen] = useState(false);
@@ -100,6 +101,14 @@ function App() {
   const t = dictionary[lang];
   const isAr = lang === 'ar';
   const isProfessional = roles.includes('professional');
+
+  useEffect(() => {
+    const syncPage = () => { const next = window.location.hash.replace('#','') || 'home'; setPage(next); setSettingsOpen(next === 'settings'); setMenu(false); window.scrollTo(0,0); };
+    window.addEventListener('hashchange', syncPage);
+    return () => window.removeEventListener('hashchange', syncPage);
+  }, []);
+
+  const navigatePage = (next) => { setPage(next); setSettingsOpen(next === 'settings'); setMenu(false); window.location.hash = next; window.scrollTo(0,0); };
 
   useEffect(() => {
     if (!supabase) return undefined;
@@ -366,15 +375,15 @@ function App() {
 
   return <div dir={isAr ? 'rtl' : 'ltr'}>
     <header className="header">
-      <a className="brand" href="#home" onClick={()=>setSettingsOpen(false)}><span className="mark">N</span><span>NUSQRA<small>نُسقرا</small></span></a>
+      <a className="brand" href="#home" onClick={()=>{setSettingsOpen(false);setPage('home');setMenu(false);}}><span className="mark">N</span><span>NUSQRA<small>نُسقرا</small></span></a>
       <nav className={menu ? 'nav open' : 'nav'}>
-        <a href="#features" onClick={()=>setMenu(false)}>{t.nav[0]}</a>
+        <a href="#explore" onClick={()=>setMenu(false)}>{t.nav[0]}</a>
         <a href="#categories" onClick={()=>setMenu(false)}>{t.nav[1]}</a>
-        <a href="#steps" onClick={()=>setMenu(false)}>{t.nav[2]}</a>
-        <a href="#categories" onClick={()=>setMenu(false)}>{t.nav[3]}</a>
+        <a href="#how-it-works" onClick={()=>setMenu(false)}>{t.nav[2]}</a>
+        <a href="#professionals" onClick={()=>setMenu(false)}>{t.nav[3]}</a>
       </nav>
       <div className="actions">
-        {session ? <button className="navlink" onClick={()=>{setSettingsOpen(true);setMenu(false);}}><UserRound size={15}/>{t.account}</button> :
+        {session ? <button className="navlink" onClick={()=>navigatePage('settings')}><UserRound size={15}/>{t.account}</button> :
           <><button className="navlink" onClick={()=>{setAuthMode('login');setError('');setNotice('')}}>{t.login}</button><button className="btn primary" onClick={()=>{setAuthMode('register');setError('');setNotice('')}}>{t.signup}</button></>}
         <button className="lang" onClick={()=>setLang(isAr?'en':'ar')}><Globe2 size={17}/>{isAr?'English':'العربية'}</button>
         {session && <button className="navlink" onClick={signOut} aria-label={t.logout}><LogOut size={16}/></button>}
@@ -382,7 +391,7 @@ function App() {
       </div>
     </header>
     <main>
-      <section className="hero" id="home">
+      {page === 'home' && <section className="hero" id="home">
         <div className="orb orb1"/><div className="orb orb2"/>
         <div className="hero-inner">
           <div className="eyebrow"><span className="spark"/> GULF SERVICES · CUSTOMER & PROFESSIONAL</div>
@@ -395,7 +404,7 @@ function App() {
         </div>
         <div className="hero-card"><div className="card-glow"/><div className="hero-monogram">ن</div><div className="hero-card-title">نُسقرا <span>NUSQRA</span></div><div className="hero-card-caption">EXPERTISE · TRUST · OPPORTUNITY</div></div>
       </section>
-      <section className="section category-section" id="categories">
+      {page === 'categories' && <section className="section category-section" id="categories">
         <div className="section-label">NUSQRA · SERVICES DIRECTORY</div>
         <h2>{t.categoriesTitle}</h2>
         <p className="section-intro category-intro">{t.categoriesIntro}</p>
@@ -417,15 +426,15 @@ function App() {
             </article>;
           })}
         </div>}
-      </section>
-      <section className="section" id="features"><div className="section-label">NUSQRA PLATFORM</div><h2>{t.trust}</h2><div className="feature-grid">
+      </section>}
+      {page === 'explore' && <section className="section" id="explore"><div className="section-label">NUSQRA PLATFORM</div><h2>{t.trust}</h2><div className="feature-grid">
         {[ShieldCheck,Users,Crown,Globe2].map((Icon,i)=><article className="feature" key={i}><span className="iconbox"><Icon size={24}/></span><h3>{t.features[i]}</h3><p>{t.featureText[i]}</p></article>)}
-      </div></section>
-      <section className="section steps" id="steps"><div className="section-label">SIMPLE BY DESIGN</div><h2>{t.steps}</h2><div className="step-grid">
+      </div></section>}
+      {page === 'how-it-works' && <section className="section steps" id="how-it-works"><div className="section-label">SIMPLE BY DESIGN</div><h2>{t.steps}</h2><div className="step-grid">
         {t.step.map((x,i)=><article key={i}><div className="step-num">0{i+1}</div><h3>{x}</h3><p>{t.stepText[i]}</p></article>)}
-      </div></section>
-      
-      {session && <section className="section marketplace-section" id="marketplace">
+      </div></section>}
+      {page === 'professionals' && <section className="section professional-landing"><div className="section-label">NUSQRA · PROFESSIONAL NETWORK</div><h2>{isAr?'نمّ أعمالك المهنية مع نسقرا':'Grow your professional presence with NUSQRA'}</h2><p className="section-intro">{isAr?'أنشئ ملفاً مهنياً، اعرض خبراتك، واكتشف فرص العمل والتعاون في الخليج.':'Build your professional profile, showcase your expertise, and discover work and collaboration opportunities across the Gulf.'}</p><div className="feature-grid"><article className="feature"><span className="iconbox"><UserRound size={24}/></span><h3>{isAr?'ملف مهني مميز':'Professional profile'}</h3><p>{isAr?'اعرض مهاراتك وخبراتك وأعمالك.':'Present your skills, experience and work clearly.'}</p></article><article className="feature"><span className="iconbox"><BriefcaseBusiness size={24}/></span><h3>{isAr?'فرص عمل':'Work opportunities'}</h3><p>{isAr?'اكتشف طلبات العملاء وقدّم عروضك.':'Discover customer requests and submit proposals.'}</p></article><article className="feature"><span className="iconbox"><MessageCircle size={24}/></span><h3>{isAr?'تواصل مباشر':'Direct connections'}</h3><p>{isAr?'تواصل مع العملاء وأدر محادثاتك.':'Connect with customers and manage conversations.'}</p></article></div><div className="buttons"><button className="btn primary" onClick={()=>{if(session)navigatePage('settings');else{setForm(x=>({...x,account_type:'professional'}));setAuthMode('register');}}}>{isAr?'انضم كمحترف':'Join as a professional'}</button><button className="btn secondary" onClick={()=>navigatePage('categories')}>{isAr?'تصفح التصنيفات':'Browse categories'}</button></div></section>}
+      {page === 'marketplace' && session && <section className="section marketplace-section" id="marketplace">
         <div className="section-label">NUSQRA · MARKETPLACE</div><h2>{t.marketplace}</h2>
         {error && <p className="auth-error" role="alert">{error}</p>}
         <div className="marketplace-layout">
@@ -482,11 +491,11 @@ function App() {
           </div>
         </div>
       </section>}
-      {session && conversations.length>0 && <section className="section marketplace-section messaging-section" id="messages"><div className="section-label">NUSQRA · PRIVATE</div><h2>{t.messages}</h2><div className="messaging-layout"><aside className="conversation-list">{conversations.length===0?<p className="market-empty">{t.noConversations}</p>:conversations.map(c=><button type="button" className={'conversation-item'+(selectedConversation?.id===c.id?' active':'')} key={c.id} onClick={()=>setSelectedConversation(c)}><strong>{c.job?.title||t.marketplace}</strong><span>{session.user.id===c.customer_id?(c.professional?.full_name||t.professional):(c.customer?.full_name||t.customer)}</span></button>)}</aside><div className="chat-panel">{selectedConversation?<><div className="chat-heading"><strong>{selectedConversation.job?.title||conversations.find(c=>c.id===selectedConversation.id)?.job?.title||t.marketplace}</strong><span>{session.user.id===selectedConversation.customer_id?(conversations.find(c=>c.id===selectedConversation.id)?.professional?.full_name||t.professional):(conversations.find(c=>c.id===selectedConversation.id)?.customer?.full_name||t.customer)}</span></div><div className="message-list">{messages.map(m=><div key={m.id} className={'message-bubble'+(m.sender_id===session.user.id?' mine':'')}><p>{m.body}</p><time>{new Date(m.created_at).toLocaleString(lang==='ar'?'ar-SA':'en-US')}</time></div>)}</div><form className="message-compose" onSubmit={sendMessage}><textarea rows="2" maxLength="4000" required placeholder={t.messagePlaceholder} value={messageDraft} onChange={e=>setMessageDraft(e.target.value)}/><button className="btn primary" type="submit" disabled={busy||!messageDraft.trim()}><Send size={16}/>{t.sendMessage}</button></form></>:<p className="market-empty">{t.noConversations}</p>}</div></div></section>}
-      {session && settingsOpen && <section className="section account-section settings-page" id="account">
+      {page === 'messages' && session && <section className="section marketplace-section messaging-section" id="messages"><div className="section-label">NUSQRA · PRIVATE</div><h2>{t.messages}</h2><div className="messaging-layout"><aside className="conversation-list">{conversations.length===0?<p className="market-empty">{t.noConversations}</p>:conversations.map(c=><button type="button" className={'conversation-item'+(selectedConversation?.id===c.id?' active':'')} key={c.id} onClick={()=>setSelectedConversation(c)}><strong>{c.job?.title||t.marketplace}</strong><span>{session.user.id===c.customer_id?(c.professional?.full_name||t.professional):(c.customer?.full_name||t.customer)}</span></button>)}</aside><div className="chat-panel">{selectedConversation?<><div className="chat-heading"><strong>{selectedConversation.job?.title||conversations.find(c=>c.id===selectedConversation.id)?.job?.title||t.marketplace}</strong><span>{session.user.id===selectedConversation.customer_id?(conversations.find(c=>c.id===selectedConversation.id)?.professional?.full_name||t.professional):(conversations.find(c=>c.id===selectedConversation.id)?.customer?.full_name||t.customer)}</span></div><div className="message-list">{messages.map(m=><div key={m.id} className={'message-bubble'+(m.sender_id===session.user.id?' mine':'')}><p>{m.body}</p><time>{new Date(m.created_at).toLocaleString(lang==='ar'?'ar-SA':'en-US')}</time></div>)}</div><form className="message-compose" onSubmit={sendMessage}><textarea rows="2" maxLength="4000" required placeholder={t.messagePlaceholder} value={messageDraft} onChange={e=>setMessageDraft(e.target.value)}/><button className="btn primary" type="submit" disabled={busy||!messageDraft.trim()}><Send size={16}/>{t.sendMessage}</button></form></>:<p className="market-empty">{t.noConversations}</p>}</div></div></section>}
+      {page === 'settings' && session && <section className="section account-section settings-page" id="account">
         <div className="section-label">NUSQRA · {t.dashboard.toUpperCase()}</div><h2>{t.dashboard}</h2>
         <div className="account-card">
-          <div className="account-heading"><div><h3>{profileForm.full_name || session.user.email}</h3><p>{session.user.email}</p></div><div className="settings-actions"><button className="btn secondary" type="button" onClick={()=>setSettingsOpen(false)}>{isAr?"العودة للرئيسية":"Back to home"}</button><button className="btn secondary" onClick={signOut}><LogOut size={16}/>{t.logout}</button></div></div>
+          <div className="account-heading"><div><h3>{profileForm.full_name || session.user.email}</h3><p>{session.user.email}</p></div><div className="settings-actions"><button className="btn secondary" type="button" onClick={()=>navigatePage('home')}>{isAr?"العودة للرئيسية":"Back to home"}</button><button className="btn secondary" onClick={signOut}><LogOut size={16}/>{t.logout}</button></div></div>
           <div className="role-list"><strong>{t.roles}:</strong>{roles.map(role=><span className="role-chip" key={role}>{role==='customer'?t.customer:t.professional}</span>)}</div>
           {!isProfessional && <button className="btn secondary enable-pro" disabled={busy} onClick={enableProfessional}><BriefcaseBusiness size={16}/>{t.enablePro}</button>}
           <form className="profile-form profile-studio" onSubmit={saveProfile}>
