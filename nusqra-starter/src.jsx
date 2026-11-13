@@ -196,6 +196,53 @@ function App() {
     finally { setBusy(false); }
   }
 
+  async function loadMarketplace() {
+    if (!supabase) return;
+    const [c,j] = await Promise.all([
+      supabase.from('categories').select('id,name_en,name_ar').eq('is_active',true).order('sort_order'),
+      supabase.from('jobs').select('id,customer_id,category_id,title,description,budget_min,budget_max,currency,country_code,city,status,created_at').order('created_at',{ascending:false}).limit(60)
+    ]);
+    if(c.error || j.error){setError(c.error?.message || j.error?.message || t.jobError);return;}
+    setCategories(c.data || []);setJobs(j.data || []);
+  }
+
+  useEffect(()=>{if(session && supabase) loadMarketplace();else{setCategories([]);setJobs([]);setJobProposals({});}},[session,roles]);
+
+  async function publishJob(event){
+    event.preventDefault();
+    if(!supabase || !session || !roles.includes('customer')) return;
+    setBusy(true);setError('');setNotice('');
+    try{
+      const payload={customer_id:session.user.id,category_id:jobForm.category_id||null,title:jobForm.title.trim(),description:jobForm.description.trim(),budget_min:jobForm.budget_min===''?null:Number(jobForm.budget_min),budget_max:jobForm.budget_max===''?null:Number(jobForm.budget_max),currency:jobForm.currency,country_code:profileForm.country_code||'SA',city:jobForm.city.trim()||null,status:'open'};
+      if(payload.title.length<5||payload.title.length>160||payload.description.length<20||payload.description.length>8000) throw new Error(t.missing);
+      if(payload.budget_min!==null&&payload.budget_max!==null&&payload.budget_max<payload.budget_min) throw new Error(t.missing);
+      const {error:e}=await supabase.from('jobs').insert(payload);if(e) throw e;
+      setJobForm({title:'',description:'',category_id:'',budget_min:'',budget_max:'',currency:'SAR',country_code:'SA',city:''});
+      await loadMarketplace();setNotice(t.jobPosted);
+    }catch(e){setError(e.message||t.authError);}finally{setBusy(false);}
+  }
+
+  async function submitProposal(event,job){
+    event.preventDefault();
+    if(!supabase||!session||!isProfessional) return;
+    if(job.customer_id===session.user.id){setError(t.ownJob);return;}
+    const v=proposalForms[job.id]||{cover_letter:'',proposed_price:'',delivery_days:''};
+    setBusy(true);setError('');setNotice('');
+    try{
+      if(v.cover_letter.trim().length<20||v.cover_letter.trim().length>5000) throw new Error(t.missing);
+      const {error:e}=await supabase.from('proposals').insert({job_id:job.id,professional_id:session.user.id,cover_letter:v.cover_letter.trim(),proposed_price:v.proposed_price===''?null:Number(v.proposed_price),currency:job.currency,delivery_days:v.delivery_days===''?null:Number(v.delivery_days)});
+      if(e){if(e.code==='23505') throw new Error(t.duplicateProposal);throw e;}
+      setProposalForms(old=>({...old,[job.id]:{cover_letter:'',proposed_price:'',delivery_days:''}}));setNotice(t.proposalSent);
+    }catch(e){setError(e.message||t.authError);}finally{setBusy(false);}
+  }
+
+  async function toggleProposals(job){
+    if(expandedJob===job.id){setExpandedJob(null);return;}
+    setExpandedJob(job.id);if(jobProposals[job.id]||!supabase)return;
+    const {data,error:e}=await supabase.from('proposals').select('id,cover_letter,proposed_price,currency,delivery_days,status,professional:profiles!proposals_professional_id_fkey(full_name)').eq('job_id',job.id).order('created_at',{ascending:false});
+    if(e){setError(e.message);return;}setJobProposals(old=>({...old,[job.id]:data||[]}));
+  }
+
   async function signOut() {
     if (!supabase) return;
     setBusy(true); const {error:signOutError} = await supabase.auth.signOut(); setBusy(false);
