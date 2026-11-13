@@ -287,6 +287,59 @@ function App() {
         {t.step.map((x,i)=><article key={i}><div className="step-num">0{i+1}</div><h3>{x}</h3><p>{t.stepText[i]}</p></article>)}
       </div></section>
       <section className="section premium" id="premium"><div><div className="section-label">NUSQRA PREMIUM</div><h2>{isAr?'أدوات أكثر، وفرص أكبر.':'More tools. More possibilities.'}</h2><p>{isAr?'ملفات احترافية ومهارات موثوقة وأدوات تساعد المهنيين على النمو.':'Professional profiles and tools designed to help Gulf talent grow.'}</p></div><div className="premium-symbol"><Crown size={65}/><span>PRO</span></div></section>
+      {session && <section className="section marketplace-section" id="marketplace">
+        <div className="section-label">NUSQRA · MARKETPLACE</div><h2>{t.marketplace}</h2>
+        <div className="marketplace-layout">
+          {roles.includes('customer') && <div className="marketplace-panel">
+            <h3>{t.postJob}</h3>
+            <form className="market-form" onSubmit={publishJob}>
+              <label>{t.jobTitle}<input required minLength="5" maxLength="160" value={jobForm.title} onChange={e=>setJobForm(v=>({...v,title:e.target.value}))}/></label>
+              <label>{t.category}<select value={jobForm.category_id} onChange={e=>setJobForm(v=>({...v,category_id:e.target.value}))}><option value="">{t.selectCategory}</option>{categories.map(c=><option key={c.id} value={c.id}>{isAr?c.name_ar:c.name_en}</option>)}</select></label>
+              <label>{t.jobDescription}<textarea required minLength="20" maxLength="8000" rows="5" value={jobForm.description} onChange={e=>setJobForm(v=>({...v,description:e.target.value}))}/></label>
+              <div className="market-form-grid">
+                <label>{t.minBudget}<input type="number" min="0" step="0.01" value={jobForm.budget_min} onChange={e=>setJobForm(v=>({...v,budget_min:e.target.value}))}/></label>
+                <label>{t.maxBudget}<input type="number" min="0" step="0.01" value={jobForm.budget_max} onChange={e=>setJobForm(v=>({...v,budget_max:e.target.value}))}/></label>
+                <label>{t.currency}<select value={jobForm.currency} onChange={e=>setJobForm(v=>({...v,currency:e.target.value}))}>{['SAR','AED','BHD','KWD','OMR','QAR'].map(x=><option key={x}>{x}</option>)}</select></label>
+                <label>{t.cityLabel}<input value={jobForm.city} onChange={e=>setJobForm(v=>({...v,city:e.target.value}))}/></label>
+              </div>
+              <button className="btn primary" type="submit" disabled={busy}>{t.publishJob}</button>
+            </form>
+          </div>}
+          <div className="marketplace-panel">
+            <h3>{isProfessional?t.browseJobs:t.myJobs}</h3>
+            {jobs.filter(j=>isProfessional?j.status==='open'&&j.customer_id!==session.user.id:j.customer_id===session.user.id).length===0
+              ? <p className="market-empty">{isProfessional?t.noJobs:t.noOwnJobs}</p>
+              : <div className="job-list">{jobs.filter(j=>isProfessional?j.status==='open'&&j.customer_id!==session.user.id:j.customer_id===session.user.id).map(job=>{
+                const category=categories.find(c=>c.id===job.category_id);
+                const v=proposalForms[job.id]||{cover_letter:'',proposed_price:'',delivery_days:''};
+                return <article className="job-card" key={job.id}>
+                  <div className="job-card-top"><span className="job-status">{job.status}</span><span className="job-date">{new Date(job.created_at).toLocaleDateString(lang==='ar'?'ar-SA':'en-US')}</span></div>
+                  <h4>{job.title}</h4><p className="job-category">{category?(isAr?category.name_ar:category.name_en):t.marketplace} · {job.city||job.country_code}</p>
+                  <p className="job-description">{job.description}</p>
+                  <div className="job-meta"><strong>{t.budget}: {job.budget_min??'—'} – {job.budget_max??'—'} {job.currency}</strong></div>
+                  {isProfessional&&job.status==='open'&&<form className="market-form proposal-form" onSubmit={e=>submitProposal(e,job)}>
+                    <h5>{t.submitProposal}</h5>
+                    <label>{t.proposalText}<textarea required minLength="20" maxLength="5000" rows="4" value={v.cover_letter} onChange={e=>setProposalForms(old=>({...old,[job.id]:{...v,cover_letter:e.target.value}}))}/></label>
+                    <div className="market-form-grid">
+                      <label>{t.proposedPrice}<input type="number" min="0" step="0.01" value={v.proposed_price} onChange={e=>setProposalForms(old=>({...old,[job.id]:{...v,proposed_price:e.target.value}}))}/></label>
+                      <label>{t.deliveryDays}<input type="number" min="1" max="365" value={v.delivery_days} onChange={e=>setProposalForms(old=>({...old,[job.id]:{...v,delivery_days:e.target.value}}))}/></label>
+                    </div>
+                    <button className="btn primary" type="submit" disabled={busy}>{t.sendProposal}</button>
+                  </form>}
+                  {!isProfessional&&<div className="proposal-review">
+                    <button className="btn secondary" type="button" onClick={()=>toggleProposals(job)}>{t.viewProposals}</button>
+                    {expandedJob===job.id&&<div className="proposal-list">
+                      {(jobProposals[job.id]||[]).length===0?<p className="market-empty">{t.noProposals}</p>:(jobProposals[job.id]||[]).map(p=><div className="proposal-card" key={p.id}>
+                        <strong>{p.professional?.full_name||t.professional}</strong><p>{p.cover_letter}</p>
+                        <small>{p.proposed_price??'—'} {p.currency} · {p.delivery_days??'—'} {t.deliveryDays} · {p.status}</small>
+                      </div>)}
+                    </div>}
+                  </div>}
+                </article>;
+              })}</div>}
+          </div>
+        </div>
+      </section>}
       {session && <section className="section account-section" id="account">
         <div className="section-label">NUSQRA · {t.dashboard.toUpperCase()}</div><h2>{t.dashboard}</h2>
         <div className="account-card">
