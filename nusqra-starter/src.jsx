@@ -73,6 +73,7 @@ function App() {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [authMode, setAuthMode] = useState(null);
   const [session, setSession] = useState(null);
+  const [authReady, setAuthReady] = useState(false);
   const [profile, setProfile] = useState(null);
   const [roles, setRoles] = useState([]);
   const [professional, setProfessional] = useState(null);
@@ -151,11 +152,14 @@ function App() {
   const navigatePage = (next) => { setPage(next); setSettingsOpen(next === 'settings'); setMenu(false); window.location.hash = next; window.scrollTo(0,0); };
 
   useEffect(() => {
-    if (!supabase) return undefined;
+    if (!supabase) { setAuthReady(true); return undefined; }
     let alive = true;
-    supabase.auth.getSession().then(({data}) => { if (alive) setSession(data.session); });
+    supabase.auth.getSession().then(({data}) => {
+      if (alive) { setSession(data.session); setAuthReady(true); }
+    }).catch(() => { if (alive) setAuthReady(true); });
     const {data:{subscription}} = supabase.auth.onAuthStateChange((_event, nextSession) => {
       setSession(nextSession);
+      setAuthReady(true);
     });
     return () => { alive = false; subscription.unsubscribe(); };
   }, []);
@@ -208,6 +212,23 @@ function App() {
 
   const setField = (key,value) => setForm(old => ({...old,[key]:value}));
   const setProfileField = (key,value) => setProfileForm(old => ({...old,[key]:value}));
+
+  async function signInWithGoogle() {
+    if (!supabase || !isSupabaseConfigured || busy) return;
+    setError('');
+    setNotice('');
+    setBusy(true);
+    try {
+      const {error:oauthError} = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: { redirectTo: window.location.origin }
+      });
+      if (oauthError) throw oauthError;
+    } catch (e) {
+      setError(e.message || t.authError);
+      setBusy(false);
+    }
+  }
 
   const gulfDialCodes = [{code:'SA',dial:'+966',name:'Saudi Arabia'},{code:'AE',dial:'+971',name:'UAE'},{code:'BH',dial:'+973',name:'Bahrain'},{code:'KW',dial:'+965',name:'Kuwait'},{code:'OM',dial:'+968',name:'Oman'},{code:'QA',dial:'+974',name:'Qatar'}];
   const selectedDial = gulfDialCodes.find(x=>x.code===form.country_code)?.dial || '+966';
@@ -262,7 +283,7 @@ function App() {
   },[session,isProfessional]);
 
   useEffect(()=>{
-    if(page!=='admin-review'||!canModerateProfiles||!supabase)return;
+    if(!session||page!=='admin-review'||!canModerateProfiles||!supabase)return;
     let alive=true;
     (async()=>{const {data:pros,error:e}=await supabase.from('professional_profiles').select('user_id,headline,about,years_experience,city,country_code,profile_level,verification_status,verification_note,identity_name_confirmed').in('verification_status',['pending_review','rejected']).order('created_at',{ascending:false});if(e){if(alive)setError(e.message);return;}const ids=(pros||[]).map(p=>p.user_id);if(!ids.length){if(alive)setAdminReviewQueue([]);return;}const [pr,cr,po,pc]=await Promise.all([supabase.from('profiles').select('id,full_name,avatar_url,country_code').in('id',ids),supabase.from('professional_credentials').select('id,professional_user_id,category_id,title,issuer,credential_number,document_path,status,review_note').in('professional_user_id',ids),supabase.from('professional_portfolio').select('id,professional_user_id,category_id,title,description,media_url,project_url,review_status').in('professional_user_id',ids),supabase.from('professional_categories').select('professional_user_id,category_id').in('professional_user_id',ids)]);if(!alive)return;if(pr.error||cr.error||po.error||pc.error){setError(pr.error?.message||cr.error?.message||po.error?.message||pc.error?.message);return;}const profilesById=Object.fromEntries((pr.data||[]).map(x=>[x.id,x]));const docs=await Promise.all((cr.data||[]).map(async x=>{const {data}=await supabase.storage.from('professional-documents').createSignedUrl(x.document_path,300);return {...x,signed_url:data?.signedUrl||null};}));const group=(rows,key)=>rows.reduce((a,x)=>{(a[x[key]] ||= []).push(x);return a;},{});const crBy=group(docs,'professional_user_id'),poBy=group(po.data||[],'professional_user_id'),catBy=group(pc.data||[],'professional_user_id');setAdminReviewQueue((pros||[]).map(p=>({...p,profile:profilesById[p.user_id],credentials:crBy[p.user_id]||[],portfolio:poBy[p.user_id]||[],categoryIds:(catBy[p.user_id]||[]).map(x=>x.category_id)})).filter(x=>x.profile));})();
     return()=>{alive=false;};
@@ -433,15 +454,15 @@ function App() {
   }
 
   useEffect(() => {
-    if (!supabase) return undefined;
+    if (!session || !supabase) return undefined;
     let alive = true;
     supabase.from('categories').select('id,slug,name_en,name_ar,description_en,description_ar').eq('is_active',true).order('sort_order')
       .then(({data,error:categoryError}) => { if (alive && !categoryError) setCategories(data || []); });
     return () => { alive = false; };
-  }, []);
+  }, [session]);
 
   async function loadMarketplace() {
-    if (!supabase) return;
+    if (!session || !supabase) return;
     const [c,j,mp] = await Promise.all([
       supabase.from('categories').select('id,slug,name_en,name_ar,description_en,description_ar').eq('is_active',true).order('sort_order'),
       supabase.from('jobs').select('id,customer_id,category_id,title,description,budget_min,budget_max,currency,country_code,city,status,created_at').order('created_at',{ascending:false}).limit(60),
@@ -451,7 +472,7 @@ function App() {
     setCategories(c.data || []);setJobs(j.data || []);setMyProposals(Object.fromEntries((mp.data||[]).map(p=>[p.job_id,p])));
   }
 
-  useEffect(()=>{if(supabase && (session || page==='marketplace')) loadMarketplace();else if(!session){setCategories([]);setJobs([]);setJobProposals({});setMyProposals({});}},[session,roles,page]);
+  useEffect(()=>{if(session && supabase) loadMarketplace();else if(!session){setCategories([]);setJobs([]);setJobProposals({});setMyProposals({});}},[session,roles,page]);
 
   useEffect(()=>{
     if(!session||!supabase||!isProfessional){setProfessionalCategoryIds([]);return;}
@@ -461,7 +482,7 @@ function App() {
   },[session,isProfessional]);
 
   useEffect(()=>{
-    if(page!=='professionals'||!supabase)return;
+    if(!session||page!=='professionals'||!supabase)return;
     if(!selectedCategoryId){setProfessionalDirectory([]);return undefined;}
     let alive=true;
     (async()=>{
@@ -597,15 +618,40 @@ function App() {
     else { setSession(null); setNotice(''); setAuthMode(null); }
   }
 
+  if (!authReady) {
+    return <div className="access-gate" dir={isAr ? 'rtl' : 'ltr'}><section className="access-gate-card" aria-live="polite"><div className="access-gate-mark"><span className="brand-calligraphy" lang="ar">نسقرا</span></div><h1>NUSQRA</h1><p>{isAr?'جارٍ التحقق من جلسة الدخول…':'Checking your secure sign-in…'}</p><LoaderCircle className="spin access-gate-loader" size={24}/></section></div>;
+  }
+
+  if (!session) {
+    return <div className="access-gate" dir={isAr ? 'rtl' : 'ltr'}>
+      <section className="access-gate-card" aria-labelledby="access-gate-title">
+        <div className="access-gate-brand"><span className="access-gate-mark"><span className="brand-calligraphy" lang="ar">نسقرا</span></span><span>NUSQRA<small>نُسقرا</small></span></div>
+        <div className="access-gate-eyebrow">{isAr?'بوابة الدخول الآمن':'PRIVATE MEMBER ACCESS'}</div>
+        <h1 id="access-gate-title">{isAr?'مرحباً بك في نسقرا':'Your next opportunity starts here.'}</h1>
+        <p>{isAr?'يجب تسجيل الدخول باستخدام حساب Google للوصول إلى نسقرا. إذا كانت هذه زيارتك الأولى، فسيتم إنشاء حسابك تلقائياً.':'NUSQRA is available to signed-in members only. Continue with your Google account to sign in or create your account automatically.'}</p>
+        {!isSupabaseConfigured && <p className="auth-warning" role="alert">{t.noConfig}</p>}
+        {error && <p className="auth-error" role="alert">{error}</p>}
+        <button type="button" className="google-auth access-gate-google" disabled={busy || !isSupabaseConfigured} onClick={signInWithGoogle}>
+          <span className="google-g" aria-hidden="true">G</span>
+          {busy ? (isAr?'جارٍ الاتصال بـ Google…':'Connecting to Google…') : (isAr?'المتابعة باستخدام Google':'Continue with Google')}
+          {!busy && <span className="access-gate-arrow">→</span>}
+        </button>
+        <div className="access-gate-security"><ShieldCheck size={16}/><span>{isAr?'تسجيل دخول آمن عبر Google':'Secure sign-in powered by Google'}</span></div>
+        <div className="access-gate-language"><button type="button" onClick={()=>setLang(isAr?'en':'ar')}><Globe2 size={15}/>{isAr?'English':'العربية'}</button></div>
+      </section>
+      <div className="access-gate-foot">© {new Date().getFullYear()} NUSQRA · {isAr?'منصة الأعضاء':'Members only'}</div>
+    </div>;
+  }
+
   return <div dir={isAr ? 'rtl' : 'ltr'}>
     <header className="header">
-      <a className="brand" href="#home" onClick={()=>{setSettingsOpen(false);setPage('home');setMenu(false);}}><span className="mark" aria-label="NUSQRA logo"><svg className="brand-symbol" viewBox="0 0 64 64" role="img" aria-hidden="true"><path d="M14 49V15h7l29 34V15" fill="none" stroke="#F0D59A" strokeWidth="6" strokeLinecap="square" strokeLinejoin="miter"/><path d="M49 15h-8" fill="none" stroke="#FFFFFF" strokeWidth="6" strokeLinecap="square"/><path d="M14 15h8" fill="none" stroke="#FFFFFF" strokeWidth="6" strokeLinecap="square"/></svg></span><span>NUSQRA<small>نُسقرا</small></span></a>
-      <nav className={menu ? 'nav open' : 'nav'}>
-        <a href="#explore" onClick={()=>setMenu(false)}>{t.nav[0]}</a>
-        <a href="#categories" onClick={()=>setMenu(false)}>{t.nav[1]}</a>
-        <a href="#how-it-works" onClick={()=>setMenu(false)}>{t.nav[2]}</a>
-        <a href="#professionals" onClick={()=>setMenu(false)}>{t.nav[3]}</a>
-        {session && <><a href="#marketplace" onClick={()=>setMenu(false)}>{isAr?'السوق':'Marketplace'}</a><a href="#messages" onClick={()=>setMenu(false)}>{t.messages}</a></>}
+      <a className="brand" href="#home" onClick={()=>{setSettingsOpen(false);setPage('home');setMenu(false);}}><span className="mark" aria-label="NUSQRA Arabic calligraphy logo"><span className="brand-calligraphy" lang="ar">نسقرا</span></span><span>NUSQRA<small>نُسقرا</small></span></a>
+      <nav className={menu ? 'nav open' : 'nav'} aria-label={isAr?'التنقل الرئيسي':'Main navigation'}>
+        <button type="button" className="navlink" onClick={()=>navigatePage('explore')}>{t.nav[0]}</button>
+        <button type="button" className="navlink" onClick={()=>navigatePage('categories')}>{t.nav[1]}</button>
+        <button type="button" className="navlink" onClick={()=>navigatePage('how-it-works')}>{t.nav[2]}</button>
+        <button type="button" className="navlink" onClick={()=>navigatePage('professionals')}>{t.nav[3]}</button>
+        {session && <><button type="button" className="navlink" onClick={()=>navigatePage('marketplace')}>{isAr?'السوق':'Marketplace'}</button><button type="button" className="navlink" onClick={()=>navigatePage('messages')}>{t.messages}</button></>}
       </nav>
       <div className="actions">
         {session ? <button className="navlink" onClick={()=>navigatePage('settings')}><UserRound size={15}/>{t.account}</button> :
@@ -641,7 +687,7 @@ function App() {
           </div>
         </section>
         <section className="home-trust-band"><div><span className="section-label">{isAr?'مصممة للخليج':'BUILT FOR THE GULF'}</span><h2>{isAr?'فرص أوضح. تواصل أسهل. نمو أقوى.':'A clearer way to find work and get work done.'}</h2></div><div className="home-trust-points"><span><ShieldCheck size={19}/>{isAr?'تواصل بثقة':'Connect with confidence'}</span><span><Globe2 size={19}/>{isAr?'العربية والإنجليزية':'Arabic & English'}</span><span><Users size={19}/>{isAr?'للأفراد والشركات':'For people & businesses'}</span></div></section>
-        <section className="home-steps section"><div className="section-label">{isAr?'ابدأ في ثلاث خطوات':'GET STARTED IN THREE STEPS'}</div><h2>{isAr?'كيف تعمل نسقرا':'A simple path from need to opportunity'}</h2><div className="home-step-grid"><article><b>01</b><h3>{isAr?'أنشئ حسابك':'Create your account'}</h3><p>{isAr?'أنشئ ملفك كعميل أو محترف.':'Join as a customer or professional.'}</p></article><article><b>02</b><h3>{isAr?'اكتشف أو انشر':'Discover or post'}</h3><p>{isAr?'ابحث عن خدمة أو انشر طلبك.':'Find a service or publish a job request.'}</p></article><article><b>03</b><h3>{isAr?'تواصل وابدأ':'Connect and begin'}</h3><p>{isAr?'راجع العروض وتواصل مباشرة.':'Review proposals and connect directly.'}</p></article></div><div className="home-final-cta"><div><h2>{isAr?'مستعد للخطوة التالية؟':'Ready for your next opportunity?'}</h2><p>{isAr?'انضم إلى مجتمع نسقرا اليوم.':'Join the NUSQRA community today.'}</p></div><button className="btn primary" onClick={()=>{if(session)navigatePage('settings');else{setForm(x=>({...x,account_type:'customer'}));setAuthMode('register');}}}>{isAr?'أنشئ حسابك':'Get started'} <ArrowRight size={17}/></button></div></section>
+        <section className="home-steps section" id="how-it-works"><div className="section-label">{isAr?'ابدأ في ثلاث خطوات':'GET STARTED IN THREE STEPS'}</div><h2>{isAr?'كيف تعمل نسقرا':'A simple path from need to opportunity'}</h2><div className="home-step-grid"><article><b>01</b><h3>{isAr?'أنشئ حسابك':'Create your account'}</h3><p>{isAr?'أنشئ ملفك كعميل أو محترف.':'Join as a customer or professional.'}</p></article><article><b>02</b><h3>{isAr?'اكتشف أو انشر':'Discover or post'}</h3><p>{isAr?'ابحث عن خدمة أو انشر طلبك.':'Find a service or publish a job request.'}</p></article><article><b>03</b><h3>{isAr?'تواصل وابدأ':'Connect and begin'}</h3><p>{isAr?'راجع العروض وتواصل مباشرة.':'Review proposals and connect directly.'}</p></article></div><div className="home-final-cta"><div><h2>{isAr?'مستعد للخطوة التالية؟':'Ready for your next opportunity?'}</h2><p>{isAr?'انضم إلى مجتمع نسقرا اليوم.':'Join the NUSQRA community today.'}</p></div><button className="btn primary" onClick={()=>{if(session)navigatePage('settings');else{setForm(x=>({...x,account_type:'customer'}));setAuthMode('register');}}}>{isAr?'أنشئ حسابك':'Get started'} <ArrowRight size={17}/></button></div></section>
       </>}
       {page === 'categories' && <section className="section category-section" id="categories">
         <div className="section-label">NUSQRA · SERVICES DIRECTORY</div>
@@ -817,7 +863,7 @@ function App() {
                   <span className={'template-mini template-'+template.id}><i/><i/><i/></span><strong>{template.name}</strong><small>{template.desc}</small><span className="template-select">{profileForm.profile_template===template.id?(isAr?'محدد':'Selected'):(isAr?'اختيار':'Select')}</span>
                 </button>)}
               </div>
-              <div className="profile-style-row"><label><span>{isAr?'نمط اللون':'Profile accent'}</span><select value={profileForm.profile_style} onChange={e=>setProfileField('profile_style',e.target.value)}><option value="simple">{isAr?'أخضر بسيط':'Simple emerald'}</option><option value="premium">{isAr?'ذهبي مميز':'Premium emerald & gold'}</option><option value="purple_gold">{isAr?'ملكي بنفسجي وذهبي':'Royal purple & gold'}</option></select></label></div>
+              <div className="profile-style-row"><label><span>{isAr?'نمط اللون':'Profile accent'}</span><select value={profileForm.profile_style} onChange={e=>setProfileField('profile_style',e.target.value)}><option value="simple">{isAr?'أخضر بسيط':'Simple emerald'}</option><option value="premium">{isAr?'ذهبي مميز':'Premium emerald & gold'}</option><option value="purple_gold">{isAr?'أخضر ملكي وذهبي':'Royal forest green & gold'}</option></select></label></div>
               <div className={'profile-preview profile-template-preview template-'+profileForm.profile_template+(profileForm.profile_style!=='simple'?' premium-profile':'')+(profileForm.profile_style==='purple_gold'?' purple-gold-profile':'')}>
                 <div className="template-preview-cover">{profileForm.cover_url?<img src={profileForm.cover_url} alt=""/>:<span>NUSQRA · {profileForm.profile_template.toUpperCase()}</span>}</div>
                 <div className="template-preview-identity"><div className="profile-avatar-preview">{profileForm.avatar_url?<img src={profileForm.avatar_url} alt=""/>:<UserRound size={30}/>}</div><div><strong>{profileForm.full_name||'Your name'}</strong><span>{profileForm.headline|| (isProfessional?'Professional on NUSQRA':'NUSQRA member')}</span></div></div>
@@ -843,11 +889,11 @@ function App() {
         </div>
       </section>}
     </main>
-    <footer><div className="brand"><span className="mark" aria-label="NUSQRA logo"><svg className="brand-symbol" viewBox="0 0 64 64" role="img" aria-hidden="true"><path d="M14 49V15h7l29 34V15" fill="none" stroke="#F0D59A" strokeWidth="6" strokeLinecap="square" strokeLinejoin="miter"/><path d="M49 15h-8" fill="none" stroke="#FFFFFF" strokeWidth="6" strokeLinecap="square"/><path d="M14 15h8" fill="none" stroke="#FFFFFF" strokeWidth="6" strokeLinecap="square"/></svg></span><span>NUSQRA<small>نُسقرا</small></span></div><p>{t.footer}</p><span>© {new Date().getFullYear()} NUSQRA · {t.join}</span></footer>
+    <footer><div className="brand"><span className="mark" aria-label="NUSQRA Arabic calligraphy logo"><span className="brand-calligraphy" lang="ar">نسقرا</span></span><span>NUSQRA<small>نُسقرا</small></span></div><p>{t.footer}</p><span>© {new Date().getFullYear()} NUSQRA · {t.join}</span></footer>
     {authMode && <div className="auth-backdrop" role="presentation" onMouseDown={e=>{if(e.target===e.currentTarget){setAuthMode(null);setError('')}}}>
       <section className="auth-dialog" role="dialog" aria-modal="true" aria-label={authMode==='register'?t.create:t.welcome}>
         <button className="auth-close" aria-label="Close" onClick={()=>setAuthMode(null)}><X size={22}/></button>
-        <div className="brand"><span className="mark" aria-label="NUSQRA logo"><svg className="brand-symbol" viewBox="0 0 64 64" role="img" aria-hidden="true"><path d="M14 49V15h7l29 34V15" fill="none" stroke="#F0D59A" strokeWidth="6" strokeLinecap="square" strokeLinejoin="miter"/><path d="M49 15h-8" fill="none" stroke="#FFFFFF" strokeWidth="6" strokeLinecap="square"/><path d="M14 15h8" fill="none" stroke="#FFFFFF" strokeWidth="6" strokeLinecap="square"/></svg></span><span>NUSQRA<small>نُسقرا</small></span></div>
+        <div className="brand"><span className="mark" aria-label="NUSQRA Arabic calligraphy logo"><span className="brand-calligraphy" lang="ar">نسقرا</span></span><span>NUSQRA<small>نُسقرا</small></span></div>
         <h2>{authMode==='register'?t.create:t.welcome}</h2>
         {!isSupabaseConfigured && <p className="auth-warning">{t.noConfig}</p>}
         <div className="auth-method-tabs">

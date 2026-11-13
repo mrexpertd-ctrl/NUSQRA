@@ -6,6 +6,11 @@ on:
     paths:
       - "nusqra-starter/**"
       - ".github/workflows/frontend-build.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "nusqra-starter/**"
+      - ".github/workflows/frontend-build.yml"
   workflow_dispatch:
 
 permissions:
