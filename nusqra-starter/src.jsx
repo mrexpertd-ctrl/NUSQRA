@@ -99,7 +99,8 @@ function App() {
   const [staffRole,setStaffRole] = useState(null);
   const [adminTab,setAdminTab] = useState('overview');
   const [adminMetrics,setAdminMetrics] = useState(null);
-  const [adminAccounts,setAdminAccounts] = useState([]);\n  const [adminStaff,setAdminStaff] = useState([]);
+  const [adminAccounts,setAdminAccounts] = useState([]);
+  const [adminStaff,setAdminStaff] = useState([]);
   const [adminCases,setAdminCases] = useState([]);
   const [adminTickets,setAdminTickets] = useState([]);
   const [adminRatings,setAdminRatings] = useState([]);
