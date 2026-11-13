@@ -14,6 +14,9 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      VITE_SUPABASE_URL: https://oybodlncqgerucwwkqvp.supabase.co
+      VITE_SUPABASE_PUBLISHABLE_KEY: sb_publishable_MHBtLOwXxBQmfK6uNzZtww_uIW33AQa
     defaults:
       run:
         working-directory: nusqra-starter
