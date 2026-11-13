@@ -320,3 +320,8 @@ footer .brand small{color:#e2cb8f}
  .profile-preview-dialog-actions{flex-direction:column-reverse}
  .profile-preview-dialog-actions .btn{width:100%;justify-content:center}
 }
+
+/* Ensure profile preview sections use the full card width */
+.profile-template-preview{align-items:stretch}
+.template-preview-cover,.template-preview-identity,.profile-template-preview>p,.template-preview-meta{width:100%;box-sizing:border-box}
+.template-preview-identity>div:last-child{flex:1}
