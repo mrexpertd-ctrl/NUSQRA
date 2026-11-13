@@ -1667,3 +1667,10 @@ footer .brand .mark{background:linear-gradient(145deg,#0b9862,#06402e)}
 @media(max-width:900px){.entry-layout{grid-template-columns:minmax(0,1fr) minmax(310px,.82fr);gap:28px}.entry-nav{gap:12px;font-size:11px}.entry-nav span+span{padding-inline-start:12px}.entry-brand{width:175px}.entry-brand-large{height:110px}.entry-hero h1{font-size:clamp(32px,5vw,46px)}}
 @media(max-width:680px){.entry-header{height:70px;flex-basis:70px;padding:0 18px}.entry-brand{width:155px;height:52px}.entry-nav{display:none}.entry-layout{display:flex;flex-direction:column;align-items:stretch;gap:28px;padding:28px 18px 38px}.entry-hero{display:flex;flex-direction:column}.entry-brand-large{width:min(320px,90%);height:88px;margin:0 auto 18px}.entry-kicker{text-align:center;font-size:9px}.entry-hero h1{max-width:540px;margin:13px auto 10px;text-align:center;font-size:clamp(30px,8vw,42px);letter-spacing:-1.1px}.entry-hero>p{text-align:center;font-size:14px}.entry-hero-points{justify-content:center;gap:12px 18px;margin:20px 0 0}.entry-hero-points div{font-size:11px}.entry-hero-points svg{width:18px}.entry-visual{display:none}.entry-auth-wrap{max-width:480px;margin:0 auto}.entry-auth-card{padding:27px 22px;border-radius:22px}.entry-auth-logo{height:74px;width:190px}.entry-auth-card h2{font-size:29px}.entry-footer{font-size:9px}}
 @media(prefers-reduced-motion:reduce){.entry-auth-card .access-gate-google{transition:none}}
+
+/* Logo repair: use the square emblem in compact brand marks, never crop the full wordmark. */
+.mark img,.access-gate-mark img{display:block;width:100%;height:100%;object-fit:contain;object-position:center;padding:5px}
+.entry-brand img,.entry-brand-large img,.entry-auth-logo img{object-fit:contain}
+.google-auth.access-gate-google{display:flex!important;visibility:visible!important;opacity:1!important;min-height:62px!important;cursor:pointer}
+.google-auth.access-gate-google:disabled{opacity:.72!important;cursor:wait}
+.google-g{font-family:Arial,sans-serif;font-weight:800;background:conic-gradient(from -45deg,#4285f4 0 25%,#34a853 25% 50%,#fbbc05 50% 75%,#ea4335 75%);color:transparent;background-clip:text;-webkit-background-clip:text}
