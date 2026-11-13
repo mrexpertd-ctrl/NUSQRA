@@ -210,3 +210,26 @@ footer .brand small{color:#e2cb8f}
  .category-section{padding-left:5%;padding-right:5%}
  .category-card{padding:17px}
 }
+
+/* Profile tiers, image customization and auth methods */
+.profile-preview{position:relative;display:flex;flex-direction:column;align-items:center;gap:8px;overflow:hidden;padding:0 18px 18px;border:1px solid #dce9e0;border-radius:22px;background:#fff;color:#073d2b;text-align:center}
+.profile-cover-preview{width:calc(100% + 36px);height:112px;object-fit:cover;margin:0 -18px}
+.profile-avatar-preview{display:grid;place-items:center;width:82px;height:82px;margin-top:-42px;overflow:hidden;border:4px solid #fff;border-radius:50%;background:#e8f5ee;color:#087a50;box-shadow:0 4px 18px #073d2b22}
+.profile-avatar-preview img{width:100%;height:100%;object-fit:cover}
+.profile-preview>span{font-size:10px;letter-spacing:.12em;color:#087a50;font-weight:800}
+.profile-preview.premium-profile{border:1px solid #c9a85d;background:linear-gradient(145deg,#f4faf6,#fff8e7)}
+.profile-preview.premium-profile>span{color:#9a772e}
+.profile-style-picker{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
+.profile-style-picker label{display:flex;align-items:flex-start;gap:9px;padding:14px;border:1px solid #dce9e0;border-radius:15px;background:#f8fbf9;cursor:pointer}
+.profile-style-picker label:has(input:checked){border-color:#087a50;background:#edf8f0;box-shadow:0 0 0 2px #087a5012}
+.profile-style-picker span{display:grid;gap:4px}.profile-style-picker small{font-size:11px;color:#63766c}
+.profile-media-fields{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:15px}
+.profile-media-fields input{font-size:12px;padding:10px}
+.auth-method-tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:18px 0 12px}
+.auth-method-tabs button,.google-auth{border:1px solid #dce9e0;border-radius:12px;background:#f7fbf8;color:#174331;padding:12px;font-weight:700}
+.auth-method-tabs button.active{background:#087a50;color:white;border-color:#087a50}
+.google-auth{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;background:#fff}
+.google-g{font-weight:900;font-size:18px;color:#4285f4}
+.auth-divider{display:flex;align-items:center;gap:10px;color:#829188;font-size:11px;margin:14px 0}
+.auth-divider:before,.auth-divider:after{content:"";height:1px;background:#e2ebe5;flex:1}
+@media(max-width:560px){.profile-style-picker,.profile-media-fields{grid-template-columns:1fr}}
