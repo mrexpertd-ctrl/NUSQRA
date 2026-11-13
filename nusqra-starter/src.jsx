@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import nusqraLogo from './nusqra-mark.svg';
+import nusqraSymbol from './nusqra-symbol.svg';
 import { createRoot } from 'react-dom/client';
 import {
   Globe2, ShieldCheck, Users, ArrowRight, ArrowLeft, Crown, Menu, X,
@@ -215,7 +216,8 @@ function App() {
   const setProfileField = (key,value) => setProfileForm(old => ({...old,[key]:value}));
 
   async function signInWithGoogle() {
-    if (!supabase || !isSupabaseConfigured || busy) return;
+    if (busy) return;
+    if (!supabase || !isSupabaseConfigured) { setError(t.noConfig); return; }
     setError('');
     setNotice('');
     setBusy(true);
@@ -620,7 +622,7 @@ function App() {
   }
 
   if (!authReady) {
-    return <div className="access-gate" dir={isAr ? 'rtl' : 'ltr'}><section className="access-gate-card" aria-live="polite"><div className="access-gate-mark"><img src={nusqraLogo} alt="NUSQRA نُسقرا" /></div><h1>NUSQRA</h1><p>{isAr?'جارٍ التحقق من جلسة الدخول…':'Checking your secure sign-in…'}</p><LoaderCircle className="spin access-gate-loader" size={24}/></section></div>;
+    return <div className="access-gate" dir={isAr ? 'rtl' : 'ltr'}><section className="access-gate-card" aria-live="polite"><div className="access-gate-mark"><img src={nusqraSymbol} alt="NUSQRA نُسقرا" /></div><h1>NUSQRA</h1><p>{isAr?'جارٍ التحقق من جلسة الدخول…':'Checking your secure sign-in…'}</p><LoaderCircle className="spin access-gate-loader" size={24}/></section></div>;
   }
 
   if (!session) {
@@ -653,7 +655,7 @@ function App() {
             <p>{isAr?'سجّل الدخول باستخدام حساب Google للمتابعة إلى السوق.':'Sign in with your Google account to continue to the marketplace.'}</p>
             {!isSupabaseConfigured && <p className="auth-warning" role="alert">{t.noConfig}</p>}
             {error && <p className="auth-error" role="alert">{error}</p>}
-            <button type="button" className="google-auth access-gate-google" disabled={busy || !isSupabaseConfigured} onClick={signInWithGoogle}>
+            <button type="button" className="google-auth access-gate-google" disabled={busy} onClick={signInWithGoogle} aria-label={isAr?"تسجيل الدخول باستخدام Google":"Sign in with Google"}>
               <span className="google-g" aria-hidden="true">G</span>
               {busy ? (isAr?'جارٍ الاتصال بـ Google…':'Connecting to Google…') : (isAr?'المتابعة باستخدام Google':'Continue with Google')}
             </button>
@@ -669,7 +671,7 @@ function App() {
 
   return <div dir={isAr ? 'rtl' : 'ltr'}>
     <header className="header">
-      <a className="brand" href="#home" onClick={()=>{setSettingsOpen(false);setPage('home');setMenu(false);}}><span className="mark"><img src={nusqraLogo} alt="NUSQRA Arabic calligraphy logo" /></span><span>NUSQRA<small>نُسقرا</small></span></a>
+      <a className="brand" href="#home" onClick={()=>{setSettingsOpen(false);setPage('home');setMenu(false);}}><span className="mark"><img src={nusqraSymbol} alt="NUSQRA Arabic calligraphy logo" /></span><span>NUSQRA<small>نُسقرا</small></span></a>
       <nav className={menu ? 'nav open' : 'nav'} aria-label={isAr?'التنقل الرئيسي':'Main navigation'}>
         <button type="button" className="navlink" onClick={()=>navigatePage('explore')}>{t.nav[0]}</button>
         <button type="button" className="navlink" onClick={()=>navigatePage('categories')}>{t.nav[1]}</button>
@@ -913,11 +915,11 @@ function App() {
         </div>
       </section>}
     </main>
-    <footer><div className="brand"><span className="mark" aria-label="NUSQRA Arabic calligraphy logo"><img src={nusqraLogo} alt="NUSQRA Arabic calligraphy logo" /></span><span>NUSQRA<small>نُسقرا</small></span></div><p>{t.footer}</p><span>© {new Date().getFullYear()} NUSQRA · {t.join}</span></footer>
+    <footer><div className="brand"><span className="mark" aria-label="NUSQRA Arabic calligraphy logo"><img src={nusqraSymbol} alt="NUSQRA Arabic calligraphy logo" /></span><span>NUSQRA<small>نُسقرا</small></span></div><p>{t.footer}</p><span>© {new Date().getFullYear()} NUSQRA · {t.join}</span></footer>
     {authMode && <div className="auth-backdrop" role="presentation" onMouseDown={e=>{if(e.target===e.currentTarget){setAuthMode(null);setError('')}}}>
       <section className="auth-dialog" role="dialog" aria-modal="true" aria-label={authMode==='register'?t.create:t.welcome}>
         <button className="auth-close" aria-label="Close" onClick={()=>setAuthMode(null)}><X size={22}/></button>
-        <div className="brand"><span className="mark" aria-label="NUSQRA Arabic calligraphy logo"><img src={nusqraLogo} alt="NUSQRA Arabic calligraphy logo" /></span><span>NUSQRA<small>نُسقرا</small></span></div>
+        <div className="brand"><span className="mark" aria-label="NUSQRA Arabic calligraphy logo"><img src={nusqraSymbol} alt="NUSQRA Arabic calligraphy logo" /></span><span>NUSQRA<small>نُسقرا</small></span></div>
         <h2>{authMode==='register'?t.create:t.welcome}</h2>
         {!isSupabaseConfigured && <p className="auth-warning">{t.noConfig}</p>}
         <div className="auth-method-tabs">
