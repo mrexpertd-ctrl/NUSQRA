@@ -1626,3 +1626,11 @@ footer .brand .mark{background:linear-gradient(145deg,#0b9862,#06402e)}
 .profile-preview.purple-gold-profile{border-color:#c5a15b}
 .profile-template-preview .template-preview-meta span{background:#edf7ef;color:#176344;border:1px solid #d6e9db}
 .profile-template-option .template-mini{box-shadow:inset 0 0 0 1px rgba(8,90,58,.12)}
+/* NUSQRA modern Arabic identity — emerald, charcoal and smoke white */
+@import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap');
+.brand{gap:12px;color:#f2f5f2}.brand small{color:#aebbb4;font-family:Amiri,Cairo,serif;font-size:13px}
+.mark{width:52px;height:52px;padding:0;border:1px solid #82968b;border-radius:17px;background:#101613;overflow:hidden;box-shadow:0 5px 22px #0008,0 0 0 3px #1e3028}
+.mark img{display:block;width:100%;height:100%;object-fit:cover}
+.access-gate-mark{display:grid;place-items:center;width:82px;height:82px;padding:0;border:1px solid #8ca297;border-radius:25px;background:#101613;overflow:hidden;box-shadow:0 12px 35px #0008,0 0 0 5px #1b2c24}
+.access-gate-mark img{display:block;width:100%;height:100%;object-fit:cover}.access-gate-brand{gap:17px}
+.access-gate-brand>span:last-child{color:#f3f6f3;letter-spacing:3px}.access-gate-brand small{color:#aebbb4;font-family:Amiri,Cairo,serif}
