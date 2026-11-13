@@ -1441,3 +1441,37 @@ footer .brand small{color:#d0b477!important}
 .professional-skill-scores em{font-style:normal;color:#c39436;letter-spacing:1px;white-space:nowrap}
 .professional-skill-scores small{color:var(--muted,#777)}
 .danger{border-color:#dba5a0!important;color:#a43c36!important}
+
+
+/* Google-only private entry gate */
+.access-gate{
+  min-height:100vh;min-height:100svh;display:grid;place-items:center;position:relative;overflow:hidden;
+  padding:28px 18px;background:
+    radial-gradient(ellipse at 12% 15%,rgba(117,78,151,.18),transparent 38%),
+    radial-gradient(ellipse at 88% 85%,rgba(188,151,82,.16),transparent 36%),
+    linear-gradient(145deg,#111321 0%,#1b1a2a 52%,#10251f 100%);color:#fff
+}
+.access-gate:before,.access-gate:after{content:"";position:absolute;width:380px;height:380px;border:1px solid rgba(220,190,132,.13);border-radius:50%;pointer-events:none}
+.access-gate:before{top:-230px;right:-130px;box-shadow:0 0 0 35px rgba(220,190,132,.025),0 0 0 70px rgba(220,190,132,.02)}
+.access-gate:after{bottom:-270px;left:-150px;box-shadow:0 0 0 38px rgba(139,105,170,.035),0 0 0 78px rgba(139,105,170,.025)}
+.access-gate-card{position:relative;z-index:1;width:min(100%,480px);padding:clamp(28px,6vw,48px);border:1px solid rgba(222,194,139,.27);border-radius:26px;background:linear-gradient(150deg,rgba(36,34,51,.97),rgba(24,31,38,.97));box-shadow:0 32px 100px rgba(0,0,0,.42);text-align:start}
+.access-gate-brand{display:flex;align-items:center;gap:12px;color:#fff;font-size:20px;font-weight:850;letter-spacing:2px}
+.access-gate-brand small{display:block;margin-top:2px;color:#d8bd82;font-size:11px;letter-spacing:1px}
+.access-gate-mark{width:48px;height:48px;display:grid;place-items:center;border:1px solid rgba(224,195,136,.65);border-radius:14px;background:linear-gradient(145deg,#75558f,#352c49);color:#f3dba7;font-family:Georgia,serif;font-size:29px;font-weight:700}
+.access-gate-eyebrow{margin-top:38px;color:#d9bd82;font-size:10px;font-weight:800;letter-spacing:2.4px}
+.access-gate-card h1{margin:13px 0 12px;color:#fff;font-size:clamp(29px,6vw,42px);line-height:1.12;letter-spacing:-1px}
+.access-gate-card>p{margin:0 0 24px;color:#c6c3d0;font-size:14px;line-height:1.8}
+.access-gate-google{min-height:54px;border:1px solid #e8e5ed!important;border-radius:13px!important;background:#fff!important;color:#252536!important;font-size:14px;box-shadow:0 8px 24px rgba(0,0,0,.18);transition:transform .18s ease,box-shadow .18s ease}
+.access-gate-google:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 13px 30px rgba(0,0,0,.25)}
+.access-gate-google .google-g{font-size:21px}
+.access-gate-arrow{margin-inline-start:auto;font-size:20px;color:#62506f}
+.access-gate-security{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:18px;color:#c9c4d2;font-size:11px}
+.access-gate-security svg{color:#d9bd82}
+.access-gate-language{display:flex;justify-content:center;margin-top:26px}
+.access-gate-language button{display:inline-flex;align-items:center;gap:7px;padding:8px 12px;border:1px solid rgba(255,255,255,.16);border-radius:20px;background:transparent;color:#e6e1ec;font-size:12px}
+.access-gate-language button:hover{border-color:#d9bd82;color:#f1dba9}
+.access-gate-foot{position:absolute;bottom:18px;z-index:1;color:rgba(255,255,255,.48);font-size:10px;letter-spacing:1.3px;text-align:center}
+.access-gate-loader{display:block;margin:20px auto 0;color:#d9bd82}
+.access-gate-card .auth-error,.access-gate-card .auth-warning{margin:0 0 16px}
+@media(max-width:520px){.access-gate-card{padding:28px 22px;border-radius:21px}.access-gate-eyebrow{margin-top:30px}.access-gate-card h1{font-size:32px}}
+@media(prefers-reduced-motion:reduce){.access-gate-google{transition:none}}
