@@ -72,6 +72,7 @@ function App() {
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState('');
   const [error, setError] = useState('');
+  // Marketplace feature module is connected in this release.
   const t = dictionary[lang];
   const isAr = lang === 'ar';
   const isProfessional = roles.includes('professional');
