@@ -485,7 +485,6 @@ function App() {
       {page === 'how-it-works' && <section className="section steps" id="how-it-works"><div className="section-label">SIMPLE BY DESIGN</div><h2>{t.steps}</h2><div className="step-grid">
         {t.step.map((x,i)=><article key={i}><div className="step-num">0{i+1}</div><h3>{x}</h3><p>{t.stepText[i]}</p></article>)}
       </div></section>}
-}
       {page === 'marketplace' && <section className="section marketplace-section" id="marketplace">
         <div className="section-label">NUSQRA · MARKETPLACE</div><h2>{t.marketplace}</h2>
         {error && <p className="auth-error" role="alert">{error}</p>}
