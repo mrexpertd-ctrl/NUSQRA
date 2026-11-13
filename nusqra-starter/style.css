@@ -75,3 +75,21 @@
 .message-compose textarea{flex:1;min-width:0;resize:vertical}
 .message-compose .btn{white-space:nowrap}
 @media(max-width:720px){.messaging-layout{grid-template-columns:1fr}.conversation-list{min-height:0;max-height:220px;overflow:auto}.message-compose{flex-direction:column;align-items:stretch}.message-compose .btn{justify-content:center}}
+
+
+/* Public bilingual category directory */
+.category-section{padding-top:78px;padding-bottom:78px}
+.category-intro{max-width:760px;margin:-12px 0 28px}
+.audience-tabs{display:flex;flex-wrap:wrap;gap:9px;margin:25px 0 22px}
+.audience-tabs button{border:1px solid #51465f;background:#191722;color:#d4d0dc;border-radius:999px;padding:10px 16px;font-size:13px;font-weight:700}
+.audience-tabs button.active{background:linear-gradient(120deg,#bca067,#e5cb8f);border-color:#e5cb8f;color:#17131d}
+.category-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.category-card{display:flex;flex-direction:column;align-items:flex-start;min-height:245px;padding:21px;background:linear-gradient(145deg,#191923,#14151e);border:1px solid #393344;border-radius:17px}
+.category-symbol{display:grid;place-items:center;width:43px;height:43px;border-radius:13px;background:#30243c;color:#e4c987;font-size:25px;font-weight:800}
+.category-card h3{font-size:16px;margin:17px 0 8px}
+.category-card p{color:#aaa7b5;font-size:12px;line-height:1.7;margin:0 0 15px;flex:1}
+.category-audience{font-size:10px;color:#e2c783;border:1px solid #76613e;background:#c5a66a12;border-radius:30px;padding:6px 9px}
+.investor-disclaimer{display:block;color:#aaa7b5;font-size:10px;line-height:1.55;margin-top:10px}
+@media(max-width:1000px){.category-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:700px){.category-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.category-card{min-height:255px;padding:16px}.audience-tabs{gap:7px}.audience-tabs button{font-size:11px;padding:9px 12px}}
+@media(max-width:390px){.category-grid{grid-template-columns:1fr}.category-card{min-height:0}}
