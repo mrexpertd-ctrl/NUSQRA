@@ -1425,3 +1425,11 @@ footer .brand small{color:#d0b477!important}
 .admin-rating-row small{color:var(--muted,#777)}
 @media(max-width:1050px){.admin-metric-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:760px){.admin-centre-head{display:grid}.admin-metric-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.admin-metric{padding:13px}.admin-metric strong{font-size:25px}.admin-support-layout{grid-template-columns:1fr}.admin-appoint-form{grid-template-columns:1fr}.admin-account-row{display:grid}.admin-account-actions{justify-content:flex-start;max-width:none}.admin-account-actions input{width:100%;flex:1 1 100%}.admin-panel-title{align-items:stretch;flex-direction:column}.admin-panel-title input{width:100%}.admin-bar-row{grid-template-columns:95px minmax(60px,1fr) 36px;gap:8px;font-size:11px}}
+
+
+.skill-rating-form{display:grid;gap:9px;margin-top:14px;padding:14px;border:1px solid rgba(196,161,93,.35);border-radius:14px;background:rgba(196,161,93,.06)}
+.skill-rating-form>strong{font-size:13px}
+.skill-rating-form input,.skill-rating-form textarea{width:100%;min-width:0;border:1px solid var(--line,#e7e3dc);border-radius:9px;padding:10px;background:var(--surface,#fff);color:var(--ink,#171827)}
+.skill-star-picker{display:flex;gap:5px}
+.skill-star-picker button{border:0;background:transparent;color:#c9c4bb;font-size:27px;line-height:1;padding:2px;cursor:pointer}
+.skill-star-picker button.selected{color:#c39436}
