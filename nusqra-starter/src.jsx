@@ -275,7 +275,7 @@ function App() {
     if(page!=='professionals'||!supabase)return;
     let alive=true;
     (async()=>{
-      const {data:proRows,error:proError}=await supabase.from('professional_profiles').select('user_id,headline,about,years_experience,city,country_code').order('created_at',{ascending:false}).limit(60);
+      const {data:proRows,error:proError}=await supabase.from('professional_profiles').select('user_id,headline,about,years_experience,city,country_code').limit(60);
       if(proError){if(alive)setError(proError.message);return;}
       const ids=(proRows||[]).map(p=>p.user_id);
       if(!ids.length){if(alive)setProfessionalDirectory([]);return;}
@@ -485,7 +485,7 @@ function App() {
       {page === 'how-it-works' && <section className="section steps" id="how-it-works"><div className="section-label">SIMPLE BY DESIGN</div><h2>{t.steps}</h2><div className="step-grid">
         {t.step.map((x,i)=><article key={i}><div className="step-num">0{i+1}</div><h3>{x}</h3><p>{t.stepText[i]}</p></article>)}
       </div></section>}
-      {page === 'professionals' && <section className="section professional-landing"><div className="section-label">NUSQRA · PROFESSIONAL NETWORK</div><h2>{isAr?'نمّ أعمالك المهنية مع نسقرا':'Grow your professional presence with NUSQRA'}</h2><p className="section-intro">{isAr?'أنشئ ملفاً مهنياً، اعرض خبراتك، واكتشف فرص العمل والتعاون في الخليج.':'Build your professional profile, showcase your expertise, and discover work and collaboration opportunities across the Gulf.'}</p><div className="feature-grid"><article className="feature"><span className="iconbox"><UserRound size={24}/></span><h3>{isAr?'ملف مهني مميز':'Professional profile'}</h3><p>{isAr?'اعرض مهاراتك وخبراتك وأعمالك.':'Present your skills, experience and work clearly.'}</p></article><article className="feature"><span className="iconbox"><BriefcaseBusiness size={24}/></span><h3>{isAr?'فرص عمل':'Work opportunities'}</h3><p>{isAr?'اكتشف طلبات العملاء وقدّم عروضك.':'Discover customer requests and submit proposals.'}</p></article><article className="feature"><span className="iconbox"><MessageCircle size={24}/></span><h3>{isAr?'تواصل مباشر':'Direct connections'}</h3><p>{isAr?'تواصل مع العملاء وأدر محادثاتك.':'Connect with customers and manage conversations.'}</p></article></div><div className="buttons"><button className="btn primary" onClick={()=>{if(session)navigatePage('settings');else{setForm(x=>({...x,account_type:'professional'}));setAuthMode('register');}}}>{isAr?'انضم كمحترف':'Join as a professional'}</button><button className="btn secondary" onClick={()=>navigatePage('categories')}>{isAr?'تصفح التصنيفات':'Browse categories'}</button></div></section>}
+}
       {page === 'marketplace' && <section className="section marketplace-section" id="marketplace">
         <div className="section-label">NUSQRA · MARKETPLACE</div><h2>{t.marketplace}</h2>
         {error && <p className="auth-error" role="alert">{error}</p>}
