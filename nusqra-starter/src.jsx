@@ -511,7 +511,7 @@ function App() {
               <label>{t.bio}<textarea rows="3" value={profileForm.about} onChange={e=>setProfileField('about',e.target.value)}/></label>
             </div>}
             <button className="btn primary" type="submit" disabled={busy}>{busy?<LoaderCircle className="spin" size={17}/>:<CheckCircle2 size={17}/>} {t.save}</button>
-          </form>>
+          </form>
         </div>
       </section>}
     </main>
