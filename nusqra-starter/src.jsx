@@ -381,6 +381,7 @@ function App() {
         <a href="#categories" onClick={()=>setMenu(false)}>{t.nav[1]}</a>
         <a href="#how-it-works" onClick={()=>setMenu(false)}>{t.nav[2]}</a>
         <a href="#professionals" onClick={()=>setMenu(false)}>{t.nav[3]}</a>
+        {session && <><a href="#marketplace" onClick={()=>setMenu(false)}>{isAr?'السوق':'Marketplace'}</a><a href="#messages" onClick={()=>setMenu(false)}>{t.messages}</a></>}
       </nav>
       <div className="actions">
         {session ? <button className="navlink" onClick={()=>navigatePage('settings')}><UserRound size={15}/>{t.account}</button> :
