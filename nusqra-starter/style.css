@@ -233,3 +233,12 @@ footer .brand small{color:#e2cb8f}
 .auth-divider{display:flex;align-items:center;gap:10px;color:#829188;font-size:11px;margin:14px 0}
 .auth-divider:before,.auth-divider:after{content:"";height:1px;background:#e2ebe5;flex:1}
 @media(max-width:560px){.profile-style-picker,.profile-media-fields{grid-template-columns:1fr}}
+
+
+/* Dedicated account settings page */
+.settings-page{position:fixed;inset:76px 0 0;z-index:35;overflow-y:auto;max-width:none;width:100%;margin:0;padding:34px max(5%,calc((100vw - 980px)/2)) 70px;background:#f7fbf8}
+.settings-page>.section-label,.settings-page>h2{max-width:900px;margin-left:auto;margin-right:auto}
+.settings-page .account-card{max-width:900px;margin:22px auto 0}
+.settings-actions{display:flex;gap:9px;flex-wrap:wrap;justify-content:flex-end}
+.settings-actions .btn{white-space:nowrap}
+@media(max-width:650px){.settings-page{inset:68px 0 0;padding:24px 5% 55px}.settings-page .account-heading{align-items:flex-start;gap:14px;flex-direction:column}.settings-actions{width:100%;justify-content:flex-start}.settings-actions .btn{flex:1}}
