@@ -21,7 +21,7 @@ const dictionary = {
     login: 'Log in', signup: 'Create account', customer: 'Customer', professional: 'Professional',
     welcome: 'Welcome back', create: 'Create your NUSQRA account', email: 'Email address',
     password: 'Password', fullName: 'Full name', country: 'Country', chooseCountry: 'Choose country',
-    save: 'Save profile', logout: 'Sign out', account: 'My account', bio: 'About you',
+    save: 'Save profile', logout: 'Sign out', account: 'Settings', bio: 'About you',
     headline: 'Professional headline', experience: 'Years of experience', city: 'City',
     dashboard: 'Account dashboard', roles: 'Account roles', proDetails: 'Professional details',
     enablePro: 'Enable professional profile', noConfig: 'Supabase is not configured yet. Add the project URL and publishable key to the environment variables.',
@@ -47,7 +47,7 @@ const dictionary = {
     login: 'تسجيل الدخول', signup: 'إنشاء حساب', customer: 'عميل', professional: 'محترف',
     welcome: 'مرحباً بعودتك', create: 'أنشئ حسابك في نسقرا', email: 'البريد الإلكتروني',
     password: 'كلمة المرور', fullName: 'الاسم الكامل', country: 'الدولة', chooseCountry: 'اختر الدولة',
-    save: 'حفظ الملف', logout: 'تسجيل الخروج', account: 'حسابي', bio: 'نبذة عنك',
+    save: 'حفظ الملف', logout: 'تسجيل الخروج', account: 'الإعدادات', bio: 'نبذة عنك',
     headline: 'المسمى المهني', experience: 'سنوات الخبرة', city: 'المدينة',
     dashboard: 'لوحة الحساب', roles: 'أدوار الحساب', proDetails: 'التفاصيل المهنية',
     enablePro: 'تفعيل الملف المهني', noConfig: 'لم يتم إعداد Supabase بعد. أضف رابط المشروع ومفتاح النشر إلى متغيرات البيئة.',
@@ -67,6 +67,7 @@ const countryCodes = ['SA','AE','BH','KW','OM','QA'];
 function App() {
   const [lang, setLang] = useState('en');
   const [menu, setMenu] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const [authMode, setAuthMode] = useState(null);
   const [session, setSession] = useState(null);
   const [profile, setProfile] = useState(null);
@@ -363,7 +364,7 @@ function App() {
 
   return <div dir={isAr ? 'rtl' : 'ltr'}>
     <header className="header">
-      <a className="brand" href="#home"><span className="mark">N</span><span>NUSQRA<small>نُسقرا</small></span></a>
+      <a className="brand" href="#home" onClick={()=>setSettingsOpen(false)}><span className="mark">N</span><span>NUSQRA<small>نُسقرا</small></span></a>
       <nav className={menu ? 'nav open' : 'nav'}>
         <a href="#features" onClick={()=>setMenu(false)}>{t.nav[0]}</a>
         <a href="#categories" onClick={()=>setMenu(false)}>{t.nav[1]}</a>
@@ -371,7 +372,7 @@ function App() {
         <a href="#premium" onClick={()=>setMenu(false)}>{t.nav[3]}</a>
       </nav>
       <div className="actions">
-        {session ? <button className="navlink" onClick={()=>document.getElementById('account')?.scrollIntoView({behavior:'smooth'})}><UserRound size={15}/>{t.account}</button> :
+        {session ? <button className="navlink" onClick={()=>{setSettingsOpen(true);setMenu(false);}}><UserRound size={15}/>{t.account}</button> :
           <><button className="navlink" onClick={()=>{setAuthMode('login');setError('');setNotice('')}}>{t.login}</button><button className="btn primary" onClick={()=>{setAuthMode('register');setError('');setNotice('')}}>{t.signup}</button></>}
         <button className="lang" onClick={()=>setLang(isAr?'en':'ar')}><Globe2 size={17}/>{isAr?'English':'العربية'}</button>
         {session && <button className="navlink" onClick={signOut} aria-label={t.logout}><LogOut size={16}/></button>}
@@ -421,7 +422,7 @@ function App() {
       <section className="section steps" id="steps"><div className="section-label">SIMPLE BY DESIGN</div><h2>{t.steps}</h2><div className="step-grid">
         {t.step.map((x,i)=><article key={i}><div className="step-num">0{i+1}</div><h3>{x}</h3><p>{t.stepText[i]}</p></article>)}
       </div></section>
-      <section className="section premium" id="premium"><div><div className="section-label">NUSQRA PREMIUM</div><h2>{isAr?'أدوات أكثر، وفرص أكبر.':'More tools. More possibilities.'}</h2><p>{isAr?'ملفات احترافية ومهارات موثوقة وأدوات تساعد المهنيين على النمو.':'Professional profiles and tools designed to help Gulf talent grow.'}</p></div><div className="premium-symbol"><Crown size={65}/><span>PRO</span></div></section>
+      
       {session && <section className="section marketplace-section" id="marketplace">
         <div className="section-label">NUSQRA · MARKETPLACE</div><h2>{t.marketplace}</h2>
         {error && <p className="auth-error" role="alert">{error}</p>}
@@ -480,10 +481,10 @@ function App() {
         </div>
       </section>}
       {session && <section className="section marketplace-section messaging-section" id="messages"><div className="section-label">NUSQRA · PRIVATE</div><h2>{t.messages}</h2><div className="messaging-layout"><aside className="conversation-list">{conversations.length===0?<p className="market-empty">{t.noConversations}</p>:conversations.map(c=><button type="button" className={'conversation-item'+(selectedConversation?.id===c.id?' active':'')} key={c.id} onClick={()=>setSelectedConversation(c)}><strong>{c.job?.title||t.marketplace}</strong><span>{session.user.id===c.customer_id?(c.professional?.full_name||t.professional):(c.customer?.full_name||t.customer)}</span></button>)}</aside><div className="chat-panel">{selectedConversation?<><div className="chat-heading"><strong>{selectedConversation.job?.title||conversations.find(c=>c.id===selectedConversation.id)?.job?.title||t.marketplace}</strong><span>{session.user.id===selectedConversation.customer_id?(conversations.find(c=>c.id===selectedConversation.id)?.professional?.full_name||t.professional):(conversations.find(c=>c.id===selectedConversation.id)?.customer?.full_name||t.customer)}</span></div><div className="message-list">{messages.map(m=><div key={m.id} className={'message-bubble'+(m.sender_id===session.user.id?' mine':'')}><p>{m.body}</p><time>{new Date(m.created_at).toLocaleString(lang==='ar'?'ar-SA':'en-US')}</time></div>)}</div><form className="message-compose" onSubmit={sendMessage}><textarea rows="2" maxLength="4000" required placeholder={t.messagePlaceholder} value={messageDraft} onChange={e=>setMessageDraft(e.target.value)}/><button className="btn primary" type="submit" disabled={busy||!messageDraft.trim()}><Send size={16}/>{t.sendMessage}</button></form></>:<p className="market-empty">{t.noConversations}</p>}</div></div></section>}
-      {session && <section className="section account-section" id="account">
+      {session && settingsOpen && <section className="section account-section settings-page" id="account">
         <div className="section-label">NUSQRA · {t.dashboard.toUpperCase()}</div><h2>{t.dashboard}</h2>
         <div className="account-card">
-          <div className="account-heading"><div><h3>{profileForm.full_name || session.user.email}</h3><p>{session.user.email}</p></div><button className="btn secondary" onClick={signOut}><LogOut size={16}/>{t.logout}</button></div>
+          <div className="account-heading"><div><h3>{profileForm.full_name || session.user.email}</h3><p>{session.user.email}</p></div><div className="settings-actions"><button className="btn secondary" type="button" onClick={()=>setSettingsOpen(false)}>{isAr?"العودة للرئيسية":"Back to home"}</button><button className="btn secondary" onClick={signOut}><LogOut size={16}/>{t.logout}</button></div></div>
           <div className="role-list"><strong>{t.roles}:</strong>{roles.map(role=><span className="role-chip" key={role}>{role==='customer'?t.customer:t.professional}</span>)}</div>
           {!isProfessional && <button className="btn secondary enable-pro" disabled={busy} onClick={enableProfessional}><BriefcaseBusiness size={16}/>{t.enablePro}</button>}
           <form className="profile-form" onSubmit={saveProfile}>
