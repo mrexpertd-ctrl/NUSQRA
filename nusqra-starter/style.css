@@ -52,3 +52,26 @@
 .proposal-card small{color:#d9bd82}
 @media(max-width:900px){.marketplace-layout{grid-template-columns:1fr}}
 @media(max-width:520px){.marketplace-panel{padding:17px}.market-form-grid{grid-template-columns:1fr}}
+
+
+/* Proposal decisions, job controls and private messaging */
+.job-management,.proposal-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.job-management .btn,.proposal-actions .btn{font-size:13px;padding:9px 13px}
+.my-proposal-status{margin:12px 0;padding:10px 12px;border-radius:10px;background:var(--surface,#f5f6fa);font-size:14px}
+.messaging-section{scroll-margin-top:90px}
+.messaging-layout{display:grid;grid-template-columns:minmax(220px, .75fr) minmax(0, 1.5fr);gap:18px;align-items:stretch}
+.conversation-list,.chat-panel{border:1px solid var(--line,#e5e7eb);border-radius:18px;background:var(--panel,#fff);min-height:360px;overflow:hidden}
+.conversation-item{display:flex;flex-direction:column;gap:5px;width:100%;padding:15px 16px;text-align:start;border:0;border-bottom:1px solid var(--line,#e5e7eb);background:transparent;color:inherit;cursor:pointer}
+.conversation-item.active{background:var(--surface,#f5f6fa)}
+.conversation-item span,.chat-heading span{font-size:13px;opacity:.7}
+.chat-panel{display:flex;flex-direction:column}
+.chat-heading{display:flex;flex-direction:column;gap:5px;padding:16px 18px;border-bottom:1px solid var(--line,#e5e7eb)}
+.message-list{display:flex;flex:1;flex-direction:column;gap:10px;padding:16px;max-height:420px;overflow:auto}
+.message-bubble{align-self:flex-start;max-width:min(82%,560px);padding:11px 14px;border-radius:14px 14px 14px 4px;background:var(--surface,#f3f4f6);overflow-wrap:anywhere}
+.message-bubble.mine{align-self:flex-end;border-radius:14px 14px 4px 14px;background:#ece8ff}
+.message-bubble p{margin:0;white-space:pre-wrap}
+.message-bubble time{display:block;margin-top:6px;font-size:10px;opacity:.65}
+.message-compose{display:flex;gap:10px;align-items:end;padding:14px;border-top:1px solid var(--line,#e5e7eb)}
+.message-compose textarea{flex:1;min-width:0;resize:vertical}
+.message-compose .btn{white-space:nowrap}
+@media(max-width:720px){.messaging-layout{grid-template-columns:1fr}.conversation-list{min-height:0;max-height:220px;overflow:auto}.message-compose{flex-direction:column;align-items:stretch}.message-compose .btn{justify-content:center}}
