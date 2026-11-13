@@ -375,7 +375,7 @@ function App() {
 
   return <div dir={isAr ? 'rtl' : 'ltr'}>
     <header className="header">
-      <a className="brand" href="#home" onClick={()=>{setSettingsOpen(false);setPage('home');setMenu(false);}}><span className="mark">N</span><span>NUSQRA<small>نُسقرا</small></span></a>
+      <a className="brand" href="#home" onClick={()=>{setSettingsOpen(false);setPage('home');setMenu(false);}}><span className="mark" aria-label="NUSQRA logo"><svg className="brand-symbol" viewBox="0 0 48 48" role="img" aria-hidden="true"><path className="brand-symbol-frame" d="M24 3.5 42 13.8v20.4L24 44.5 6 34.2V13.8L24 3.5Z"/><path className="brand-symbol-letter" d="M15 33V15l18 18V15"/><path className="brand-symbol-accent" d="M33 9.5 38.5 12.7"/></svg></span><span>NUSQRA<small>نُسقرا</small></span></a>
       <nav className={menu ? 'nav open' : 'nav'}>
         <a href="#explore" onClick={()=>setMenu(false)}>{t.nav[0]}</a>
         <a href="#categories" onClick={()=>setMenu(false)}>{t.nav[1]}</a>
@@ -591,11 +591,11 @@ function App() {
         </div>
       </section>}
     </main>
-    <footer><div className="brand"><span className="mark">N</span><span>NUSQRA<small>نُسقرا</small></span></div><p>{t.footer}</p><span>© {new Date().getFullYear()} NUSQRA · {t.join}</span></footer>
+    <footer><div className="brand"><span className="mark" aria-label="NUSQRA logo"><svg className="brand-symbol" viewBox="0 0 48 48" role="img" aria-hidden="true"><path className="brand-symbol-frame" d="M24 3.5 42 13.8v20.4L24 44.5 6 34.2V13.8L24 3.5Z"/><path className="brand-symbol-letter" d="M15 33V15l18 18V15"/><path className="brand-symbol-accent" d="M33 9.5 38.5 12.7"/></svg></span><span>NUSQRA<small>نُسقرا</small></span></div><p>{t.footer}</p><span>© {new Date().getFullYear()} NUSQRA · {t.join}</span></footer>
     {authMode && <div className="auth-backdrop" role="presentation" onMouseDown={e=>{if(e.target===e.currentTarget){setAuthMode(null);setError('')}}}>
       <section className="auth-dialog" role="dialog" aria-modal="true" aria-label={authMode==='register'?t.create:t.welcome}>
         <button className="auth-close" aria-label="Close" onClick={()=>setAuthMode(null)}><X size={22}/></button>
-        <div className="brand"><span className="mark">N</span><span>NUSQRA<small>نُسقرا</small></span></div>
+        <div className="brand"><span className="mark" aria-label="NUSQRA logo"><svg className="brand-symbol" viewBox="0 0 48 48" role="img" aria-hidden="true"><path className="brand-symbol-frame" d="M24 3.5 42 13.8v20.4L24 44.5 6 34.2V13.8L24 3.5Z"/><path className="brand-symbol-letter" d="M15 33V15l18 18V15"/><path className="brand-symbol-accent" d="M33 9.5 38.5 12.7"/></svg></span><span>NUSQRA<small>نُسقرا</small></span></div>
         <h2>{authMode==='register'?t.create:t.welcome}</h2>
         {!isSupabaseConfigured && <p className="auth-warning">{t.noConfig}</p>}
         <div className="auth-method-tabs">
