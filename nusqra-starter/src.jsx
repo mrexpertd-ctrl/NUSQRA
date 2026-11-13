@@ -369,7 +369,7 @@ function App() {
         <a href="#features" onClick={()=>setMenu(false)}>{t.nav[0]}</a>
         <a href="#categories" onClick={()=>setMenu(false)}>{t.nav[1]}</a>
         <a href="#steps" onClick={()=>setMenu(false)}>{t.nav[2]}</a>
-        <a href="#premium" onClick={()=>setMenu(false)}>{t.nav[3]}</a>
+        <a href="#categories" onClick={()=>setMenu(false)}>{t.nav[3]}</a>
       </nav>
       <div className="actions">
         {session ? <button className="navlink" onClick={()=>{setSettingsOpen(true);setMenu(false);}}><UserRound size={15}/>{t.account}</button> :
