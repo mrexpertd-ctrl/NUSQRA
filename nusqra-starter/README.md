@@ -1,6 +1,6 @@
-# NUSQRA — First website prototype
+# NUSQRA — Website prototype
 
-A responsive React/Vite frontend for NUSQRA, a Saudi-first services marketplace.
+Responsive React/Vite frontend for the NUSQRA Gulf marketplace.
 
 ## Run locally
 
@@ -9,21 +9,30 @@ npm install
 npm run dev
 ```
 
-Open the URL printed by Vite. To make a production bundle run `npm run build`.
+Build:
+
+```bash
+npm run build
+```
 
 ## Included
-- Responsive premium homepage (emerald, purple, gold, smoke black)
-- Arabic/English language toggle with RTL layout
-- Feature overview, marketplace flow, professional subscription introduction
-- Interactive Super Admin **demo** dashboard using clearly marked example numbers
+- Responsive bilingual (Arabic/English) homepage with RTL layout
+- Marketplace positioning and professional growth information
+- Prototype login and registration dialogs (not connected to authentication yet)
 
-## Not yet implemented
-- Authentication, user registration, persistent data, jobs, bids, payments, verification, actual admin authorization, API integrations, mobile apps.
-- Logo is a temporary typographic treatment; the selected promotional art has not been bundled.
-- The Neon project is separate; this frontend does **not** connect to it yet.
+## Backend status
 
-## Deployment
-Connect this source to a new frontend service after placing it in a repository you control. Build: `npm install && npm run build`; output: `dist` for static hosting.
+The development database is Supabase project `nusqra-development`. Its schema and migrations are maintained in the repository at `../supabase/migrations/`.
 
-## Security
-Do not treat this dashboard as a protected admin interface. It is only a visual preview and contains no private data.
+The frontend does not yet connect to Supabase. Authentication, live profiles, services, job listings, proposals and messaging UI remain to be implemented.
+
+## First-release payment model
+
+NUSQRA connects customers and professionals. They arrange payment independently; the platform does not collect or distribute payments in the first release.
+
+## Security notes
+
+- Do not add a Supabase service-role or secret key to frontend code.
+- Use only a publishable key in browser code, supplied through local environment variables.
+- Keep real customer data out of the development database until privacy, cross-border transfer and hosting requirements are reviewed.
+- The staff-access link is a prototype only, not a secured admin portal.
