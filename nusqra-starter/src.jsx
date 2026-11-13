@@ -89,6 +89,7 @@ function App() {
   const [categories,setCategories] = useState([]);
   const [categoryAudience,setCategoryAudience] = useState('all');
   const [jobs,setJobs] = useState([]);
+  const [professionalDirectory,setProfessionalDirectory] = useState([]);
   const [jobForm,setJobForm] = useState({title:'',description:'',category_id:'',budget_min:'',budget_max:'',currency:'SAR',country_code:'SA',city:''});
   const [proposalForms,setProposalForms] = useState({});
   const [jobProposals,setJobProposals] = useState({});
@@ -268,7 +269,24 @@ function App() {
     setCategories(c.data || []);setJobs(j.data || []);setMyProposals(Object.fromEntries((mp.data||[]).map(p=>[p.job_id,p])));
   }
 
-  useEffect(()=>{if(session && supabase) loadMarketplace();else{setCategories([]);setJobs([]);setJobProposals({});setMyProposals({});}},[session,roles]);
+  useEffect(()=>{if(supabase && (session || page==='marketplace')) loadMarketplace();else if(!session){setCategories([]);setJobs([]);setJobProposals({});setMyProposals({});}},[session,roles,page]);
+
+  useEffect(()=>{
+    if(page!=='professionals'||!supabase)return;
+    let alive=true;
+    (async()=>{
+      const {data:proRows,error:proError}=await supabase.from('professional_profiles').select('user_id,headline,about,years_experience,city,country_code').order('created_at',{ascending:false}).limit(60);
+      if(proError){if(alive)setError(proError.message);return;}
+      const ids=(proRows||[]).map(p=>p.user_id);
+      if(!ids.length){if(alive)setProfessionalDirectory([]);return;}
+      const {data:profilesRows,error:profilesError}=await supabase.from('profiles').select('id,full_name,display_name,country_code,bio,avatar_url').in('id',ids);
+      if(!alive)return;
+      if(profilesError){setError(profilesError.message);return;}
+      const byId=Object.fromEntries((profilesRows||[]).map(p=>[p.id,p]));
+      setProfessionalDirectory((proRows||[]).map(p=>({...p,profile:byId[p.user_id]})).filter(p=>p.profile));
+    })();
+    return()=>{alive=false;};
+  },[page]);
 
   async function loadConversations(){
     if(!supabase||!session)return;
@@ -398,8 +416,8 @@ function App() {
           <div className="eyebrow"><span className="spark"/> GULF SERVICES · CUSTOMER & PROFESSIONAL</div>
           <h1>{t.hero}</h1><p>{t.sub}</p>
           <div className="buttons">
-            <button className="btn primary" onClick={()=>{setForm(x=>({...x,account_type:'customer'}));setAuthMode('register')}}>{t.hire}{isAr?<ArrowLeft size={18}/>:<ArrowRight size={18}/>}</button>
-            <button className="btn secondary" onClick={()=>{setForm(x=>({...x,account_type:'professional'}));setAuthMode('register')}}>{t.work}</button>
+            <button className="btn primary" onClick={()=>navigatePage('professionals')}>{t.hire}{isAr?<ArrowLeft size={18}/>:<ArrowRight size={18}/>}</button>
+            <button className="btn secondary" onClick={()=>navigatePage('marketplace')}>{t.work}</button>
           </div>
           <div className="proof"><ShieldCheck size={18}/>{t.trust}<span className="dot"/> <span>Gulf-first · Mobile-first</span></div>
         </div>
@@ -417,7 +435,7 @@ function App() {
           </div>
         </section>
         <section className="home-trust-band"><div><span className="section-label">{isAr?'مصممة للخليج':'BUILT FOR THE GULF'}</span><h2>{isAr?'فرص أوضح. تواصل أسهل. نمو أقوى.':'A clearer way to find work and get work done.'}</h2></div><div className="home-trust-points"><span><ShieldCheck size={19}/>{isAr?'تواصل بثقة':'Connect with confidence'}</span><span><Globe2 size={19}/>{isAr?'العربية والإنجليزية':'Arabic & English'}</span><span><Users size={19}/>{isAr?'للأفراد والشركات':'For people & businesses'}</span></div></section>
-        <section className="home-steps section"><div className="section-label">{isAr?'ابدأ في ثلاث خطوات':'GET STARTED IN THREE STEPS'}</div><h2>{isAr?'كيف تعمل نسقرا':'A simple path from need to opportunity'}</h2><div className="home-step-grid"><article><b>01</b><h3>{isAr?'أنشئ حسابك':'Create your account'}</h3><p>{isAr?'أنشئ ملفك كعميل أو محترف.':'Join as a customer or professional.'}</p></article><article><b>02</b><h3>{isAr?'اكتشف أو انشر':'Discover or post'}</h3><p>{isAr?'ابحث عن خدمة أو انشر طلبك.':'Find a service or publish a job request.'}</p></article><article><b>03</b><h3>{isAr?'تواصل وابدأ':'Connect and begin'}</h3><p>{isAr?'راجع العروض وتواصل مباشرة.':'Review proposals and connect directly.'}</p></article></div><div className="home-final-cta"><div><h2>{isAr?'مستعد للخطوة التالية؟':'Ready for your next opportunity?'}</h2><p>{isAr?'انضم إلى مجتمع نسقرا اليوم.':'Join the NUSQRA community today.'}</p></div><button className="btn primary" onClick={()=>{setForm(x=>({...x,account_type:'customer'}));setAuthMode('register')}}>{isAr?'أنشئ حسابك':'Get started'} <ArrowRight size={17}/></button></div></section>
+        <section className="home-steps section"><div className="section-label">{isAr?'ابدأ في ثلاث خطوات':'GET STARTED IN THREE STEPS'}</div><h2>{isAr?'كيف تعمل نسقرا':'A simple path from need to opportunity'}</h2><div className="home-step-grid"><article><b>01</b><h3>{isAr?'أنشئ حسابك':'Create your account'}</h3><p>{isAr?'أنشئ ملفك كعميل أو محترف.':'Join as a customer or professional.'}</p></article><article><b>02</b><h3>{isAr?'اكتشف أو انشر':'Discover or post'}</h3><p>{isAr?'ابحث عن خدمة أو انشر طلبك.':'Find a service or publish a job request.'}</p></article><article><b>03</b><h3>{isAr?'تواصل وابدأ':'Connect and begin'}</h3><p>{isAr?'راجع العروض وتواصل مباشرة.':'Review proposals and connect directly.'}</p></article></div><div className="home-final-cta"><div><h2>{isAr?'مستعد للخطوة التالية؟':'Ready for your next opportunity?'}</h2><p>{isAr?'انضم إلى مجتمع نسقرا اليوم.':'Join the NUSQRA community today.'}</p></div><button className="btn primary" onClick={()=>{if(session)navigatePage('settings');else{setForm(x=>({...x,account_type:'customer'}));setAuthMode('register');}}}>{isAr?'أنشئ حسابك':'Get started'} <ArrowRight size={17}/></button></div></section>
       </>}
       {page === 'categories' && <section className="section category-section" id="categories">
         <div className="section-label">NUSQRA · SERVICES DIRECTORY</div>
@@ -460,6 +478,7 @@ function App() {
           })}
         </div>}
       </section>}
+      {page === 'professionals' && <section className="section professional-directory"><div className="section-label">NUSQRA · PROFESSIONAL DIRECTORY</div><h2>{isAr?'اكتشف المحترفين':'Find professionals'}</h2><p className="section-intro">{isAr?'تعرّف على المحترفين المسجلين وخبراتهم في الخليج.':'Discover professionals who have created a NUSQRA profile and explore their skills across the Gulf.'}</p>{error&&<p className="auth-error" role="alert">{error}</p>}{professionalDirectory.length===0?<p className="market-empty">{isAr?'لا توجد ملفات مهنية منشورة بعد.':'No professional profiles are listed yet.'}</p>:<div className="professional-directory-grid">{professionalDirectory.map(p=><article className="professional-directory-card" key={p.user_id}>{p.profile.avatar_url?<img src={p.profile.avatar_url} alt=""/>:<div className="professional-avatar">{(p.profile.display_name||p.profile.full_name||'N').slice(0,1).toUpperCase()}</div>}<div className="professional-directory-copy"><h3>{p.profile.display_name||p.profile.full_name||t.professional}</h3><strong>{p.headline|| (isAr?'محترف في نسقرا':'NUSQRA professional')}</strong><p>{p.about||p.profile.bio||''}</p><small>{[p.city,p.country_code||p.profile.country_code].filter(Boolean).join(' · ')}{p.years_experience?` · ${p.years_experience} ${isAr?'سنوات خبرة':'years experience'}`:''}</small></div><button className="btn secondary" type="button" onClick={()=>{if(session){navigatePage('messages');setNotice(isAr?'ابدأ محادثة من خلال عرض عمل مناسب.':'Start a conversation through a relevant job proposal.');}else{setForm(x=>({...x,account_type:'customer'}));setAuthMode('login');}}}>{isAr?'تواصل':'Connect'}</button></article>)}</div>}<div className="buttons"><button className="btn secondary" onClick={()=>navigatePage('marketplace')}>{isAr?'استكشف فرص العمل':'Explore opportunities'}</button></div></section>}
       {page === 'explore' && <section className="section" id="explore"><div className="section-label">NUSQRA PLATFORM</div><h2>{t.trust}</h2><div className="feature-grid">
         {[ShieldCheck,Users,Crown,Globe2].map((Icon,i)=><article className="feature" key={i}><span className="iconbox"><Icon size={24}/></span><h3>{t.features[i]}</h3><p>{t.featureText[i]}</p></article>)}
       </div></section>}
@@ -467,7 +486,7 @@ function App() {
         {t.step.map((x,i)=><article key={i}><div className="step-num">0{i+1}</div><h3>{x}</h3><p>{t.stepText[i]}</p></article>)}
       </div></section>}
       {page === 'professionals' && <section className="section professional-landing"><div className="section-label">NUSQRA · PROFESSIONAL NETWORK</div><h2>{isAr?'نمّ أعمالك المهنية مع نسقرا':'Grow your professional presence with NUSQRA'}</h2><p className="section-intro">{isAr?'أنشئ ملفاً مهنياً، اعرض خبراتك، واكتشف فرص العمل والتعاون في الخليج.':'Build your professional profile, showcase your expertise, and discover work and collaboration opportunities across the Gulf.'}</p><div className="feature-grid"><article className="feature"><span className="iconbox"><UserRound size={24}/></span><h3>{isAr?'ملف مهني مميز':'Professional profile'}</h3><p>{isAr?'اعرض مهاراتك وخبراتك وأعمالك.':'Present your skills, experience and work clearly.'}</p></article><article className="feature"><span className="iconbox"><BriefcaseBusiness size={24}/></span><h3>{isAr?'فرص عمل':'Work opportunities'}</h3><p>{isAr?'اكتشف طلبات العملاء وقدّم عروضك.':'Discover customer requests and submit proposals.'}</p></article><article className="feature"><span className="iconbox"><MessageCircle size={24}/></span><h3>{isAr?'تواصل مباشر':'Direct connections'}</h3><p>{isAr?'تواصل مع العملاء وأدر محادثاتك.':'Connect with customers and manage conversations.'}</p></article></div><div className="buttons"><button className="btn primary" onClick={()=>{if(session)navigatePage('settings');else{setForm(x=>({...x,account_type:'professional'}));setAuthMode('register');}}}>{isAr?'انضم كمحترف':'Join as a professional'}</button><button className="btn secondary" onClick={()=>navigatePage('categories')}>{isAr?'تصفح التصنيفات':'Browse categories'}</button></div></section>}
-      {page === 'marketplace' && session && <section className="section marketplace-section" id="marketplace">
+      {page === 'marketplace' && <section className="section marketplace-section" id="marketplace">
         <div className="section-label">NUSQRA · MARKETPLACE</div><h2>{t.marketplace}</h2>
         {error && <p className="auth-error" role="alert">{error}</p>}
         <div className="marketplace-layout">
@@ -487,10 +506,10 @@ function App() {
             </form>
           </div>}
           <div className="marketplace-panel">
-            <h3>{isProfessional?t.myJobsAndOpenJobs:t.myJobs}</h3>
-            {jobs.filter(j=>(isProfessional&&j.customer_id!==session.user.id&&(j.status==='open'||myProposals[j.id]))||(roles.includes('customer')&&j.customer_id===session.user.id)).length===0
-              ? <p className="market-empty">{isProfessional?t.noJobs:t.noOwnJobs}</p>
-              : <div className="job-list">{jobs.filter(j=>(isProfessional&&j.customer_id!==session.user.id&&(j.status==='open'||myProposals[j.id]))||(roles.includes('customer')&&j.customer_id===session.user.id)).map(job=>{
+            <h3>{!session?(isAr?'فرص العمل المتاحة':'Available opportunities'):isProfessional?t.myJobsAndOpenJobs:t.myJobs}</h3>
+            {jobs.filter(j=>(!session&&j.status==='open')||(session&&isProfessional&&j.customer_id!==session.user.id&&(j.status==='open'||myProposals[j.id]))||(session&&roles.includes('customer')&&j.customer_id===session.user.id)).length===0
+              ? <p className="market-empty">{!session?(isAr?'لا توجد فرص منشورة حالياً.':'No opportunities have been posted yet.'):isProfessional?t.noJobs:t.noOwnJobs}</p>
+              : <div className="job-list">{jobs.filter(j=>(!session&&j.status==='open')||(session&&isProfessional&&j.customer_id!==session.user.id&&(j.status==='open'||myProposals[j.id]))||(session&&roles.includes('customer')&&j.customer_id===session.user.id)).map(job=>{
                 const category=categories.find(c=>c.id===job.category_id);
                 const v=proposalForms[job.id]||{cover_letter:'',proposed_price:'',delivery_days:''};
                 return <article className="job-card" key={job.id}>
@@ -498,6 +517,8 @@ function App() {
                   <h4>{job.title}</h4><p className="job-category">{category?(isAr?category.name_ar:category.name_en):t.marketplace} · {job.city||job.country_code}</p>
                   <p className="job-description">{job.description}</p>
                   <div className="job-meta"><strong>{t.budget}: {job.budget_min??'—'} – {job.budget_max??'—'} {job.currency}</strong></div>
+                  {!session&&job.status==='open'&&<button className="btn primary" type="button" onClick={()=>{setForm(x=>({...x,account_type:'professional'}));setAuthMode('login');}}>{isAr?'سجّل الدخول لتقديم عرض':'Log in to submit a proposal'}</button>}
+                  {session&&!isProfessional&&job.status==='open'&&job.customer_id!==session.user.id&&<button className="btn secondary" type="button" disabled={busy} onClick={enableProfessional}>{isAr?'تفعيل الملف المهني للتقديم':'Enable professional profile to apply'}</button>}
                   {isProfessional&&job.status==='open'&&job.customer_id!==session.user.id&&!myProposals[job.id]&&<form className="market-form proposal-form" onSubmit={e=>submitProposal(e,job)}>
                     <h5>{t.submitProposal}</h5>
                     <label>{t.proposalText}<textarea required minLength="20" maxLength="5000" rows="4" value={v.cover_letter} onChange={e=>setProposalForms(old=>({...old,[job.id]:{...v,cover_letter:e.target.value}}))}/></label>
