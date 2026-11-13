@@ -277,7 +277,8 @@ function App() {
     try{
       const {data,error:e}=await supabase.from('proposals').update({status,updated_at:new Date().toISOString()}).eq('id',proposal.id).eq('status','submitted').select('id,status').maybeSingle();
       if(e)throw e;if(!data)throw new Error(isAr?'تعذر اتخاذ القرار؛ قد يكون العرض قد تغير بالفعل.':'Could not update this proposal; it may already have changed.');
-      await loadMarketplace();if(expandedJob){const job=jobs.find(j=>j.id===expandedJob);if(job)await toggleProposals(job);}
+      await loadMarketplace();
+      if(expandedJob){const {data,error:refreshError}=await supabase.from('proposals').select('id,professional_id,cover_letter,proposed_price,currency,delivery_days,status,professional:profiles!proposals_professional_id_fkey(full_name)').eq('job_id',expandedJob).order('created_at',{ascending:false});if(refreshError)throw refreshError;setJobProposals(old=>({...old,[expandedJob]:data||[]}));}
       setNotice(t.decisionSaved);
     }catch(e){setError(e.message||t.authError);}finally{setBusy(false);}
   }
@@ -375,9 +376,9 @@ function App() {
           </div>}
           <div className="marketplace-panel">
             <h3>{isProfessional?t.myJobsAndOpenJobs:t.myJobs}</h3>
-            {jobs.filter(j=>(isProfessional&&j.status==='open'&&j.customer_id!==session.user.id)||(j.customer_id===session.user.id)).length===0
+            {jobs.filter(j=>(isProfessional&&j.customer_id!==session.user.id&&(j.status==='open'||myProposals[j.id]))||(roles.includes('customer')&&j.customer_id===session.user.id)).length===0
               ? <p className="market-empty">{isProfessional?t.noJobs:t.noOwnJobs}</p>
-              : <div className="job-list">{jobs.filter(j=>isProfessional?j.status==='open'&&j.customer_id!==session.user.id:j.customer_id===session.user.id).map(job=>{
+              : <div className="job-list">{jobs.filter(j=>(isProfessional&&j.customer_id!==session.user.id&&(j.status==='open'||myProposals[j.id]))||(roles.includes('customer')&&j.customer_id===session.user.id)).map(job=>{
                 const category=categories.find(c=>c.id===job.category_id);
                 const v=proposalForms[job.id]||{cover_letter:'',proposed_price:'',delivery_days:''};
                 return <article className="job-card" key={job.id}>
