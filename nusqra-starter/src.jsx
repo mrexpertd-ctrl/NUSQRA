@@ -3,7 +3,7 @@ import nusqraLogo from './nusqra-mark.svg';
 import nusqraSymbol from './nusqra-symbol.svg';
 import { createRoot } from 'react-dom/client';
 import {
-  Globe2, ShieldCheck, Users, ArrowRight, ArrowLeft, Crown, Menu, X,
+  Globe2, ShieldCheck, Users, ArrowRight, ArrowLeft, Crown, Menu, X, Search, Clock3,
   BriefcaseBusiness, LogOut, UserRound, CheckCircle2, LoaderCircle,
   MessageCircle, Send, Check, XCircle, RefreshCw, Eye, EyeOff
 } from 'lucide-react';
