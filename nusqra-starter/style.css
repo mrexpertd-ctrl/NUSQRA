@@ -4282,3 +4282,7 @@ html,body,#root{width:100%;max-width:100%;min-width:0;overflow-x:hidden}
 .entry-footer span{color:#fff;font-weight:800;letter-spacing:.08em}
 .entry-footer small{color:#a9c0b1}
 @media(max-width:680px){.entry-how-grid{grid-template-columns:1fr}.entry-closing-cta{align-items:stretch;flex-direction:column}.entry-closing-cta button{width:100%}.entry-category-tile{flex-basis:76vw;height:160px}}
+
+.marketplace-entry .entry-brand-words strong{direction:rtl;unicode-bidi:isolate;text-align:right}
+.marketplace-entry .entry-brand-words small{direction:ltr;unicode-bidi:isolate;text-align:left}
+@media(max-width:390px){.marketplace-entry .entry-brand-words small{font-size:9px;letter-spacing:.24em}}
