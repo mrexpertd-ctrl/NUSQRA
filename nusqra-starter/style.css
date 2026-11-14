@@ -4256,7 +4256,7 @@ html,body,#root{width:100%;max-width:100%;min-width:0;overflow-x:hidden}
 .marketplace-entry .entry-brand-words small{font-size:8px}
 .marketplace-entry .entry-header{padding-inline:10px}
 }
-@font-face{font-family:"Aref Ruqaa";src:url(data:font/ttf;base64,LOCAL_FONT_ALREADY_EMBEDDED) format("truetype");font-style:normal;font-weight:700;font-display:swap}
+
 .entry-home-sections{width:100%;background:#07150f;color:#f7fff9}
 .entry-category-strip,.entry-how-section{padding:58px clamp(16px,5vw,68px);border-top:1px solid rgba(255,255,255,.08)}
 .entry-section-heading{margin:0 0 24px}
