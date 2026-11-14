@@ -871,7 +871,8 @@ function App() {
               ['HR & Recruitment','الموارد البشرية والتوظيف','hr-recruitment','photo-1521737711867-e3b97375f902'],
               ['Healthcare & Wellness','الرعاية الصحية والعافية','healthcare-wellness','photo-1576091160399-112ba8d25d1d'],
               ['Hospitality & Events','الضيافة والفعاليات','hospitality-events','photo-1511795409834-ef04bbd61622'],
-              ['Industrial & Manufacturing','الصناعة والتصنيع','industrial-manufacturing','photo-1581091226825-a6a2a5aee158']
+              ['Industrial & Manufacturing','الصناعة والتصنيع','industrial-manufacturing','photo-1581091226825-a6a2a5aee158'],
+              ['Investors & Opportunities','المستثمرون والفرص','investors-opportunities','photo-1559526324-4b87b5e36e44']
             ].map(([nameEn,nameAr,slug,imageId])=><button type="button" className="entry-category-tile" key={slug} onClick={()=>openEntryCategory(slug)} aria-label={isAr?nameAr:nameEn}><img src={`https://images.unsplash.com/${imageId}?auto=format&fit=crop&w=640&q=76`} alt="" loading="lazy"/><span>{isAr?nameAr:nameEn}</span></button>)}
           </div>
         </section>
