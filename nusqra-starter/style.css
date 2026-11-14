@@ -1373,3 +1373,10 @@ html,body,#root{max-width:100%!important;min-width:0!important;overflow-x:hidden
 .header .nusqra-header-symbol{display:block!important;width:190px!important;height:54px!important;max-width:38vw!important;flex:0 1 190px!important;object-fit:contain!important;object-position:start center!important}
 .header>.brand-lockup{display:flex!important;align-items:center!important;min-width:0!important;gap:0!important}
 @media(max-width:600px){.header .nusqra-header-symbol{width:150px!important;height:44px!important;max-width:42vw!important;flex-basis:150px!important}}
+
+.marketplace-entry .entry-hero{position:relative!important;isolation:isolate!important}
+.marketplace-entry .entry-hero::before{content:""!important;position:absolute!important;z-index:0!important;inset:-28px -18px!important;pointer-events:none!important;background:linear-gradient(112deg,transparent 38%,rgba(47,227,154,.055) 49%,transparent 60%)!important;background-size:220% 100%!important;animation:entryHeroShimmer 18s ease-in-out infinite!important}
+.marketplace-entry .entry-hero>*{position:relative!important;z-index:1!important}
+.marketplace-entry .entry-reveal{opacity:0!important;transform:translateY(18px)!important;transition:opacity .65s ease,transform .65s ease!important}
+.marketplace-entry .entry-reveal.is-visible{opacity:1!important;transform:translateY(0)!important}
+@media(prefers-reduced-motion:reduce){.marketplace-entry .entry-reveal{opacity:1!important;transform:none!important;transition:none!important}.marketplace-entry .entry-hero::before{animation:none!important}}
