@@ -29,8 +29,11 @@ async function trackInstall(request, env) {
   if (contentLength > 1024) return json({ error: "Request too large." }, 413);
 
   let body;
-  try { body = await request.json(); }
-  catch { return json({ error: "Invalid JSON." }, 400); }
+  try {
+    const raw = await request.text();
+    if (raw.length > 1024) return json({ error: "Request too large." }, 413);
+    body = JSON.parse(raw);
+  } catch { return json({ error: "Invalid JSON." }, 400); }
 
   const deviceId = typeof body.device_id === "string" ? body.device_id.trim() : "";
   const platform = typeof body.platform === "string" ? body.platform : "";
