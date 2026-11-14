@@ -136,7 +136,8 @@ export default {
    if(url.pathname==='/api/staff/manage'&&request.method==='POST'){
     if(ctx.staff.staff_role!=='supreme_admin') return json({error:'Only the Supreme Admin can manage staff.'},403);
     let body;try{body=await request.json();}catch{return json({error:'Invalid JSON.'},400);}
-    const staffId=String(body.staffId||''),action=body.action;
+    const staffId=String(body.staffId||''),action=body.action,reason=String(body.reason||'').trim();
+    if(!reason) return json({error:'A reason is required for every staff-management action.'},400);
     const {data:target,error:targetError}=await ctx.service.from('admin_staff_directory').select('*').eq('id',staffId).maybeSingle();
     if(targetError||!target) return json({error:'Staff member not found.'},404);
     if(target.staff_role==='supreme_admin') return json({error:'The Supreme Admin seat cannot be changed or removed through staff management.'},403);
@@ -144,13 +145,13 @@ export default {
       if(!['admin','moderator'].includes(body.role)) return json({error:'Choose Admin or Moderator.'},400);
       const {error}=await ctx.service.from('admin_staff_directory').update({staff_role:body.role,updated_at:new Date().toISOString()}).eq('id',staffId);
       if(error) return json({error:'Role change failed. The Admin seat limit may have been reached.'},409);
-      await audit(ctx,request,'staff_role_changed','staff',target.email,'Changed role to '+body.role);
+      await audit(ctx,request,'staff_role_changed','staff',target.email,reason+' (new role: '+body.role+')');
     }else if(action==='suspend'||action==='remove'){
       const status=action==='suspend'?'suspended':'removed';
       const {error}=await ctx.service.from('admin_staff_directory').update({status,updated_at:new Date().toISOString()}).eq('id',staffId);
       if(error) return json({error:'Staff status change failed.'},500);
       if(target.user_id) await ctx.service.from('admin_sessions').update({revoked_at:new Date().toISOString()}).eq('user_id',target.user_id).is('revoked_at',null);
-      await audit(ctx,request,action==='suspend'?'staff_suspended':'staff_removed','staff',target.email);
+      await audit(ctx,request,action==='suspend'?'staff_suspended':'staff_removed','staff',target.email,reason);
     }else return json({error:'Unsupported staff action.'},400);
     return json({success:true,message:'Staff record updated.'});
    }
