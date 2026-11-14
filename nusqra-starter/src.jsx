@@ -697,18 +697,34 @@ function App() {
               </button>
             </div>
             <h2 id="access-gate-title">{isAr?'مرحباً بك في نسقرا':'Welcome to NUSQRA'}</h2>
-            <h2 id="access-gate-title">{isAr?'مرحباً بك في نسقرا':'Welcome to NUSQRA'}</h2>
-            <p>{isAr?'سجّل الدخول باستخدام حساب Google للمتابعة إلى السوق.':'Sign in with your Google account to continue to the marketplace.'}</p>
-            {!isSupabaseConfigured && <p className="auth-warning" role="alert">{t.noConfig}</p>}
-            {error && <p className="auth-error" role="alert">{error}</p>}
-            <button type="button" className="google-auth access-gate-google" disabled={busy || !selectedRole} onClick={signInWithGoogle} aria-label={isAr?"تسجيل الدخول باستخدام Google":"Sign in with Google"}>
-              <span className="google-g" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path fill="#4285F4" d="M23.49 12.27c0-.79-.07-1.54-.2-2.27H12v4.3h6.44a5.5 5.5 0 0 1-2.33 3.36v2.8h3.77c2.2-2.03 3.61-5.02 3.61-8.19z"/><path fill="#34A853" d="M12 24c3.24 0 5.96-1.08 7.95-2.92l-3.77-2.8c-1.05.7-2.4 1.12-4.18 1.12-3.21 0-5.93-2.17-6.9-5.09H1.2v2.89C3.18 21.16 7.27 24 12 24z"/><path fill="#FBBC05" d="M5.1 14.31A7.2 7.2 0 0 1 4.72 12c0-.8.14-1.58.38-2.31V6.8H1.2A12 12 0 0 0 0 12c0 1.94.46 3.77 1.2 5.2l3.9-2.89z"/><path fill="#EA4335" d="M12 4.6c1.77 0 3.36.61 4.61 1.8l3.45-3.45C17.95 1.12 15.24 0 12 0 7.27 0 3.18 2.84 1.2 6.8l3.9 2.89C6.07 6.77 8.79 4.6 12 4.6z"/></svg></span>
-              {busy ? (isAr?'جارٍ الاتصال بـ Google…':'Connecting to Google…') : (isAr?'المتابعة باستخدام Google':'Continue with Google')}
-            </button>
-            <button type="button" className="entry-email-action" disabled={!selectedRole} onClick={()=>{window.localStorage.setItem('nusqra-pending-role',selectedRole);window.localStorage.setItem('nusqra-active-role',selectedRole);setForm(x=>({...x,account_type:selectedRole}));setAuthMode('register');setError('');setNotice('');}}>{isAr?'إنشاء حساب بالبريد الإلكتروني':'Create account with email'}</button>
-            <button type="button" className="entry-login-action" disabled={!selectedRole} onClick={()=>{window.localStorage.setItem('nusqra-pending-role',selectedRole);window.localStorage.setItem('nusqra-active-role',selectedRole);setForm(x=>({...x,account_type:selectedRole}));setAuthMode('login');setError('');setNotice('');}}>{isAr?'لديك حساب بالفعل؟ تسجيل الدخول':'Already have an account? Log in'}</button>
-            <div className="entry-auth-divider"><span>{isAr?'دخول آمن':'SECURE ACCESS'}</span></div>
-            <div className="access-gate-security"><ShieldCheck size={17}/><span>{isAr?'بياناتك محمية وآمنة':'Your data is secure and private'}</span></div>
+            {!authMode ? <>
+              <h2 id="access-gate-title">{isAr?'مرحباً بك في نسقرا':'Welcome to NUSQRA'}</h2>
+              <p>{isAr?'اختر دورك ثم تابع باستخدام Google أو البريد الإلكتروني.':'Choose your role, then continue with Google or email.'}</p>
+              {!isSupabaseConfigured && <p className="auth-warning" role="alert">{t.noConfig}</p>}
+              {error && <p className="auth-error" role="alert">{error}</p>}
+              <button type="button" className="google-auth access-gate-google" disabled={busy || !selectedRole} onClick={signInWithGoogle} aria-label={isAr?"تسجيل الدخول باستخدام Google":"Sign in with Google"}>
+                <span className="google-g" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path fill="#4285F4" d="M23.49 12.27c0-.79-.07-1.54-.2-2.27H12v4.3h6.44a5.5 5.5 0 0 1-2.33 3.36v2.8h3.77c2.2-2.03 3.61-5.02 3.61-8.19z"/><path fill="#34A853" d="M12 24c3.24 0 5.96-1.08 7.95-2.92l-3.77-2.8c-1.05.7-2.4 1.12-4.18 1.12-3.21 0-5.93-2.17-6.9-5.09H1.2v2.89C3.18 21.16 7.27 24 12 24z"/><path fill="#FBBC05" d="M5.1 14.31A7.2 7.2 0 0 1 4.72 12c0-.8.14-1.58.38-2.31V6.8H1.2A12 12 0 0 0 0 12c0 1.94.46 3.77 1.2 5.2l3.9-2.89z"/><path fill="#EA4335" d="M12 4.6c1.77 0 3.36.61 4.61 1.8l3.45-3.45C17.95 1.12 15.24 0 12 0 7.27 0 3.18 2.84 1.2 6.8l3.9 2.89C6.07 6.77 8.79 4.6 12 4.6z"/></svg></span>
+                {busy ? (isAr?'جارٍ الاتصال بـ Google…':'Connecting to Google…') : (isAr?'المتابعة باستخدام Google':'Continue with Google')}
+              </button>
+              <button type="button" className="entry-email-action" disabled={!selectedRole} onClick={()=>{window.localStorage.setItem('nusqra-pending-role',selectedRole);window.localStorage.setItem('nusqra-active-role',selectedRole);setForm(x=>({...x,account_type:selectedRole}));setAuthMode('register');setError('');setNotice('');}}>{isAr?'إنشاء حساب بالبريد الإلكتروني':'Create account with email'}</button>
+              <button type="button" className="entry-login-action" disabled={!selectedRole} onClick={()=>{window.localStorage.setItem('nusqra-pending-role',selectedRole);window.localStorage.setItem('nusqra-active-role',selectedRole);setForm(x=>({...x,account_type:selectedRole}));setAuthMode('login');setError('');setNotice('');}}>{isAr?'لديك حساب بالفعل؟ تسجيل الدخول':'Already have an account? Log in'}</button>
+              <div className="entry-auth-divider"><span>{isAr?'دخول آمن':'SECURE ACCESS'}</span></div>
+              <div className="access-gate-security"><ShieldCheck size={17}/><span>{isAr?'بياناتك محمية وآمنة':'Your data is secure and private'}</span></div>
+            </> : <>
+              <h2>{authMode==='register'?t.create:t.welcome}</h2>
+              {!isSupabaseConfigured && <p className="auth-warning">{t.noConfig}</p>}
+              <form className="entry-register-form" onSubmit={submitAuth}>
+                {authMode==='register' && <label>{t.fullName}<input required autoComplete="name" value={form.full_name} onChange={e=>setField('full_name',e.target.value)}/></label>}
+                <label>{t.email}<input type="email" required autoComplete="email" value={form.email} onChange={e=>setField('email',e.target.value)}/></label>
+                <label>{t.password}<input type="password" required minLength="8" autoComplete={authMode==='register'?'new-password':'current-password'} value={form.password} onChange={e=>setField('password',e.target.value)}/></label>
+                {authMode==='register' && <label>{t.country}<select value={form.country_code} onChange={e=>setField('country_code',e.target.value)}>{countryCodes.map(code=><option key={code} value={code}>{t.countries[code]}</option>)}</select></label>}
+                {authMode==='register' && form.account_type==='professional' && <label>{isAr?'التخصص المهني الأساسي':'Primary professional category'}<select required value={signupCategoryId} onChange={e=>setSignupCategoryId(e.target.value)}><option value="">{t.selectCategory}</option>{categories.filter(c=>c.slug!=='investors-opportunities').map(c=><option key={c.id} value={c.id}>{isAr?c.name_ar:c.name_en}</option>)}</select></label>}
+                {error && <p className="auth-error" role="alert">{error}</p>}
+                {notice && <p className="auth-success" role="status">{notice}</p>}
+                <button className="btn primary" type="submit" disabled={busy||!isSupabaseConfigured}>{busy?t.working:authMode==='register'?t.signup:t.login}</button>
+              </form>
+              <button type="button" className="auth-switch" onClick={()=>{setAuthMode(null);setError('');setNotice('');}}>{isAr?'العودة لاختيار نوع الحساب':'Back to role selection'}</button>
+            </>}
           </div>
           <div className="entry-auth-note">{isAr?'حساب واحد للوصول إلى خدمات وفرص نسقرا':'One account for the NUSQRA services marketplace'}</div>
         </section>
