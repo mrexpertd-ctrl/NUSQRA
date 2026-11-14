@@ -38,8 +38,8 @@ The initial Worker uses its isolated workers.dev hostname. To attach admin.examp
 
 ## Important setup notes
 1. Enable TOTP MFA in Supabase Auth settings. The Worker enforces AAL2 for every protected API route.
-2. Set SUPREME_ADMIN_EMAIL to the owner's exact Supabase Auth email.
-3. Sign in with that email. The first successful AAL2 session creates the single Supreme Admin staff record. The user chooses their own password through Supabase Auth; this application never receives or stores the password.
+2. Set SUPREME_ADMIN_EMAIL to the owner's exact email. On first dashboard visit, the Worker reserves the unique Supreme Admin seat and sends a Supabase invitation. If the email already has an Auth user, that account is authorized instead.
+3. Open the invitation link on the separate Worker hostname. New invitees set their own password in the dashboard, then enroll and verify TOTP. The application never stores or logs passwords.
 4. Invite Admins and Moderators from the Supreme Admin dashboard. Supabase sends the invite email. Their role is stored server-side and cannot be chosen by the invitee.
 5. Admin API database tables are inaccessible to anon/authenticated roles; the Worker uses the service-role secret only on the server.
 
