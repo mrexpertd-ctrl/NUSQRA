@@ -721,7 +721,7 @@ function App() {
         <section className="entry-auth-wrap">
           <div className="entry-auth-card">
 
-            <div className="entry-auth-eyebrow">{entryStep==='role'?(isAr?'اختر طريقة استخدام المنصة':'{isAr?'اختر تجربة نسقرا المناسبة لك':'Choose your NUSQRA experience'}'):(isAr?'تسجيل الدخول الآمن':'SECURE ACCOUNT ACCESS')}</div>
+            <div className="entry-auth-eyebrow">{entryStep==='role'?(isAr?'اختر تجربة نسقرا المناسبة لك':'Choose your NUSQRA experience'):(isAr?'تسجيل الدخول الآمن':'SECURE ACCOUNT ACCESS')}</div>
             {entryStep==='role' && <div className="entry-role-picker" role="group" aria-label={isAr?'اختر نوع الحساب':'Choose account type'}>
               <button type="button" className={'entry-role-card '+(selectedRole==='customer'?'selected':'')} onClick={()=>chooseEntryRole('customer')}>
                 <span className="entry-role-icon"><Users size={24}/></span><strong>{isAr?'أبحث عن محترف':'I want to hire'}</strong><small>{isAr?'تصفح الملفات المهنية والتوفر، وقارن الخبرات، وانشر طلبك.':'Browse professional profiles and availability, compare skills and post a job.'}</small><span className="entry-role-arrow" aria-hidden="true">{isAr?<ArrowLeft size={18}/>:<ArrowRight size={18}/>}</span>
