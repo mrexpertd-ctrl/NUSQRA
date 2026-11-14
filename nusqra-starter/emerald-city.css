@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Tajawal:wght@400;500;700;800&display=swap');
 /* NUSQRA Emerald City visual system — homepage and marketplace */
 :root{--nq-forest:#073d2b;--nq-deep:#05291f;--nq-green:#087a50;--nq-bright:#16a36b;--nq-mint:#eaf5ed;--nq-gold:#c9a85d;--nq-ink:#13291f;--nq-muted:#64776b;--nq-line:#dce8df}
 html{scroll-behavior:smooth}
@@ -214,7 +215,6 @@ html body .marketplace-entry .entry-layout-auth .entry-auth-card{
 }
 
 /* NUSQRA Signature U: private-sector Saudi Arabic-first design */
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Tajawal:wght@400;500;700;800&display=swap');
 :root{--nq-forest:#126b53;--nq-deep:#181b1a;--nq-green:#126b53;--nq-bright:#178766;--nq-mint:#edf5f0;--nq-gold:#c4a56b;--nq-ink:#181b1a;--nq-muted:#63716b;--nq-line:#e1e7e1}
 html body,html body button,html body input,html body textarea,html body select{font-family:'IBM Plex Sans Arabic','Tajawal',system-ui,sans-serif!important}
 html[dir=rtl] body{font-family:'Tajawal','IBM Plex Sans Arabic',sans-serif!important}
