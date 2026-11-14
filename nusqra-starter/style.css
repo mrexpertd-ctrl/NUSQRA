@@ -1360,3 +1360,12 @@ html,body,#root{max-width:100%!important;min-width:0!important;overflow-x:hidden
 [dir="rtl"] .marketplace-entry .entry-role-arrow svg{transform:rotate(180deg)!important}
 [dir="rtl"] .marketplace-entry .entry-hero-points{direction:rtl!important}
 @media(prefers-reduced-motion:reduce){.marketplace-entry *, .marketplace-entry *::before,.marketplace-entry *::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
+@media(max-width:600px){
+ .marketplace-entry>.entry-header{flex-wrap:wrap!important;align-content:center!important;justify-content:space-between!important;height:auto!important;min-height:96px!important;flex-basis:auto!important;padding:7px 14px 5px!important;row-gap:2px!important}
+ .marketplace-entry .entry-brand{order:1!important}
+ .marketplace-entry .entry-language{order:2!important}
+ .marketplace-entry .entry-nav{display:flex!important;order:3!important;flex:1 0 100%!important;justify-content:center!important;flex-wrap:wrap!important;gap:4px 15px!important;padding:4px 0 2px!important;font-size:10px!important}
+ .marketplace-entry .entry-nav span{white-space:normal!important}
+ .marketplace-entry>.entry-layout-role{min-height:calc(100svh - 96px)!important}
+}
