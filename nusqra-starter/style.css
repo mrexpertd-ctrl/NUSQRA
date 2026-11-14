@@ -4655,8 +4655,14 @@ html,body,#root{width:100%;max-width:100%;min-width:0;overflow-x:hidden}
 .category-section .category-symbol {
   font-size: 1rem !important;
 }
-.category-section :is(.section-label, .category-audience, .investor-disclaimer, .category-flow-note, .audience-tabs button) {
-  min-font-size: .875rem;
+.category-section :is(.section-label, .category-symbol, .category-audience, .investor-disclaimer, .category-flow-note, .audience-tabs button, .category-selected-mark) {
+  font-size: .875rem !important;
+}
+.category-section .category-grid > .category-select-card > .investor-disclaimer {
+  order: 2 !important;
+}
+.category-section .category-grid > .category-select-card > .category-audience {
+  order: 3 !important;
 }
 .category-section,
 .category-section * {
