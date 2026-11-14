@@ -811,15 +811,15 @@ function App() {
       </>}
       {page === 'categories' && <section className="section category-section" id="categories">
         <div className="section-label">NUSQRA · SERVICES DIRECTORY</div>
-        <h2>{t.categoriesTitle}</h2>
-        <p className="section-intro category-intro">{t.categoriesIntro}</p>
+        <h2>{isProfessional?(isAr?'اختر تخصصاتك المهنية':'Choose your professional categories'):t.categoriesTitle}</h2>
+        <p className="section-intro category-intro">{isProfessional?(isAr?'حدد الخدمات التي تستطيع تقديمها، ثم أكمل بياناتك المهنية للظهور للعملاء المناسبين.':'Choose the services you can provide, then complete your professional details so customers can find you.'):t.categoriesIntro}</p>
         <div className="category-flow-note">{isProfessional?(isAr?'اختر تخصصاتك المهنية، ثم أكمل بيانات خبرتك وموقعك ووسيلة التواصل.':'Select your service categories, then complete your professional details.'):(isAr?'اختر الخدمة لعرض المحترفين المسجلين في التصنيف نفسه.':'Choose a service category to see professionals who offer that exact service.')}</div>
-        <div className="audience-tabs" role="group" aria-label="Browse categories by audience">
+        {!isProfessional&&<div className="audience-tabs" role="group" aria-label="Browse categories by audience">
           <button type="button" className={categoryAudience==='all'?'active':''} onClick={()=>setCategoryAudience('all')}>{t.audienceAll}</button>
           <button type="button" className={categoryAudience==='individuals'?'active':''} onClick={()=>setCategoryAudience('individuals')}>{t.audienceIndividuals}</button>
           <button type="button" className={categoryAudience==='companies'?'active':''} onClick={()=>setCategoryAudience('companies')}>{t.audienceCompanies}</button>
           <button type="button" className={categoryAudience==='investors'?'active':''} onClick={()=>setCategoryAudience('investors')}>{t.audienceInvestors}</button>
-        </div>
+        </div>}
         {categories.length>0 && <div className="category-grid">
           {categories.filter(c=>{if(isProfessional&&c.slug==='investors-opportunities')return false;const individualSlugs=['automotive-services','design-creative','education-training','healthcare-wellness','home-maintenance','hospitality-events','transport-logistics','web-technology','writing-translation'];const companySlugs=['business-services','construction-engineering','design-creative','finance-administration','hr-recruitment','industrial-manufacturing','marketing-sales','transport-logistics','web-technology'];if(categoryAudience==='all')return true;if(categoryAudience==='investors')return c.slug==='investors-opportunities';if(categoryAudience==='individuals')return individualSlugs.includes(c.slug);return companySlugs.includes(c.slug);}).map(c=>{
             const symbols={'web-technology':'⌘','design-creative':'✦','marketing-sales':'↗','business-services':'▤','automotive-services':'⚙','education-training':'◎','home-maintenance':'⌂','writing-translation':'✎','construction-engineering':'⌁','transport-logistics':'⇢','finance-administration':'＄','hr-recruitment':'♙','healthcare-wellness':'＋','hospitality-events':'◇','industrial-manufacturing':'▦','investors-opportunities':'◈'};
