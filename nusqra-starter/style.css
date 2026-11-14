@@ -2853,3 +2853,11 @@ footer{padding:32px clamp(22px,5vw,76px)!important}
 .language-preference label{font-weight:700}
 .language-preference select{min-width:130px;padding:9px 12px;border:1px solid var(--line,#dfe5e2);border-radius:9px;background:var(--surface,#fff);color:inherit}
 @media(max-width:560px){.entry-role-picker{grid-template-columns:1fr}.entry-role-card{padding:14px}.entry-auth-card{padding-left:20px;padding-right:20px}}
+
+
+/* Public professional availability indicator */
+.availability-badge{display:inline-flex;align-items:center;gap:7px;width:max-content;max-width:100%;padding:6px 11px;border-radius:999px;font-size:12px;font-weight:750;line-height:1.4}
+.availability-badge::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor;flex:0 0 7px}
+.availability-available{color:#087a50;background:rgba(16,185,129,.12)}
+.availability-busy{color:#9a6700;background:rgba(234,179,8,.15)}
+.availability-unavailable{color:#66736d;background:rgba(107,114,128,.12)}
