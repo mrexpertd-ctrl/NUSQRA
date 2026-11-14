@@ -580,7 +580,7 @@ function App() {
 
   async function publishJob(event){
     event.preventDefault();
-    if(!supabase || !session || !roles.includes('customer')) return;
+    if(!supabase || !session || !isCustomer) return;
     setBusy(true);setError('');setNotice('');
     try{
       const payload={customer_id:session.user.id,category_id:jobForm.category_id||null,title:jobForm.title.trim(),description:jobForm.description.trim(),budget_min:jobForm.budget_min===''?null:Number(jobForm.budget_min),budget_max:jobForm.budget_max===''?null:Number(jobForm.budget_max),currency:jobForm.currency,country_code:profileForm.country_code||'SA',city:jobForm.city.trim()||null,status:'open'};
@@ -916,6 +916,7 @@ function App() {
         <div className="account-card">
           <div className="account-heading"><div><h3>{profileForm.full_name || session.user.email}</h3><p>{session.user.email}</p></div><div className="settings-actions"><button className="btn secondary" type="button" onClick={()=>navigatePage('home')}>{isAr?"العودة للرئيسية":"Back to home"}</button><button className="btn secondary" onClick={signOut}><LogOut size={16}/>{t.logout}</button></div></div>
           <div className="language-preference"><label htmlFor="nusqra-language-setting">{isAr?'لغة المنصة':'Website language'}</label><select id="nusqra-language-setting" value={lang} onChange={e=>setLang(e.target.value)}><option value="ar">العربية</option><option value="en">English</option></select></div>
+          {roles.length>1 && <div className="language-preference"><label htmlFor="nusqra-role-setting">{isAr?'طريقة استخدام نسقرا':'NUSQRA experience'}</label><select id="nusqra-role-setting" value={activeRole} onChange={e=>{const next=e.target.value;setActiveRole(next);window.localStorage.setItem('nusqra-active-role',next);navigatePage(next==='professional'?'marketplace':'professionals');}}>{roles.includes('customer')&&<option value="customer">{isAr?'أبحث عن محترف':'Hire a professional'}</option>}{roles.includes('professional')&&<option value="professional">{isAr?'أنا محترف':'Find work as a professional'}</option>}</select></div>}
           <div className="role-list"><strong>{t.roles}:</strong>{roles.filter(role=>role!=='admin').map(role=><span className="role-chip" key={role}>{role==='customer'?t.customer:t.professional}</span>)}<button className="btn secondary" type="button" onClick={()=>navigatePage('support')}>{isAr?'دعم العملاء':'Customer support'}</button></div>
           {!isProfessional && <button className="btn secondary enable-pro" disabled={busy} onClick={enableProfessional}><BriefcaseBusiness size={16}/>{t.enablePro}</button>}
           <form className="profile-form profile-studio" onSubmit={saveProfile}>
