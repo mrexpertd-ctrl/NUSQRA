@@ -1,4 +1,4 @@
-const CACHE_NAME = "nusqra-shell-v1";
+const CACHE_NAME = "nusqra-shell-v2";
 const SHELL = ["/", "/site.webmanifest", "/favicon.svg"];
 
 self.addEventListener("install", event => {
