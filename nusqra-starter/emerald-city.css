@@ -56,3 +56,37 @@ body{background:#f5f8f5;color:var(--nq-ink);font-family:Inter,"Segoe UI",Tahoma,
 footer:not(.entry-footer){background:#041e17!important;color:#d6e6dc!important}
 @media(max-width:900px){.entry-hero{grid-template-columns:1fr!important;min-height:0!important;padding:72px 6vw 74px!important}.entry-kicker{grid-column:1!important;margin:0!important}.entry-hero h1{grid-column:1!important;grid-row:auto!important}.entry-hero-search{grid-column:1!important;grid-row:auto!important}.entry-hero-choices{grid-column:1!important;grid-row:auto!important}.entry-browse-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}.entry-why-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}.entry-header{padding-inline:4vw!important}}
 @media(max-width:600px){.entry-header{height:68px!important;padding-inline:14px!important}.entry-hero{gap:22px!important;padding:48px 18px 52px!important}.entry-hero h1{font-size:39px!important;line-height:1.15!important}.entry-hero-search{gap:7px!important;padding:6px 7px 6px 12px!important;border-radius:14px!important}.entry-hero-search input{font-size:13px!important}.entry-hero-search button{padding:12px 15px!important}.entry-hero-choices{grid-template-columns:1fr!important;gap:10px!important}.entry-hero-choice{padding:14px!important}.entry-content-section{padding:52px 18px!important}.entry-browse-grid{gap:11px!important}.entry-browse-card{min-height:142px!important;padding:13px!important;border-radius:14px!important}.entry-browse-card span{font-size:13px!important}.entry-how-grid{grid-template-columns:1fr!important;gap:11px!important}.entry-how-grid article{padding:21px!important}.entry-why-grid{grid-template-columns:1fr 1fr!important;gap:9px!important}.entry-why-grid article{padding:13px!important;font-size:12px!important}.entry-section-heading h2{font-size:29px!important}.entry-closing-cta{align-items:flex-start!important;flex-direction:column!important;padding:42px 20px!important}.entry-cta-actions{width:100%!important}.entry-cta-actions button{flex:1!important}.entry-footer{grid-template-columns:auto 1fr!important;padding:24px 20px!important}.entry-footer nav{grid-column:1/-1!important}.entry-footer small{grid-column:1/-1!important}.entry-nav.open{background:#fff!important;border:1px solid var(--nq-line)!important;border-radius:0 0 16px 16px!important}}
+
+
+/* NUSQRA Theme F — Warm Sunset / Gulf Heritage. Isolated preview, visual-only. */
+:root{--nq-forest:#542e36;--nq-deep:#261c30;--nq-green:#c95724;--nq-bright:#ed8b36;--nq-mint:#fff0df;--nq-gold:#e9ad66;--nq-ink:#33212d;--nq-muted:#79636b;--nq-line:#e9d4c7}
+body{background:#fff4e9!important;color:#33212d!important}
+.marketplace-entry,.marketplace-entry .entry-layout-role{background:#fff4e9!important;color:#33212d!important}
+.marketplace-entry .entry-header{background:rgba(42,27,45,.97)!important;border-bottom:1px solid #bb7858!important;box-shadow:0 5px 22px #29132326!important}
+.marketplace-entry .entry-brand-words strong{color:#fff4e9!important}
+.marketplace-entry .entry-brand-words small{color:#f4b37e!important}
+.marketplace-entry .entry-nav a,.marketplace-entry .entry-nav span{color:#fff0e4!important}
+.marketplace-entry .entry-language,.marketplace-entry .entry-menu{background:#493044!important;color:#fff6eb!important;border-color:#a16a65!important}
+.marketplace-entry .entry-hero{background:linear-gradient(110deg,#311f38 0%,#744052 55%,#d87840 100%)!important;color:#fff8f0!important}
+.marketplace-entry .entry-hero:before{background:linear-gradient(90deg,rgba(37,23,42,.94) 0%,rgba(68,32,48,.78) 48%,rgba(89,43,43,.20) 100%),url("https://images.unsplash.com/photo-1509316785289-025f5b846b35?auto=format&fit=crop&w=2000&q=85") center/cover!important;opacity:1!important}
+.marketplace-entry .entry-hero:after{border-color:#ffc28a66!important;box-shadow:0 0 0 70px #ffb27010!important}
+.marketplace-entry .entry-hero h1,.marketplace-entry .entry-hero p{color:#fff8f0!important}
+.marketplace-entry .entry-hero h1 em,.marketplace-entry .entry-hero h1 span{color:#ffb36b!important}
+.marketplace-entry .entry-hero-search{background:#fffaf4!important;border-color:#f0c8a7!important}
+.marketplace-entry .entry-hero-search input{color:#402b35!important}
+.marketplace-entry .entry-hero-search button,.marketplace-entry .entry-cta-actions button:first-child{background:linear-gradient(110deg,#f18a35,#c94f25)!important;color:white!important;border-color:#e97a35!important}
+.marketplace-entry .entry-hero-choice{background:linear-gradient(125deg,rgba(86,43,66,.96),rgba(181,77,49,.86))!important;border-color:#ed9d75!important;color:#fff7f0!important}
+.marketplace-entry .entry-hero-choice:nth-child(2){background:linear-gradient(125deg,rgba(50,37,55,.97),rgba(109,57,70,.9))!important}
+.marketplace-entry .entry-home-sections,.marketplace-entry .entry-content-section{background:#fff4e9!important;color:#382534!important}
+.marketplace-entry .entry-section-heading h2,.marketplace-entry .entry-content-section h2{color:#462c39!important;opacity:1!important;visibility:visible!important}
+.marketplace-entry .entry-section-heading:before,.marketplace-entry .entry-section-heading:after{background:#d47750!important}
+.marketplace-entry .entry-browse-card{background:#fffaf5!important;border:1px solid #e8c9b8!important;box-shadow:0 8px 22px #66352218!important}
+.marketplace-entry .entry-browse-card span{color:#fff9f2!important;background:linear-gradient(0deg,rgba(38,24,40,.94),rgba(57,28,44,.52))!important}
+.marketplace-entry .entry-how-grid article,.marketplace-entry .entry-why-grid article{background:#fffaf5!important;color:#402a38!important;border:1px solid #e9cdbb!important;box-shadow:0 5px 15px #703d3010!important}
+.marketplace-entry .entry-how-grid article p,.marketplace-entry .entry-why-grid article p{color:#69505b!important;opacity:1!important}
+.marketplace-entry .entry-how-grid article h3{color:#3f2937!important}
+.marketplace-entry .entry-closing-cta{background:linear-gradient(100deg,rgba(69,31,54,.94),rgba(201,86,46,.80)),url("https://images.unsplash.com/photo-1509316785289-025f5b846b35?auto=format&fit=crop&w=1800&q=80") center/cover!important;color:#fff7ef!important}
+.marketplace-entry .entry-footer{background:#291c30!important;color:#fff2e7!important}
+.marketplace-entry .entry-footer a,.marketplace-entry .entry-footer small{color:#f2d5c5!important}
+.marketplace-entry .entry-reveal{opacity:1!important;transform:none!important}
+@media(max-width:899px){.marketplace-entry .entry-nav.open{background:#38263b!important;border-color:#9b675c!important}.marketplace-entry .entry-nav.open a{color:#fff4e9!important}}
