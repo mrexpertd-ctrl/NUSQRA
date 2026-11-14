@@ -5096,3 +5096,63 @@ html,body,#root{width:100%;max-width:100%;min-width:0;overflow-x:hidden}
 [dir="rtl"] .marketplace-entry .entry-home-sections .entry-audience-grid,
 [dir="rtl"] .marketplace-entry .entry-home-sections .entry-faq-list{direction:rtl!important}
 [dir="rtl"] .marketplace-entry .entry-faq-list summary{padding:17px 16px 17px 42px!important}
+
+/* NUSQRA homepage repair: visible content, compact flow, and mobile-first navigation */
+.marketplace-entry,.marketplace-entry *{box-sizing:border-box!important}
+.marketplace-entry{width:100%!important;max-width:100%!important;overflow-x:hidden!important}
+.marketplace-entry .entry-header{position:relative!important;display:flex!important;align-items:center!important;justify-content:space-between!important;gap:12px!important;width:100%!important;min-height:64px!important;padding:10px 16px!important}
+.marketplace-entry .entry-nav{display:none!important}
+.marketplace-entry .entry-nav.open{position:absolute!important;z-index:50!important;top:calc(100% + 4px)!important;inset-inline:12px!important;display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:0!important;padding:8px!important;border:1px solid rgba(255,255,255,.16)!important;border-radius:14px!important;background:#07140f!important;box-shadow:0 16px 34px rgba(0,0,0,.38)!important}
+.marketplace-entry .entry-nav a,.marketplace-entry .entry-nav span{display:flex!important;align-items:center!important;min-height:46px!important;padding:10px 12px!important;color:#fff!important;text-decoration:none!important}
+.marketplace-entry .entry-header-actions{display:flex!important;align-items:center!important;gap:8px!important;margin-inline-start:auto!important}
+.marketplace-entry .entry-language,.marketplace-entry .entry-menu{display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:6px!important;min-width:40px!important;min-height:40px!important}
+.marketplace-entry .entry-menu{width:40px!important;padding:0!important}
+.marketplace-entry .entry-layout-role{display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:0!important;width:100%!important;min-height:0!important;margin:0!important;padding:0 16px!important}
+.marketplace-entry .entry-hero{width:100%!important;max-width:100%!important;min-height:0!important;margin:0!important;padding:40px 0!important}
+.marketplace-entry .entry-hero h1{margin:0 0 20px!important;color:#fff!important;font-size:clamp(28px,7vw,42px)!important;line-height:1.2!important}
+.marketplace-entry .entry-hero-search{width:100%!important;max-width:100%!important;margin:0!important}
+.marketplace-entry .entry-experience-section{display:block!important;width:100%!important;max-width:100%!important;min-height:0!important;margin:0!important;padding:0 0 40px!important;background:transparent!important}
+.marketplace-entry .entry-experience-section .entry-auth-card{width:100%!important;max-width:100%!important;margin:0!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important}
+.marketplace-entry .entry-experience-section .entry-auth-eyebrow{display:block!important;width:100%!important;margin:0 0 20px!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;color:#fff!important;font-size:16px!important;line-height:1.4!important;font-weight:700!important;text-align:start!important}
+.marketplace-entry .entry-experience-section .entry-role-picker{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:12px!important;width:100%!important}
+.marketplace-entry .entry-experience-section .entry-role-card{display:grid!important;grid-template-columns:44px minmax(0,1fr) 20px!important;grid-template-rows:auto auto!important;align-items:center!important;column-gap:12px!important;row-gap:5px!important;width:100%!important;min-width:0!important;min-height:108px!important;margin:0!important;padding:18px!important;border:1px solid rgba(255,255,255,.18)!important;border-radius:16px!important;background:rgba(7,20,15,.82)!important;color:#fff!important;text-align:start!important}
+.marketplace-entry .entry-experience-section .entry-role-icon{grid-column:1;grid-row:1/3!important;display:flex!important;align-items:center!important;justify-content:center!important;width:44px!important;height:44px!important}
+.marketplace-entry .entry-experience-section .entry-role-card strong{grid-column:2;grid-row:1!important;color:#fff!important;font-size:17px!important;line-height:1.35!important}
+.marketplace-entry .entry-experience-section .entry-role-card small{grid-column:2;grid-row:2!important;color:#e7eee9!important;font-size:14px!important;line-height:1.5!important}
+.marketplace-entry .entry-experience-section .entry-role-arrow{grid-column:3;grid-row:1/3!important}
+.marketplace-entry .entry-experience-section .entry-role-prompt,.marketplace-entry .entry-experience-section .entry-auth-note{display:none!important}
+.marketplace-entry .entry-home-sections{display:flex!important;flex-direction:column!important;gap:0!important;width:100%!important;max-width:100%!important;margin:0!important;padding:0 16px!important}
+.marketplace-entry .entry-home-sections>section{display:block!important;width:100%!important;max-width:100%!important;min-width:0!important;min-height:0!important;height:auto!important;margin:0!important;padding-block:40px!important}
+.marketplace-entry .entry-home-sections .entry-section-heading{display:block!important;width:100%!important;max-width:100%!important;margin:0 0 20px!important;padding:0!important;opacity:1!important;visibility:visible!important;transform:none!important;animation:none!important;text-align:start!important}
+.marketplace-entry .entry-home-sections .entry-section-heading h2{display:block!important;margin:0!important;padding:0!important;color:#fff!important;-webkit-text-fill-color:#fff!important;font-size:26px!important;line-height:1.25!important;font-weight:700!important;opacity:1!important;visibility:visible!important;transform:none!important;animation:none!important}
+.marketplace-entry .entry-home-sections .entry-section-heading>span{display:block!important;margin:0 0 6px!important;color:#19c37d!important;opacity:1!important;visibility:visible!important}
+.marketplace-entry .entry-home-sections section,.marketplace-entry .entry-home-sections section *{animation:none!important;scroll-margin-top:0!important}
+.marketplace-entry .entry-home-sections section,.marketplace-entry .entry-home-sections section h2,.marketplace-entry .entry-home-sections section h3,.marketplace-entry .entry-home-sections section p{opacity:1!important;visibility:visible!important}
+.marketplace-entry .entry-content-section .entry-how-grid{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:12px!important;width:100%!important}
+.marketplace-entry .entry-content-section .entry-how-grid article{padding:18px!important}
+.marketplace-entry .entry-content-section .entry-how-grid p{font-size:16px!important;line-height:1.6!important}
+.marketplace-entry .entry-browse-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important;width:100%!important}
+.marketplace-entry .entry-browse-card{min-width:0!important;min-height:132px!important}
+.marketplace-entry .entry-browse-card:nth-last-child(1):nth-child(odd){grid-column:1/-1!important}
+.marketplace-entry .entry-why-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important}
+.marketplace-entry .entry-why-grid article{min-width:0!important;min-height:110px!important}
+.marketplace-entry .entry-faq-list{display:flex!important;flex-direction:column!important;gap:10px!important}
+.marketplace-entry .entry-closing-cta{width:100%!important;min-height:0!important;margin:0!important;padding-block:40px!important}
+.marketplace-entry .entry-footer{min-height:0!important;height:auto!important;margin:0!important;padding:28px 16px!important}
+@media(min-width:700px){
+ .marketplace-entry .entry-layout-role{padding-inline:24px!important}
+ .marketplace-entry .entry-experience-section .entry-role-picker{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ .marketplace-entry .entry-home-sections{padding-inline:24px!important}
+ .marketplace-entry .entry-content-section .entry-how-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+ .marketplace-entry .entry-browse-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+ .marketplace-entry .entry-browse-card:nth-last-child(1):nth-child(odd){grid-column:auto!important}
+}
+@media(min-width:900px){
+ .marketplace-entry .entry-header{padding-inline:24px!important}
+ .marketplace-entry .entry-nav{position:static!important;display:flex!important;flex-direction:row!important;align-items:center!important;gap:22px!important;margin-inline:auto!important;padding:0!important;border:0!important;background:transparent!important;box-shadow:none!important}
+ .marketplace-entry .entry-nav a,.marketplace-entry .entry-nav span{min-height:40px!important;padding:4px!important}
+ .marketplace-entry .entry-menu{display:none!important}
+ .marketplace-entry .entry-layout-role{padding-inline:32px!important}
+ .marketplace-entry .entry-home-sections{padding-inline:32px!important}
+}
+[dir="rtl"] .marketplace-entry .entry-experience-section .entry-role-card{text-align:start!important}
