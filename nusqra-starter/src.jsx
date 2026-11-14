@@ -779,10 +779,23 @@ function App() {
         <section className="entry-category-strip" id="entry-categories">
           <div className="entry-section-heading"><span>{isAr?'استكشف السوق':'EXPLORE THE MARKETPLACE'}</span><h2>{isAr?'مجالات وخبرات متنوعة':'Explore services and opportunities'}</h2></div>
           <div className="entry-category-track">
-            <a className="entry-category-tile" href="#categories" onClick={e=>{e.preventDefault();window.location.hash='categories';}}><img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=640&q=76" alt="Technology and web" loading="lazy"/><span>{isAr?'التقنية والويب':'Technology & Web'}</span></a>
-            <a className="entry-category-tile" href="#categories" onClick={e=>{e.preventDefault();window.location.hash='categories';}}><img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=640&q=76" alt="Marketing and sales" loading="lazy"/><span>{isAr?'التسويق والمبيعات':'Marketing & Sales'}</span></a>
-            <a className="entry-category-tile" href="#categories" onClick={e=>{e.preventDefault();window.location.hash='categories';}}><img src="https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?auto=format&fit=crop&w=640&q=76" alt="Automotive services" loading="lazy"/><span>{isAr?'خدمات السيارات':'Automotive Services'}</span></a>
-            <a className="entry-category-tile" href="#categories" onClick={e=>{e.preventDefault();window.location.hash='categories';}}><img src="https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=640&q=76" alt="Construction and engineering" loading="lazy"/><span>{isAr?'البناء والهندسة':'Construction & Engineering'}</span></a>
+            {[
+              ['Technology & IT','التقنية وتقنية المعلومات','web-technology','photo-1498050108023-c5249f4df085'],
+              ['Design & Creative','التصميم والإبداع','design-creative','photo-1561070791-2526d30994b5'],
+              ['Marketing & Sales','التسويق والمبيعات','marketing-sales','photo-1460925895917-afdab827c52f'],
+              ['Business & Consulting','الأعمال والاستشارات','business-services','photo-1454165804606-c3d57bc86b40'],
+              ['Automotive & Machinery','السيارات والآلات','automotive-services','photo-1486262715619-67b85e0b08d3'],
+              ['Education & Training','التعليم والتدريب','education-training','photo-1509062522246-3755977927d7'],
+              ['Home & Personal Services','الخدمات المنزلية والشخصية','home-maintenance','photo-1581578731548-c64695cc6952'],
+              ['Writing & Translation','الكتابة والترجمة','writing-translation','photo-1455390582262-044c83d1b8d9'],
+              ['Construction & Engineering','الإنشاءات والهندسة','construction-engineering','photo-1503387762-592deb58ef4e'],
+              ['Transport & Logistics','النقل والخدمات اللوجستية','transport-logistics','photo-物流'],
+              ['Finance & Administration','المالية والإدارة','finance-administration','photo-1554224155-6726b3ff858f'],
+              ['HR & Recruitment','الموارد البشرية والتوظيف','hr-recruitment','photo-1521737711867-e3b97375f902'],
+              ['Healthcare & Wellness','الرعاية الصحية والعافية','healthcare-wellness','photo-1576091160399-112ba8d25d1d'],
+              ['Hospitality & Events','الضيافة والفعاليات','hospitality-events','photo-1511795409834-ef04bbd61622'],
+              ['Industrial & Manufacturing','الصناعة والتصنيع','industrial-manufacturing','photo-1581091226825-a6a2a5aee158']
+            ].map(([nameEn,nameAr,slug,imageId])=><button type="button" className="entry-category-tile" key={slug} onClick={()=>openEntryCategory(slug)} aria-label={isAr?nameAr:nameEn}><img src={`https://images.unsplash.com/${imageId}?auto=format&fit=crop&w=640&q=76`} alt="" loading="lazy"/><span>{isAr?nameAr:nameEn}</span></button>)}
           </div>
         </section>
         <section className="entry-how-section" id="entry-how-it-works">
@@ -795,7 +808,7 @@ function App() {
         </section>
         <section className="entry-closing-cta"><div><span>{isAr?'فرصتك تبدأ هنا':'YOUR NEXT STEP STARTS HERE'}</span><h2>{isAr?'ابدأ رحلتك مع نسقرا':'Make your next move with NUSQRA'}</h2></div><button type="button" onClick={()=>{setSelectedRole('customer');setActiveRole('customer');setForm(x=>({...x,account_type:'customer'}));window.localStorage.setItem('nusqra-active-role','customer');window.localStorage.setItem('nusqra-pending-role','customer');window.history.pushState({...window.history.state,nusqraEntryStep:'auth'},'','#login');setEntryStep('auth');setAuthMode('register');}}>{isAr?'أنشئ حسابك':'Create your account'} <ArrowRight size={18}/></button></section>
       </div>}
-      <footer className="entry-footer"><img src={nusqraSymbol} alt="" aria-hidden="true"/><span>NUSQRA · نُسقرا</span><small>© {new Date().getFullYear()} NUSQRA · {isAr?'سوق الخدمات والفرص':'The marketplace for services & opportunities'}</small></footer>
+      <footer className="entry-footer"><img src={nusqraSymbol} alt="" aria-hidden="true"/><span>NUSQRA · نُسقرا</span><nav aria-label={isAr?'روابط التذييل':'Footer links'}><a href="#entry-categories" onClick={e=>{e.preventDefault();document.getElementById('entry-categories')?.scrollIntoView({behavior:'smooth'});}}>{isAr?'التصنيفات':'Categories'}</a><a href="#entry-how-it-works" onClick={e=>{e.preventDefault();document.getElementById('entry-how-it-works')?.scrollIntoView({behavior:'smooth'});}}>{isAr?'كيف تعمل':'How it works'}</a><button type="button" onClick={()=>chooseEntryRole('customer')}>{isAr?'إنشاء حساب':'Create account'}</button></nav><small>© {new Date().getFullYear()} NUSQRA · {isAr?'سوق الخدمات والفرص':'The marketplace for services & opportunities'}</small></footer>
     </div>;
   }
 
