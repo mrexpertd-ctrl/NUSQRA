@@ -770,7 +770,7 @@ function App() {
         <button type="button" className="navlink" onClick={()=>navigatePage('explore')}>{t.nav[0]}</button>
         <button type="button" className="navlink" onClick={()=>navigatePage('categories')}>{t.nav[1]}</button>
         <button type="button" className="navlink" onClick={()=>navigatePage('how-it-works')}>{t.nav[2]}</button>
-        <button type="button" className="navlink" onClick={()=>navigatePage('professionals')}>{t.nav[3]}</button>
+        <button type="button" className="navlink" onClick={()=>{setActiveRole('professional');window.localStorage.setItem('nusqra-active-role','professional');navigatePage('categories');}}>{t.nav[3]}</button>
         {session && <><button type="button" className="navlink" onClick={()=>navigatePage('marketplace')}>{isAr?'السوق':'Marketplace'}</button><button type="button" className="navlink" onClick={()=>navigatePage('messages')}>{t.messages}</button></>}
       </nav>
       <div className="actions">
@@ -821,7 +821,7 @@ function App() {
           <button type="button" className={categoryAudience==='investors'?'active':''} onClick={()=>setCategoryAudience('investors')}>{t.audienceInvestors}</button>
         </div>
         {categories.length>0 && <div className="category-grid">
-          {categories.filter(c=>{const individualSlugs=['automotive-services','design-creative','education-training','healthcare-wellness','home-maintenance','hospitality-events','transport-logistics','web-technology','writing-translation'];const companySlugs=['business-services','construction-engineering','design-creative','finance-administration','hr-recruitment','industrial-manufacturing','marketing-sales','transport-logistics','web-technology'];if(categoryAudience==='all')return true;if(categoryAudience==='investors')return c.slug==='investors-opportunities';if(categoryAudience==='individuals')return individualSlugs.includes(c.slug);return companySlugs.includes(c.slug);}).map(c=>{
+          {categories.filter(c=>{if(isProfessional&&c.slug==='investors-opportunities')return false;const individualSlugs=['automotive-services','design-creative','education-training','healthcare-wellness','home-maintenance','hospitality-events','transport-logistics','web-technology','writing-translation'];const companySlugs=['business-services','construction-engineering','design-creative','finance-administration','hr-recruitment','industrial-manufacturing','marketing-sales','transport-logistics','web-technology'];if(categoryAudience==='all')return true;if(categoryAudience==='investors')return c.slug==='investors-opportunities';if(categoryAudience==='individuals')return individualSlugs.includes(c.slug);return companySlugs.includes(c.slug);}).map(c=>{
             const symbols={'web-technology':'⌘','design-creative':'✦','marketing-sales':'↗','business-services':'▤','automotive-services':'⚙','education-training':'◎','home-maintenance':'⌂','writing-translation':'✎','construction-engineering':'⌁','transport-logistics':'⇢','finance-administration':'＄','hr-recruitment':'♙','healthcare-wellness':'＋','hospitality-events':'◇','industrial-manufacturing':'▦','investors-opportunities':'◈'};
             const images={
               'web-technology':'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=900&q=82',
