@@ -794,21 +794,23 @@ function App() {
             <Search size={20} aria-hidden="true"/>
             <input value={entrySearch} onChange={e=>setEntrySearch(e.target.value)} placeholder={isAr?'سباك، مصمم شعارات، مترجم...':'Plumber, logo designer, translator...'} aria-label={isAr?'ابحث عن خدمة':'Search for a service'}/>
             <button type="submit">{isAr?'بحث':'Search'}</button>
-          </form>
-        </section>}
-        <section className={"entry-auth-wrap "+(entryStep==='role'?"entry-experience-section":"")}>
+            <div className="entry-hero-choices" role="group" aria-label={isAr?'اختر طريقة الاستخدام':'Choose how to use NUSQRA'}>
+              <button type="button" className="entry-hero-choice" onClick={()=>chooseEntryRole('customer')}>
+                <span className="entry-role-icon"><Users size={22}/></span>
+                <span className="entry-hero-choice-copy"><strong>{isAr?'أريد توظيف محترف':'I want to hire'}</strong><small>{isAr?'اعثر على محترفين وقارن العروض وانشر طلبك.':'Find professionals, compare proposals and post a request.'}</small></span>
+                <ArrowRight className="entry-hero-choice-arrow" size={20}/>
+              </button>
+              <button type="button" className="entry-hero-choice" onClick={()=>chooseEntryRole('professional')}>
+                <span className="entry-role-icon"><BriefcaseBusiness size={22}/></span>
+                <span className="entry-hero-choice-copy"><strong>{isAr?'أنا محترف':'I am a professional'}</strong><small>{isAr?'اكتشف الفرص وقدّم عروضك وأدر مشاريعك.':'Discover opportunities, submit proposals and manage projects.'}</small></span>
+                <ArrowRight className="entry-hero-choice-arrow" size={20}/>
+              </button>
+            </div>
+          </section>}
+        {entryStep==='auth' && <section className="entry-auth-wrap">
           <div className="entry-auth-card">
-
-            <div className="entry-auth-eyebrow">{entryStep==='role'?(isAr?'أولاً، اختر كيف تريد استخدام نسقرا':'First, choose how you want to use NUSQRA'):(isAr?'تسجيل الدخول الآمن':'SECURE ACCOUNT ACCESS')}</div>
-            {entryStep==='role' && <div className="entry-role-picker" role="group" aria-label={isAr?'اختر نوع الحساب':'Choose account type'}>
-              <button type="button" className={'entry-role-card '+(selectedRole==='customer'?'selected':'')} onClick={()=>chooseEntryRole('customer')}>
-                <span className="entry-role-icon"><Users size={24}/></span><strong>{isAr?'أبحث عن محترف':'I want to hire'}</strong><small>{isAr?'تصفح الملفات المهنية والتوفر، وقارن الخبرات، وانشر طلبك.':'Browse professional profiles and availability, compare skills and post a job.'}</small><span className="entry-role-arrow" aria-hidden="true">{isAr?<ArrowLeft size={18}/>:<ArrowRight size={18}/>}</span>
-              </button>
-              <button type="button" className={'entry-role-card '+(selectedRole==='professional'?'selected':'')} onClick={()=>chooseEntryRole('professional')}>
-                <span className="entry-role-icon"><BriefcaseBusiness size={24}/></span><strong>{isAr?'أنا محترف وأبحث عن عمل':'I am a professional'}</strong><small>{isAr?'اكتشف فرص العمل، وقدّم العروض، وأدر مشاريعك وعملاءك.':'Find jobs, submit proposals and manage your projects and clients.'}</small><span className="entry-role-arrow" aria-hidden="true">{isAr?<ArrowLeft size={18}/>:<ArrowRight size={18}/>}</span>
-              </button>
-            </div>}
-            {entryStep==='role' ? null : !selectedRole ? (
+            <div className="entry-auth-eyebrow">{isAr?'تسجيل الدخول الآمن':'SECURE ACCOUNT ACCESS'}</div>
+            {!selectedRole ? (
               <p className="entry-role-prompt">{isAr?'يرجى اختيار ما تريد القيام به في نسقرا أولاً.':'First, choose how you want to use NUSQRA.'}</p>
             ) : !authMode ? <>
 
@@ -851,7 +853,7 @@ function App() {
             </>}
           </div>
           <div className="entry-auth-note">{isAr?'حساب واحد للوصول إلى خدمات وفرص نسقرا':'One account for the NUSQRA services marketplace'}</div>
-        </section>
+        </section>}
       </main>
       {entryStep==='role' && <div className="entry-home-sections">
         <section className="entry-content-section" id="entry-browse-categories">
