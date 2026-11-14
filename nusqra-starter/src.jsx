@@ -8,7 +8,7 @@ import {
   MessageCircle, Send, Check, XCircle, RefreshCw, Eye, EyeOff
 } from 'lucide-react';
 import './style.css';
-import './emerald-city.css';
+import './purple-redesign.css';
 import { isSupabaseConfigured, supabase } from './supabaseClient';
 
 const dictionary = {
