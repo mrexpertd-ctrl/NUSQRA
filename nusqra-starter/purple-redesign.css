@@ -124,3 +124,7 @@ body{margin:0;background:linear-gradient(145deg,#0b0a2b 0%,#100d3b 54%,#17104a 1
 [dir="rtl"] .marketplace-entry .entry-category-icon{left:auto;right:10px}
 [dir="rtl"] .marketplace-entry .entry-browse-card strong{padding:12px 48px 12px 12px}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+.marketplace-entry .entry-header-actions .entry-login-button,.marketplace-entry .entry-header-actions .entry-register-button{display:inline-flex;align-items:center;justify-content:center;border:1px solid rgba(167,139,250,.65);border-radius:11px;padding:10px 14px;background:linear-gradient(120deg,#7a2ff7,#5b21d6);color:#fff;font-size:12px;font-weight:800}
+.marketplace-entry .entry-header-actions .entry-register-button{background:transparent}
+@media(max-width:900px){.marketplace-entry .entry-header-actions .entry-login-button,.marketplace-entry .entry-header-actions .entry-register-button{display:none}}
