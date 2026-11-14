@@ -176,7 +176,7 @@ function App() {
 
   useEffect(() => {
     if ('serviceWorker' in navigator && window.isSecureContext) {
-      navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(() => {});
+      navigator.serviceWorker.register('/sw.js', { scope: '/', updateViaCache: 'none' }).then(registration => registration.update()).catch(() => {});
     }
 
     const makeDeviceId = () => {
