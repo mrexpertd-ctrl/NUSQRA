@@ -80,7 +80,7 @@ const homeCategoryImages = {
   'healthcare-wellness':'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=900&q=82',
   'hospitality-events':'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=900&q=82',
   'industrial-manufacturing':'https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&w=900&q=82',
-  'investors-opportunities':'https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?auto=format&fit=crop&w=900&q=82'
+  'investors-opportunities':'https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=900&q=82'
 };
 const countryCodes = ['SA','AE','BH','KW','OM','QA'];
 
@@ -795,20 +795,9 @@ function App() {
             <input value={entrySearch} onChange={e=>setEntrySearch(e.target.value)} placeholder={isAr?'سباك، مصمم شعارات، مترجم...':'Plumber, logo designer, translator...'} aria-label={isAr?'ابحث عن خدمة':'Search for a service'}/>
             <button type="submit">{isAr?'بحث':'Search'}</button>
           </form>
-          <div className="entry-category-chips" aria-label={isAr?'التصنيفات الشائعة':'Popular categories'}>
-            <button type="button" onClick={()=>openEntryCategory('web-technology')}>{isAr?'التقنية وتكنولوجيا المعلومات':'Technology & IT'}</button>
-            <button type="button" onClick={()=>openEntryCategory('design-creative')}>{isAr?'التصميم والإبداع':'Design & Creative'}</button>
-            <button type="button" onClick={()=>openEntryCategory('business-services')}>{isAr?'الأعمال والاستشارات':'Business & Consulting'}</button>
-            <button type="button" onClick={()=>openEntryCategory('home-maintenance')}>{isAr?'الخدمات المنزلية والشخصية':'Home & Personal Services'}</button>
-            <button type="button" onClick={()=>openEntryCategory('writing-translation')}>{isAr?'الكتابة والترجمة':'Writing & Translation'}</button>
-            <button type="button" onClick={()=>openEntryCategory('transport-logistics')}>{isAr?'النقل والخدمات اللوجستية':'Transport & Logistics'}</button>
-          </div>
-          <div className="entry-hero-actions">
-            <button type="button" className="entry-hero-hire" onClick={()=>chooseEntryRole('customer')}>{isAr?'أريد توظيف محترف':'I want to hire'}</button>
-            <button type="button" className="entry-hero-pro" onClick={()=>chooseEntryRole('professional')}>{isAr?'أنا محترف':'I am a professional'}</button>
-          </div>
-          <div className="entry-trust-facts">
-            <div><Globe2 size={17}/><span>{isAr?'العربية والإنجليزية':'Arabic and English'}</span></div>
+          
+          
+          
             <div><Clock3 size={17}/><span>{isAr?'انشر طلبك في دقائق':'Post a request in minutes'}</span></div>
             <div><Users size={17}/><span>{isAr?'عروض من محترفين مستقلين':'Proposals from independent professionals'}</span></div>
           </div>
@@ -816,7 +805,7 @@ function App() {
         <section className={"entry-auth-wrap "+(entryStep==='role'?"entry-experience-section":"")}>
           <div className="entry-auth-card">
 
-            <div className="entry-auth-eyebrow">{entryStep==='role'?(isAr?'اختر تجربة نسقرا المناسبة لك':'Choose your NUSQRA experience'):(isAr?'تسجيل الدخول الآمن':'SECURE ACCOUNT ACCESS')}</div>
+            <div className="entry-auth-eyebrow">{entryStep==='role'?(isAr?'أولاً، اختر كيف تريد استخدام نسقرا':'First, choose how you want to use NUSQRA'):(isAr?'تسجيل الدخول الآمن':'SECURE ACCOUNT ACCESS')}</div>
             {entryStep==='role' && <div className="entry-role-picker" role="group" aria-label={isAr?'اختر نوع الحساب':'Choose account type'}>
               <button type="button" className={'entry-role-card '+(selectedRole==='customer'?'selected':'')} onClick={()=>chooseEntryRole('customer')}>
                 <span className="entry-role-icon"><Users size={24}/></span><strong>{isAr?'أبحث عن محترف':'I want to hire'}</strong><small>{isAr?'تصفح الملفات المهنية والتوفر، وقارن الخبرات، وانشر طلبك.':'Browse professional profiles and availability, compare skills and post a job.'}</small><span className="entry-role-arrow" aria-hidden="true">{isAr?<ArrowLeft size={18}/>:<ArrowRight size={18}/>}</span>
@@ -825,7 +814,7 @@ function App() {
                 <span className="entry-role-icon"><BriefcaseBusiness size={24}/></span><strong>{isAr?'أنا محترف وأبحث عن عمل':'I am a professional'}</strong><small>{isAr?'اكتشف فرص العمل، وقدّم العروض، وأدر مشاريعك وعملاءك.':'Find jobs, submit proposals and manage your projects and clients.'}</small><span className="entry-role-arrow" aria-hidden="true">{isAr?<ArrowLeft size={18}/>:<ArrowRight size={18}/>}</span>
               </button>
             </div>}
-            {!selectedRole || entryStep==='role' ? (
+            {entryStep==='role' ? null : !selectedRole ? (
               <p className="entry-role-prompt">{isAr?'يرجى اختيار ما تريد القيام به في نسقرا أولاً.':'First, choose how you want to use NUSQRA.'}</p>
             ) : !authMode ? <>
 
@@ -871,25 +860,6 @@ function App() {
         </section>
       </main>
       {entryStep==='role' && <div className="entry-home-sections">
-        <section className="entry-category-strip" id="entry-categories">
-          <div className="entry-section-heading"><span>{isAr?'استكشف السوق':'EXPLORE THE MARKETPLACE'}</span><h2>{isAr?'مجالات وخبرات متنوعة':'Explore services and opportunities'}</h2></div>
-          <div className="entry-category-track">
-            {categories.map(c=><button type="button" className="entry-category-tile" key={c.id} onClick={()=>openEntryCategory(c.slug)} aria-label={isAr?c.name_ar:c.name_en}>
-              <img src={homeCategoryImages[c.slug]||homeCategoryImages['business-services']} alt="" loading="lazy"/>
-              <span>{isAr?c.name_ar:c.name_en}</span>
-            </button>)}
-          </div>
-        </section>
-
-        <section className="entry-content-section" id="entry-how-it-works">
-          <div className="entry-section-heading"><span>{isAr?'خطوات بسيطة':'HOW IT WORKS'}</span><h2>{isAr?'كيف تعمل نسقرا':'How NUSQRA works'}</h2></div>
-          <div className="entry-how-grid">
-            <article><b className="entry-step-number">1</b><h3>{isAr?'انشر طلباً':'Post a request'}</h3><p>{isAr?'صف الخدمة التي تحتاجها، بالعربية أو الإنجليزية.':'Describe the service you need, in Arabic or English.'}</p></article>
-            <article><b className="entry-step-number">2</b><h3>{isAr?'استقبل العروض':'Receive proposals'}</h3><p>{isAr?'يرسل المحترفون المستقلون طريقتهم والسعر المقترح.':'Independent professionals send their approach and price.'}</p></article>
-            <article><b className="entry-step-number">3</b><h3>{isAr?'قارن واختر':'Compare and choose'}</h3><p>{isAr?'اختر المحترف الذي تفضله واتفقا مباشرة على الشروط.':'Pick the professional you prefer and agree terms directly.'}</p></article>
-          </div>
-        </section>
-
         <section className="entry-content-section" id="entry-browse-categories">
           <div className="entry-section-heading"><span>{isAr?'اكتشف المجالات':'EXPLORE THE DIRECTORY'}</span><h2>{isAr?'تصفح حسب التصنيف':'Browse by category'}</h2></div>
           <div className="entry-browse-grid">
@@ -901,11 +871,13 @@ function App() {
           <button type="button" className="entry-view-all" onClick={()=>{if(session)navigatePage('categories');else document.getElementById('entry-browse-categories')?.scrollIntoView({behavior:'smooth',block:'start'});}}>{isAr?'عرض جميع التصنيفات':'View all categories'} <ArrowRight size={17}/></button>
         </section>
 
-        <section className="entry-content-section" id="entry-for-whom">
-          <div className="entry-section-heading"><span>{isAr?'لمن صُممت نسقرا':'WHO IT IS FOR'}</span><h2>{isAr?'لمن نسقرا؟':'For whom'}</h2></div>
-          <div className="entry-audience-grid">
-            <article><h3>{isAr?'للشركات والأفراد':'For businesses and individuals'}</h3><p>{isAr?'اعثر على محترفين، وانشر طلباً، وقارن العروض.':'Find professionals, post a request, compare proposals.'}</p><button type="button" onClick={()=>{chooseEntryRole('customer');setAuthMode('register');}}>{isAr?'انشر طلباً':'Post a request'} <ArrowRight size={17}/></button></article>
-            <article><h3>{isAr?'للمحترفين':'For professionals'}</h3><p>{isAr?'أنشئ ملفاً مهنياً، واعثر على الطلبات، وأرسل عروضك.':'Create a profile, find requests, send proposals.'}</p><button type="button" onClick={()=>{chooseEntryRole('professional');setAuthMode('register');}}>{isAr?'انضم كمحترف':'Join as a professional'} <ArrowRight size={17}/></button></article>
+
+        <section className="entry-content-section" id="entry-how-it-works">
+          <div className="entry-section-heading"><span>{isAr?'خطوات بسيطة':'HOW IT WORKS'}</span><h2>{isAr?'كيف تعمل نسقرا':'How NUSQRA works'}</h2></div>
+          <div className="entry-how-grid">
+            <article><b className="entry-step-number">1</b><h3>{isAr?'انشر طلباً':'Post a request'}</h3><p>{isAr?'صف الخدمة التي تحتاجها، بالعربية أو الإنجليزية.':'Describe the service you need, in Arabic or English.'}</p></article>
+            <article><b className="entry-step-number">2</b><h3>{isAr?'استقبل العروض':'Receive proposals'}</h3><p>{isAr?'يرسل المحترفون المستقلون طريقتهم والسعر المقترح.':'Independent professionals send their approach and price.'}</p></article>
+            <article><b className="entry-step-number">3</b><h3>{isAr?'قارن واختر':'Compare and choose'}</h3><p>{isAr?'اختر المحترف الذي تفضله واتفقا مباشرة على الشروط.':'Pick the professional you prefer and agree terms directly.'}</p></article>
           </div>
         </section>
 
