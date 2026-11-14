@@ -898,7 +898,7 @@ function App() {
               <span>{isAr?c.name_ar:c.name_en}</span><ArrowRight size={17} aria-hidden="true"/>
             </button>)}
           </div>
-          <button type="button" className="entry-view-all" onClick={()=>navigatePage('categories')}>{isAr?'عرض جميع التصنيفات':'View all categories'} <ArrowRight size={17}/></button>
+          <button type="button" className="entry-view-all" onClick={()=>{if(session)navigatePage('categories');else document.getElementById('entry-browse-categories')?.scrollIntoView({behavior:'smooth',block:'start'});}}>{isAr?'عرض جميع التصنيفات':'View all categories'} <ArrowRight size={17}/></button>
         </section>
 
         <section className="entry-content-section" id="entry-for-whom">
@@ -927,9 +927,9 @@ function App() {
             <details><summary>{isAr?'كيف ينضم المحترفون؟':'How do professionals join?'}</summary><p>{isAr?'أنشئ حساباً واختر دور المحترف، ثم أكمل ملفك المهني واختر تخصصك.':'Create an account, choose the professional role, then complete your professional profile and select your category.'}</p></details>
             <details><summary>{isAr?'ما اللغات المدعومة؟':'Which languages are supported?'}</summary><p>{isAr?'واجهة نسقرا متاحة بالعربية والإنجليزية.':'The NUSQRA interface is available in Arabic and English.'}</p></details>
             <details><summary>{isAr?'ما الدول التي تخدمها نسقرا؟':'Which countries does NUSQRA serve?'}</summary><p>{isAr?'تتضمن خيارات الدولة الحالية السعودية والإمارات والبحرين والكويت وعُمان وقطر. يرجى التأكد من توفر الخدمة في منطقتك قبل الاعتماد عليها.':'The current country options are Saudi Arabia, the UAE, Bahrain, Kuwait, Oman and Qatar. Please confirm local availability before relying on service in a specific area.'}</p></details>
-            <details><summary>{isAr?'كيف أتواصل مع الدعم؟':'How do I contact support?'}</summary><p>{isAr?'إذا كان خيار الدعم متاحاً داخل حسابك، فاستخدمه. لم يتم تأكيد قناة دعم عامة بعد؛ يرجى الرجوع إلى القنوات الرسمية لنسقرا.':'If a support option is available in your account, use it. A public support contact channel has not yet been confirmed; please refer to NUSQRA’s official channels.'}</p></details>
+            <details><summary>{isAr?'كيف أتواصل مع الدعم؟':'How do I contact support?'}</summary><p>{isAr?'سجّل الدخول وافتح دعم العملاء من حسابك لإرسال طلب دعم ومتابعة حالته.':'Sign in and open Customer support from your account to send a support request and follow its status.'}</p></details>
           </div>
-          {/* TODO: owner to confirm exact service-country coverage and publish the official support contact channel before launch. */}
+          {/* TODO: owner to confirm exact service-country coverage before launch. */}
         </section>
 
         <section className="entry-closing-cta">
