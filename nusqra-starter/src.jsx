@@ -157,6 +157,22 @@ function App() {
   }, [lang]);
 
   useEffect(() => {
+    if (session || entryStep !== 'role' || !('IntersectionObserver' in window)) return undefined;
+    const nodes = document.querySelectorAll('.entry-category-tile, .entry-how-grid article, .entry-closing-cta');
+    nodes.forEach(node => node.classList.add('entry-reveal'));
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -36px 0px' });
+    nodes.forEach(node => observer.observe(node));
+    return () => observer.disconnect();
+  }, [session, entryStep]);
+
+  useEffect(() => {
     const syncPage = () => { const next = window.location.hash.replace('#','') || 'home'; setPage(next); setSettingsOpen(next === 'settings'); setMenu(false); window.scrollTo(0,0); };
     window.addEventListener('hashchange', syncPage);
     return () => window.removeEventListener('hashchange', syncPage);
