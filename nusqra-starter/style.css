@@ -2992,3 +2992,225 @@ footer{padding:32px clamp(22px,5vw,76px)!important}
 .settings-popover-panel .profile-upload-card{background:linear-gradient(145deg,#f5faf6,#e8f1e9)!important;border:1px solid #cbdccd!important}
 .settings-popover-panel .profile-upload-card small{color:#52675a!important}
 .settings-popover-panel .profile-save-row{border-top:1px solid #d1dfd4!important}
+
+
+/* NUSQRA mobile UI repair — dark emerald account drawer and category cards */
+html,body,#root{max-width:100%;overflow-x:clip}
+body:has(.settings-popover-panel){overflow:hidden!important;overscroll-behavior:none}
+
+/* Account dashboard drawer */
+.settings-popover-panel{
+  position:fixed!important;
+  z-index:120!important;
+  top:8px!important;
+  bottom:8px!important;
+  inset-inline-end:3vw!important;
+  inset-inline-start:auto!important;
+  width:min(560px,94vw)!important;
+  max-width:94vw!important;
+  max-height:calc(100dvh - 16px)!important;
+  height:auto!important;
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  overscroll-behavior:contain!important;
+  -webkit-overflow-scrolling:touch;
+  margin:0!important;
+  padding:16px!important;
+  border:1px solid rgba(255,255,255,.16)!important;
+  border-radius:20px!important;
+  background:linear-gradient(#07140f,#0d2519)!important;
+  color:#eaf5ee!important;
+  box-shadow:0 0 0 100vmax rgba(0,0,0,.72),0 24px 80px rgba(0,0,0,.48)!important;
+  isolation:isolate;
+  scrollbar-color:rgba(169,192,177,.45) transparent;
+}
+.settings-popover-panel *{box-sizing:border-box}
+.settings-popover-heading{
+  position:sticky!important;
+  top:-16px!important;
+  z-index:5!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:12px!important;
+  margin:-16px -16px 14px!important;
+  padding:15px 16px 12px!important;
+  background:linear-gradient(#07140f,#07140f)!important;
+  border-bottom:1px solid rgba(255,255,255,.12)!important;
+}
+.settings-popover-heading span{color:#d6b86d!important;background:transparent!important}
+.settings-popover-heading h2{color:#eaf5ee!important;background:transparent!important}
+.settings-popover-heading>button{
+  flex:0 0 38px!important;width:38px!important;height:38px!important;
+  background:rgba(255,255,255,.08)!important;
+  color:#eaf5ee!important;border:1px solid rgba(255,255,255,.18)!important;
+}
+.settings-popover-panel .account-card,
+.settings-popover-panel .language-preference,
+.settings-popover-panel .role-list,
+.settings-popover-panel .profile-studio,
+.settings-popover-panel .profile-upload-card,
+.settings-popover-panel .professional-category-editor,
+.settings-popover-panel .verification-status-panel,
+.settings-popover-panel .profile-template-option,
+.settings-popover-panel .profile-style-picker label{
+  background:rgba(255,255,255,.06)!important;
+  border:1px solid rgba(255,255,255,.12)!important;
+  color:#eaf5ee!important;
+  box-shadow:none!important;
+}
+.settings-popover-panel .account-card{padding:13px!important}
+.settings-popover-panel :is(h2,h3,h4,h5,strong,b,label,.role-list,.profile-studio-heading,.profile-template-intro){
+  color:#eaf5ee!important;background:transparent!important;
+}
+.settings-popover-panel :is(p,small,.profile-studio-heading p,.profile-template-intro span,.profile-template-option small,.profile-upload-card small,.account-heading p){
+  color:#a9c0b1!important;background:transparent!important;
+}
+.settings-popover-panel .settings-popover-heading h2,
+.settings-popover-panel .account-heading h3{color:#eaf5ee!important;background:transparent!important}
+.settings-popover-panel .account-heading p{color:#a9c0b1!important}
+.settings-popover-panel .profile-studio-kicker{color:#d6b86d!important;background:transparent!important}
+.settings-popover-panel .language-preference label{color:#a9c0b1!important;background:transparent!important}
+.settings-popover-panel input:not([type=checkbox]):not([type=file]),
+.settings-popover-panel select,
+.settings-popover-panel textarea{
+  min-width:0!important;
+  background:#fff!important;
+  color:#0b1a13!important;
+  border:1px solid rgba(255,255,255,.22)!important;
+  border-radius:10px!important;
+}
+.settings-popover-panel input::placeholder,
+.settings-popover-panel textarea::placeholder{color:#5d7266!important;opacity:1!important}
+.settings-popover-panel select option{background:#fff!important;color:#0b1a13!important}
+.settings-popover-panel .role-chip{
+  display:inline-flex!important;align-items:center!important;
+  padding:7px 11px!important;border-radius:999px!important;
+  background:rgba(255,255,255,.07)!important;
+  border:1px solid rgba(255,255,255,.18)!important;
+  color:#eaf5ee!important;
+}
+.settings-popover-panel .role-chip.selected{
+  background:linear-gradient(120deg,#15945f,#08623f)!important;
+  border-color:#35b77b!important;color:#fff!important;
+}
+.settings-popover-panel .profile-upload-card{
+  min-width:0!important;gap:8px!important;padding:12px!important;
+  background:rgba(255,255,255,.06)!important;
+  border:1px solid rgba(255,255,255,.16)!important;
+  color:#eaf5ee!important;
+}
+.settings-popover-panel .profile-upload-card strong{color:#eaf5ee!important;background:transparent!important}
+.settings-popover-panel .upload-icon{
+  background:linear-gradient(135deg,#19c37d,#0b7a50)!important;
+  color:#fff!important;
+}
+.settings-popover-panel .profile-upload-card input[type=file]{
+  width:100%!important;max-width:100%!important;min-width:0!important;
+  color:#eaf5ee!important;background:rgba(255,255,255,.04)!important;
+}
+.settings-popover-panel .profile-upload-card input[type=file]::file-selector-button{
+  border:0!important;border-radius:8px!important;padding:8px 10px!important;
+  margin-inline-end:8px!important;background:linear-gradient(120deg,#19c37d,#0b7a50)!important;
+  color:#fff!important;font-weight:800!important;cursor:pointer!important;
+}
+.settings-popover-panel .profile-save-row{
+  position:sticky!important;bottom:-16px!important;z-index:4!important;
+  margin:12px -16px -16px!important;padding:14px 16px 16px!important;
+  background:linear-gradient(0deg,#0d2519 78%,rgba(13,37,25,.94) 90%,transparent)!important;
+  border-top:1px solid rgba(255,255,255,.12)!important;
+}
+.settings-popover-panel .profile-save-row>span{color:#a9c0b1!important;background:transparent!important}
+.settings-popover-panel .profile-save-row .btn,
+.settings-popover-panel .enable-pro,
+.settings-popover-panel .settings-actions .btn{
+  background:linear-gradient(120deg,#19a96b,#0b7048)!important;
+  border:1px solid #32bd80!important;color:#fff!important;
+}
+.settings-popover-panel .profile-editor-tabs{border-bottom-color:rgba(255,255,255,.14)!important}
+.settings-popover-panel .profile-editor-tabs button{
+  background:rgba(255,255,255,.06)!important;border:1px solid rgba(255,255,255,.14)!important;
+  color:#eaf5ee!important;
+}
+.settings-popover-panel .profile-editor-tabs button.active{
+  background:linear-gradient(120deg,#15945f,#08623f)!important;border-color:#35b77b!important;color:#fff!important;
+}
+.settings-popover-panel .profile-template-option.selected{
+  background:rgba(25,195,125,.14)!important;border-color:#35b77b!important;
+}
+.settings-popover-panel .profile-template-option .template-select{color:#75e0aa!important;background:transparent!important}
+.settings-popover-panel .profile-guidance,
+.settings-popover-panel .auth-error{color:#ffd0cc!important;background:rgba(150,30,30,.18)!important}
+@media(max-width:600px){
+  .settings-popover-panel{top:8px!important;bottom:8px!important;inset-inline-end:3vw!important;width:94vw!important;max-width:94vw!important;max-height:calc(100dvh - 16px)!important;padding:13px!important}
+  .settings-popover-heading{top:-13px!important;margin:-13px -13px 12px!important;padding:13px!important}
+  .settings-popover-panel .profile-save-row{margin:12px -13px -13px!important;padding:13px!important;bottom:-13px!important}
+  .settings-popover-panel .profile-upload-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .settings-popover-panel .profile-upload-card{padding:9px!important}
+}
+
+/* Category cards: preserve photography, darken card body and restore icon contrast */
+.category-section{
+  background:linear-gradient(180deg,#07140f 0%,#0d2519 100%)!important;
+}
+.category-section h2{color:#fff!important;background:transparent!important}
+.category-section .category-intro{color:#b9cdc0!important;background:transparent!important}
+.category-section .category-select-card{
+  min-width:0!important;
+  overflow:hidden!important;
+  background:rgba(255,255,255,.06)!important;
+  border:1px solid rgba(255,255,255,.12)!important;
+  color:#fff!important;
+  box-shadow:0 12px 28px rgba(0,0,0,.22)!important;
+}
+.category-section .category-select-card :is(h3,.category-audience,.investor-disclaimer){
+  color:#fff!important;-webkit-text-fill-color:#fff!important;background:transparent!important;
+}
+.category-section .category-select-card p{
+  color:#b9cdc0!important;-webkit-text-fill-color:#b9cdc0!important;background:transparent!important;line-height:1.65!important;
+}
+.category-section .category-select-card .category-image{background:#10291d!important}
+.category-section .category-select-card .category-symbol{
+  background:linear-gradient(135deg,#19c37d,#0b7a50)!important;
+  color:#fff!important;-webkit-text-fill-color:#fff!important;
+  border:1px solid rgba(255,255,255,.22)!important;
+  box-shadow:0 7px 20px rgba(0,0,0,.25)!important;
+}
+.category-section .category-select-card .category-audience{
+  display:inline-flex!important;align-items:center!important;
+  margin-top:10px!important;padding:8px 11px!important;
+  border-radius:999px!important;background:rgba(7,20,15,.3)!important;
+  border:1px solid #19c37d!important;color:#eaf5ee!important;
+  -webkit-text-fill-color:#eaf5ee!important;font-weight:800!important;
+}
+.category-section .category-select-card.is-selected{
+  border:2px solid #19c37d!important;
+  box-shadow:0 0 0 3px rgba(25,195,125,.18),0 14px 32px rgba(0,0,0,.3)!important;
+}
+.category-section .category-select-card .category-image img{display:block;width:100%;height:100%;object-fit:cover}
+.category-section .investor-disclaimer{color:#b9cdc0!important;-webkit-text-fill-color:#b9cdc0!important;background:transparent!important}
+@media(max-width:600px){
+  .category-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important}
+  .category-section .category-select-card{padding:13px!important;min-width:0!important}
+  .category-section .category-select-card h3{font-size:14px!important;overflow-wrap:anywhere}
+  .category-section .category-select-card p{font-size:11px!important}
+}
+@media(max-width:379px){
+  .category-grid{grid-template-columns:minmax(0,1fr)!important}
+}
+
+/* Header wordmark: bilingual names on two lines beside the monogram, no separator */
+.header>.brand-lockup{display:flex!important;align-items:center!important;gap:10px!important;min-width:0!important}
+.header>.brand-lockup .nusqra-wordmark{
+  display:flex!important;flex-direction:column!important;align-items:flex-start!important;
+  justify-content:center!important;gap:1px!important;line-height:1.12!important;
+  white-space:normal!important;letter-spacing:.04em!important;
+}
+.header>.brand-lockup .nusqra-wordmark>span:first-child{font-size:14px!important;font-weight:900!important;color:#073d2b!important;background:transparent!important}
+.header>.brand-lockup .nusqra-wordmark>span[lang="ar"]{font-size:12px!important;font-weight:800!important;color:#087a50!important;background:transparent!important}
+.header>.brand-lockup .nusqra-wordmark-divider{display:none!important}
+@media(max-width:560px){
+  .header>.brand-lockup{gap:8px!important}
+  .header>.brand-lockup .nusqra-wordmark>span:first-child{font-size:12px!important}
+  .header>.brand-lockup .nusqra-wordmark>span[lang="ar"]{font-size:11px!important}
+}
