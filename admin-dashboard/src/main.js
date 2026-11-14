@@ -19,7 +19,7 @@ async function boot(){
   supabase=createClient(cfg.supabaseUrl,cfg.anonKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
   supabase.auth.onAuthStateChange((event,nextSession)=>{
    if(nextSession) session=nextSession;
-   else if(event==='SIGNED_OUT'&&session){session=null;renderLogin();}
+   else if(event==='SIGNED_OUT'&&session){stopLiveStats();session=null;renderLogin();}
   });
   const {data}=await supabase.auth.getSession(); session=data.session;
   if(session){
