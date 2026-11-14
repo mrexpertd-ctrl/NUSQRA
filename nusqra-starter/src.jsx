@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import nusqraLogo from './nusqra-mark.svg';
 import nusqraSymbol from './nusqra-symbol.svg';
 import { createRoot } from 'react-dom/client';
 import {
@@ -696,7 +697,27 @@ function App() {
           <div className="entry-auth-note">{isAr?'حساب واحد للوصول إلى خدمات وفرص نسقرا':'One account for the NUSQRA services marketplace'}</div>
         </section>
       </main>
-      <footer className="entry-footer">© {new Date().getFullYear()} NUSQRA <span>·</span> {isAr?'سوق الخدمات والفرص':'The marketplace for services & opportunities'}</footer>
+      {entryStep==='role' && <div className="entry-home-sections">
+        <section className="entry-category-strip" id="entry-categories">
+          <div className="entry-section-heading"><span>{isAr?'استكشف السوق':'EXPLORE THE MARKETPLACE'}</span><h2>{isAr?'مجالات وخبرات متنوعة':'Explore services and opportunities'}</h2></div>
+          <div className="entry-category-track">
+            <a className="entry-category-tile" href="#categories" onClick={e=>{e.preventDefault();window.location.hash='categories';}}><img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=640&q=76" alt="Technology and web" loading="lazy"/><span>{isAr?'التقنية والويب':'Technology & Web'}</span></a>
+            <a className="entry-category-tile" href="#categories" onClick={e=>{e.preventDefault();window.location.hash='categories';}}><img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=640&q=76" alt="Marketing and sales" loading="lazy"/><span>{isAr?'التسويق والمبيعات':'Marketing & Sales'}</span></a>
+            <a className="entry-category-tile" href="#categories" onClick={e=>{e.preventDefault();window.location.hash='categories';}}><img src="https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?auto=format&fit=crop&w=640&q=76" alt="Automotive services" loading="lazy"/><span>{isAr?'خدمات السيارات':'Automotive Services'}</span></a>
+            <a className="entry-category-tile" href="#categories" onClick={e=>{e.preventDefault();window.location.hash='categories';}}><img src="https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=640&q=76" alt="Construction and engineering" loading="lazy"/><span>{isAr?'البناء والهندسة':'Construction & Engineering'}</span></a>
+          </div>
+        </section>
+        <section className="entry-how-section" id="entry-how-it-works">
+          <div className="entry-section-heading"><span>{isAr?'بكل بساطة':'HOW IT WORKS'}</span><h2>{isAr?'من احتياجك إلى إنجازك في ثلاث خطوات':'A simple path from need to opportunity'}</h2></div>
+          <div className="entry-how-grid">
+            <article><b>01</b><h3>{isAr?'انشر طلبك':'Post a request'}</h3><p>{isAr?'وضّح ما تحتاجه والخبرة المطلوبة.':'Describe what you need and the skills required.'}</p></article>
+            <article><b>02</b><h3>{isAr?'استقبل العروض':'Receive proposals'}</h3><p>{isAr?'راجع عروض المحترفين وتفاصيلها.':'Review proposals from interested professionals.'}</p></article>
+            <article><b>03</b><h3>{isAr?'اختر واتفق':'Choose and agree'}</h3><p>{isAr?'اختر العرض المناسب وابدأ العمل.':'Choose the right proposal and get started.'}</p></article>
+          </div>
+        </section>
+        <section className="entry-closing-cta"><div><span>{isAr?'فرصتك تبدأ هنا':'YOUR NEXT STEP STARTS HERE'}</span><h2>{isAr?'ابدأ رحلتك مع نسقرا':'Make your next move with NUSQRA'}</h2></div><button type="button" onClick={()=>{setSelectedRole('customer');setActiveRole('customer');setForm(x=>({...x,account_type:'customer'}));window.localStorage.setItem('nusqra-active-role','customer');window.localStorage.setItem('nusqra-pending-role','customer');window.history.pushState({...window.history.state,nusqraEntryStep:'auth'},'','#login');setEntryStep('auth');setAuthMode('register');}}>{isAr?'أنشئ حسابك':'Create your account'} <ArrowRight size={18}/></button></section>
+      </div>}
+      <footer className="entry-footer"><img src={nusqraSymbol} alt="" aria-hidden="true"/><span>NUSQRA · نُسقرا</span><small>© {new Date().getFullYear()} NUSQRA · {isAr?'سوق الخدمات والفرص':'The marketplace for services & opportunities'}</small></footer>
     </div>;
   }
 
