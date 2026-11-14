@@ -25,5 +25,7 @@ jobs:
           cache-dependency-path: admin-dashboard/package.json
       - run: npm install
       - run: npm run build
+      - name: Validate Worker bundle syntax
+        run: npx esbuild src/worker.js --bundle --platform=browser --format=esm --external:@supabase/supabase-js --outfile=/tmp/nusqra-admin-worker-check.js
       - name: Build only; deployment is performed separately with Wrangler
         run: echo "Admin build complete. Deploy from a trusted terminal after configuring Worker secrets."
