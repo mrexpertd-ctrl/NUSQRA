@@ -225,7 +225,7 @@ function App() {
   }, [session, t.authError]);
 
   useEffect(() => {
-    if (!session || !supabase) return;
+    if (!session || !supabase || profile === null) return;
     const pendingRole = window.localStorage.getItem('nusqra-pending-role');
     if (pendingRole !== 'customer' && pendingRole !== 'professional') return;
     let alive = true;
@@ -238,13 +238,14 @@ function App() {
       }
       if (!alive) return;
       setRoles(old => [...new Set([...old,pendingRole])]);
+      if (pendingRole === 'professional') setProfessional({country_code:'SA'});
       setActiveRole(pendingRole);
       window.localStorage.removeItem('nusqra-pending-role');
       const destination = pendingRole === 'professional' ? 'marketplace' : 'professionals';
       setPage(destination); window.location.hash = destination;
     })();
     return () => { alive = false; };
-  }, [session]);
+  }, [session, profile]);
 
   const setField = (key,value) => setForm(old => ({...old,[key]:value}));
   const setProfileField = (key,value) => setProfileForm(old => ({...old,[key]:value}));
@@ -494,12 +495,12 @@ function App() {
   }
 
   useEffect(() => {
-    if (!session || !supabase) return undefined;
+    if (!supabase) return undefined;
     let alive = true;
     supabase.from('categories').select('id,slug,name_en,name_ar,description_en,description_ar').eq('is_active',true).order('sort_order')
       .then(({data,error:categoryError}) => { if (alive && !categoryError) setCategories(data || []); });
     return () => { alive = false; };
-  }, [session]);
+  }, []);
 
   async function loadMarketplace() {
     if (!session || !supabase) return;
