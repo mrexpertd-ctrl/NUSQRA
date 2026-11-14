@@ -128,3 +128,14 @@ body{margin:0;background:linear-gradient(145deg,#0b0a2b 0%,#100d3b 54%,#17104a 1
 .marketplace-entry .entry-header-actions .entry-login-button,.marketplace-entry .entry-header-actions .entry-register-button{display:inline-flex;align-items:center;justify-content:center;border:1px solid rgba(167,139,250,.65);border-radius:11px;padding:10px 14px;background:linear-gradient(120deg,#7a2ff7,#5b21d6);color:#fff;font-size:12px;font-weight:800}
 .marketplace-entry .entry-header-actions .entry-register-button{background:transparent}
 @media(max-width:900px){.marketplace-entry .entry-header-actions .entry-login-button,.marketplace-entry .entry-header-actions .entry-register-button{display:none}}
+
+
+/* Final overrides run after the legacy stylesheet in Vite's CSS bundle */
+.access-gate.marketplace-entry .entry-step-number{background:linear-gradient(135deg,#8b35ff,#5b21d6)!important;color:#fff!important;border:0!important;box-shadow:0 4px 14px rgba(122,47,247,.35)!important}
+.access-gate.marketplace-entry .entry-how-grid article{background:rgba(255,255,255,.045)!important;border:1px solid rgba(167,139,250,.34)!important;border-radius:15px!important}
+.access-gate.marketplace-entry .entry-faq-list details{background:rgba(255,255,255,.055)!important;border:1px solid rgba(167,139,250,.34)!important}
+.access-gate.marketplace-entry .entry-closing-cta{background:linear-gradient(105deg,rgba(122,47,247,.82),rgba(21,15,75,.96))!important;border:1px solid rgba(167,139,250,.48)!important}
+.access-gate.marketplace-entry .entry-role-icon,.access-gate.marketplace-entry .entry-category-icon{background:linear-gradient(135deg,#8b35ff,#5b21d6)!important;color:#fff!important}
+.access-gate.marketplace-entry .entry-hero-search{background:#f8f7ff!important;border:1px solid #fff!important}
+.access-gate.marketplace-entry .entry-hero-search input{color:#17133a!important}
+.access-gate.marketplace-entry .entry-header{background:rgba(4,6,30,.94)!important}
