@@ -70,6 +70,7 @@ const countryCodes = ['SA','AE','BH','KW','OM','QA'];
 function App() {
   const [lang, setLang] = useState(() => window.localStorage.getItem('nusqra-language') || 'ar');
   const [selectedRole, setSelectedRole] = useState(null);
+  const [entryStep, setEntryStep] = useState('role');
   const [activeRole, setActiveRole] = useState(() => window.localStorage.getItem('nusqra-active-role') || 'customer');
   const [menu, setMenu] = useState(false);
   const [page, setPage] = useState(() => window.location.hash.replace('#','') || 'home');
@@ -701,8 +702,8 @@ function App() {
         <div className="entry-nav"><span>{isAr?'سوق الخدمات المهنية':'Professional marketplace'}</span><span>{isAr?'للأفراد والشركات':'For individuals & businesses'}</span></div>
         <button type="button" className="entry-language" onClick={()=>setLang(isAr?'en':'ar')}><Globe2 size={16}/>{isAr?'English':'العربية'}</button>
       </header>
-      <main className="entry-layout">
-        <section className="entry-hero">
+      <main className={'entry-layout '+(entryStep==='auth'?'entry-layout-auth':'entry-layout-role')}>
+        {entryStep==='role' && <section className="entry-hero">
           <div className="entry-brand-large"><img src={nusqraLogo} alt="NUSQRA نسقرا" /></div>
           <div className="entry-kicker">{isAr?'سوق واحد · فرص أكثر':'ONE MARKETPLACE · MORE OPPORTUNITY'}</div>
           <h1>{isAr?'اكتشف المحترفين، واستكشف الفرص، وابدأ الآن.':'Find Professionals, Explore Opportunities, Get Started.'}</h1>
@@ -713,22 +714,23 @@ function App() {
             <div><Globe2 size={22}/><span>{isAr?'نمُ معاً':'Grow together'}</span></div>
           </div>
           <div className="entry-visual"><img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1200&q=85" alt={isAr?'مساحة عمل رقمية حديثة':'Modern digital workspace'} /><div className="entry-visual-caption"><span> NUSQRA MARKETPLACE </span><strong>{isAr?'المهارات تلتقي بالفرص':'Where skills meet opportunity'}</strong></div></div>
-        </section>
+        </section>}
         <section className="entry-auth-wrap">
           <div className="entry-auth-card">
             <div className="entry-auth-logo"><img src={nusqraLogoDark} alt="NUSQRA نسقرا" /></div>
-            <div className="entry-auth-eyebrow">{isAr?'اختر طريقة استخدام المنصة':'CHOOSE YOUR NUSQRA EXPERIENCE'}</div>
-            <div className="entry-role-picker" role="group" aria-label={isAr?'اختر نوع الحساب':'Choose account type'}>
-              <button type="button" className={'entry-role-card '+(selectedRole==='customer'?'selected':'')} onClick={()=>{setSelectedRole('customer');setActiveRole('customer');setForm(x=>({...x,account_type:'customer'}));window.localStorage.setItem('nusqra-active-role','customer');window.localStorage.setItem('nusqra-pending-role','customer');setError('');}}>
+            <div className="entry-auth-eyebrow">{entryStep==='role'?(isAr?'اختر طريقة استخدام المنصة':'CHOOSE YOUR NUSQRA EXPERIENCE'):(isAr?'تسجيل الدخول الآمن':'SECURE ACCOUNT ACCESS')}</div>
+            {entryStep==='role' && <div className="entry-role-picker" role="group" aria-label={isAr?'اختر نوع الحساب':'Choose account type'}>
+              <button type="button" className={'entry-role-card '+(selectedRole==='customer'?'selected':'')} onClick={()=>{setSelectedRole('customer');setActiveRole('customer');setForm(x=>({...x,account_type:'customer'}));window.localStorage.setItem('nusqra-active-role','customer');window.localStorage.setItem('nusqra-pending-role','customer');setError('');setEntryStep('auth');}}>
                 <span className="entry-role-icon"><Users size={24}/></span><strong>{isAr?'أبحث عن محترف':'I want to hire'}</strong><small>{isAr?'تصفح الملفات المهنية والتوفر، وقارن الخبرات، وانشر طلبك.':'Browse professional profiles and availability, compare skills and post a job.'}</small>
               </button>
-              <button type="button" className={'entry-role-card '+(selectedRole==='professional'?'selected':'')} onClick={()=>{setSelectedRole('professional');setActiveRole('professional');setForm(x=>({...x,account_type:'professional'}));window.localStorage.setItem('nusqra-active-role','professional');window.localStorage.setItem('nusqra-pending-role','professional');setError('');}}>
+              <button type="button" className={'entry-role-card '+(selectedRole==='professional'?'selected':'')} onClick={()=>{setSelectedRole('professional');setActiveRole('professional');setForm(x=>({...x,account_type:'professional'}));window.localStorage.setItem('nusqra-active-role','professional');window.localStorage.setItem('nusqra-pending-role','professional');setError('');setEntryStep('auth');}}>
                 <span className="entry-role-icon"><BriefcaseBusiness size={24}/></span><strong>{isAr?'أنا محترف وأبحث عن عمل':'I am a professional'}</strong><small>{isAr?'اكتشف فرص العمل، وقدّم العروض، وأدر مشاريعك وعملاءك.':'Find jobs, submit proposals and manage your projects and clients.'}</small>
               </button>
-            </div>
-            {!selectedRole ? (
+            </div>}
+            {!selectedRole || entryStep==='role' ? (
               <p className="entry-role-prompt">{isAr?'يرجى اختيار ما تريد القيام به في نسقرا أولاً.':'First, choose how you want to use NUSQRA.'}</p>
             ) : !authMode ? <>
+              <button type="button" className="entry-back-role" onClick={()=>{setEntryStep('role');setAuthMode(null);setError('');setNotice('');}}>{isAr?'العودة لاختيار نوع الاستخدام':'Back to role selection'}</button>
               <h2 id="access-gate-title">{isAr?'مرحباً بك في نسقرا':'Welcome to NUSQRA'}</h2>
               <p>{isAr?'تم اختيار نوع الاستخدام. تابع الآن باستخدام Google أو البريد الإلكتروني.':'Your role is selected. Now continue with Google or email.'}</p>
               {!isSupabaseConfigured && <p className="auth-warning" role="alert">{t.noConfig}</p>}
@@ -754,7 +756,7 @@ function App() {
                 {notice && <p className="auth-success" role="status">{notice}</p>}
                 <button className="btn primary" type="submit" disabled={busy||!isSupabaseConfigured}>{busy?t.working:authMode==='register'?t.signup:t.login}</button>
               </form>
-              <button type="button" className="auth-switch" onClick={()=>{setAuthMode(null);setError('');setNotice('');}}>{isAr?'العودة لاختيار نوع الحساب':'Back to role selection'}</button>
+              <button type="button" className="auth-switch" onClick={()=>{setAuthMode(null);setEntryStep('role');setError('');setNotice('');}}>{isAr?'العودة لاختيار نوع الحساب':'Back to role selection'}</button>
             </>}
           </div>
           <div className="entry-auth-note">{isAr?'حساب واحد للوصول إلى خدمات وفرص نسقرا':'One account for the NUSQRA services marketplace'}</div>
@@ -775,7 +777,7 @@ function App() {
         {session && <><button type="button" className="navlink" onClick={()=>navigatePage('marketplace')}>{isAr?'السوق':'Marketplace'}</button><button type="button" className="navlink" onClick={()=>navigatePage('messages')}>{t.messages}</button></>}
       </nav>
       <div className="actions">
-        {session ? <button className="navlink" onClick={()=>navigatePage('settings')}><UserRound size={15}/>{t.account}</button> :
+        {session ? <button className={'navlink '+(settingsOpen?'active':'')} aria-expanded={settingsOpen} onClick={()=>setSettingsOpen(v=>!v)}><UserRound size={15}/>{t.account}</button> :
           <><button className="navlink" onClick={()=>{setAuthMode('login');setError('');setNotice('')}}>{t.login}</button><button className="btn primary" onClick={()=>{setAuthMode('register');setError('');setNotice('')}}>{t.signup}</button></>}
         <button className="lang" onClick={()=>setLang(isAr?'en':'ar')}><Globe2 size={17}/>{isAr?'English':'العربية'}</button>
         {session && <button className="navlink" onClick={signOut} aria-label={t.logout}><LogOut size={16}/></button>}
@@ -808,7 +810,7 @@ function App() {
           </div>
         </section>
         <section className="home-trust-band"><div><span className="section-label">{isAr?'مصممة للخليج':'BUILT FOR THE GULF'}</span><h2>{isAr?'فرص أوضح. تواصل أسهل. نمو أقوى.':'A clearer way to find work and get work done.'}</h2></div><div className="home-trust-points"><span><ShieldCheck size={19}/>{isAr?'تواصل بثقة':'Connect with confidence'}</span><span><Globe2 size={19}/>{isAr?'العربية والإنجليزية':'Arabic & English'}</span><span><Users size={19}/>{isAr?'للأفراد والشركات':'For people & businesses'}</span></div></section>
-        <section className="home-steps section" id="how-it-works"><div className="section-label">{isAr?'ابدأ في ثلاث خطوات':'GET STARTED IN THREE STEPS'}</div><h2>{isAr?'كيف تعمل نسقرا':'A simple path from need to opportunity'}</h2><div className="home-step-grid"><article><b>01</b><h3>{isAr?'أنشئ حسابك':'Create your account'}</h3><p>{isAr?'أنشئ ملفك كعميل أو محترف.':'Join as a customer or professional.'}</p></article><article><b>02</b><h3>{isAr?'اكتشف أو انشر':'Discover or post'}</h3><p>{isAr?'ابحث عن خدمة أو انشر طلبك.':'Find a service or publish a job request.'}</p></article><article><b>03</b><h3>{isAr?'تواصل وابدأ':'Connect and begin'}</h3><p>{isAr?'راجع العروض وتواصل مباشرة.':'Review proposals and connect directly.'}</p></article></div><div className="home-final-cta"><div><h2>{isAr?'مستعد للخطوة التالية؟':'Ready for your next opportunity?'}</h2><p>{isAr?'انضم إلى مجتمع نسقرا اليوم.':'Join the NUSQRA community today.'}</p></div><button className="btn primary" onClick={()=>{if(session)navigatePage('settings');else{setForm(x=>({...x,account_type:'customer'}));setAuthMode('register');}}}>{isAr?'أنشئ حسابك':'Get started'} <ArrowRight size={17}/></button></div></section>
+        <section className="home-steps section" id="how-it-works"><div className="section-label">{isAr?'ابدأ في ثلاث خطوات':'GET STARTED IN THREE STEPS'}</div><h2>{isAr?'كيف تعمل نسقرا':'A simple path from need to opportunity'}</h2><div className="home-step-grid"><article><b>01</b><h3>{isAr?'أنشئ حسابك':'Create your account'}</h3><p>{isAr?'أنشئ ملفك كعميل أو محترف.':'Join as a customer or professional.'}</p></article><article><b>02</b><h3>{isAr?'اكتشف أو انشر':'Discover or post'}</h3><p>{isAr?'ابحث عن خدمة أو انشر طلبك.':'Find a service or publish a job request.'}</p></article><article><b>03</b><h3>{isAr?'تواصل وابدأ':'Connect and begin'}</h3><p>{isAr?'راجع العروض وتواصل مباشرة.':'Review proposals and connect directly.'}</p></article></div><div className="home-final-cta"><div><h2>{isAr?'مستعد للخطوة التالية؟':'Ready for your next opportunity?'}</h2><p>{isAr?'انضم إلى مجتمع نسقرا اليوم.':'Join the NUSQRA community today.'}</p></div><button className="btn primary" onClick={()=>{if(session)setSettingsOpen(true);else{setForm(x=>({...x,account_type:'customer'}));setAuthMode('register');}}}>{isAr?'أنشئ حسابك':'Get started'} <ArrowRight size={17}/></button></div></section>
       </>}
       {page === 'categories' && <section className="section category-section" id="categories">
         <div className="section-label">NUSQRA · SERVICES DIRECTORY</div>
@@ -967,10 +969,10 @@ function App() {
         </div>
       </section>}
       {page === 'messages' && session && <section className="section marketplace-section messaging-section" id="messages"><div className="section-label">NUSQRA · PRIVATE</div><h2>{t.messages}</h2><div className="messaging-layout"><aside className="conversation-list">{conversations.length===0?<p className="market-empty">{t.noConversations}</p>:conversations.map(c=><button type="button" className={'conversation-item'+(selectedConversation?.id===c.id?' active':'')} key={c.id} onClick={()=>setSelectedConversation(c)}><strong>{c.job?.title||t.marketplace}</strong><span>{session.user.id===c.customer_id?(c.professional?.full_name||t.professional):(c.customer?.full_name||t.customer)}</span></button>)}</aside><div className="chat-panel">{selectedConversation?<><div className="chat-heading"><strong>{selectedConversation.job?.title||conversations.find(c=>c.id===selectedConversation.id)?.job?.title||t.marketplace}</strong><span>{session.user.id===selectedConversation.customer_id?(conversations.find(c=>c.id===selectedConversation.id)?.professional?.full_name||t.professional):(conversations.find(c=>c.id===selectedConversation.id)?.customer?.full_name||t.customer)}</span></div><div className="message-list">{messages.map(m=><div key={m.id} className={'message-bubble'+(m.sender_id===session.user.id?' mine':'')}><p>{m.body}</p><time>{new Date(m.created_at).toLocaleString(lang==='ar'?'ar-SA':'en-US')}</time></div>)}</div><form className="message-compose" onSubmit={sendMessage}><textarea rows="2" maxLength="4000" required placeholder={t.messagePlaceholder} value={messageDraft} onChange={e=>setMessageDraft(e.target.value)}/><button className="btn primary" type="submit" disabled={busy||!messageDraft.trim()||!canMessage}><Send size={16}/>{t.sendMessage}</button></form></>:<p className="market-empty">{t.noConversations}</p>}</div></div></section>}
-      {page === 'settings' && session && <section className="section account-section settings-page" id="account">
-        <div className="section-label">NUSQRA · {t.dashboard.toUpperCase()}</div><h2>{t.dashboard}</h2>
+      {settingsOpen && session && <section className="section account-section settings-page settings-popover-panel" id="account">
+        <div className="settings-popover-heading"><div><span>NUSQRA ACCOUNT</span><h2>{t.dashboard}</h2></div><button type="button" aria-label="Close settings" onClick={()=>setSettingsOpen(false)}><X size={19}/></button></div>
         <div className="account-card">
-          <div className="account-heading"><div><h3>{profileForm.full_name || session.user.email}</h3><p>{session.user.email}</p></div><div className="settings-actions"><button className="btn secondary" type="button" onClick={()=>navigatePage('home')}>{isAr?"العودة للرئيسية":"Back to home"}</button><button className="btn secondary" onClick={signOut}><LogOut size={16}/>{t.logout}</button></div></div>
+          <div className="account-heading"><div><h3>{profileForm.full_name || session.user.email}</h3><p>{session.user.email}</p></div><div className="settings-actions"><button className="btn secondary" type="button" onClick={()=>setSettingsOpen(false)}>{isAr?"إغلاق":"Close"}</button><button className="btn secondary" onClick={signOut}><LogOut size={16}/>{t.logout}</button></div></div>
           <div className="language-preference"><label htmlFor="nusqra-language-setting">{isAr?'لغة المنصة':'Website language'}</label><select id="nusqra-language-setting" value={lang} onChange={e=>setLang(e.target.value)}><option value="ar">العربية</option><option value="en">English</option></select></div>
           {roles.length>1 && <div className="language-preference"><label htmlFor="nusqra-role-setting">{isAr?'طريقة استخدام نسقرا':'NUSQRA experience'}</label><select id="nusqra-role-setting" value={activeRole} onChange={e=>{const next=e.target.value;setActiveRole(next);window.localStorage.setItem('nusqra-active-role',next);navigatePage(next==='professional'?'marketplace':'professionals');}}>{roles.includes('customer')&&<option value="customer">{isAr?'أبحث عن محترف':'Hire a professional'}</option>}{roles.includes('professional')&&<option value="professional">{isAr?'أنا محترف':'Find work as a professional'}</option>}</select></div>}
           <div className="role-list"><strong>{t.roles}:</strong>{roles.filter(role=>role!=='admin').map(role=><span className="role-chip" key={role}>{role==='customer'?t.customer:t.professional}</span>)}<button className="btn secondary" type="button" onClick={()=>navigatePage('support')}>{isAr?'دعم العملاء':'Customer support'}</button></div>
