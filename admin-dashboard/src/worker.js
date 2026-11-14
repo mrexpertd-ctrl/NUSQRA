@@ -89,9 +89,11 @@ export default {
       if(count>0) return json({success:true,message:'Supreme Admin invitation already exists.'});
       const {error:rowError}=await service.from('admin_staff_directory').insert({email,staff_role:'supreme_admin',status:'invited'});
       if(rowError) return json({error:'Supreme Admin seat could not be reserved.'},409);
-      const {data:existingUser}=await service.auth.admin.getUserByEmail(email);
-      if(existingUser?.user){
-        const {error:activateError}=await service.from('admin_staff_directory').update({user_id:existingUser.user.id,status:'active',activated_at:new Date().toISOString()}).eq('email',email);
+      const {data:userPage,error:userListError}=await service.auth.admin.listUsers({page:1,perPage:1000});
+      if(userListError) return json({error:'Owner account lookup failed.'},503);
+      const existingUser=(userPage?.users||[]).find(u=>(u.email||'').toLowerCase()===email);
+      if(existingUser){
+        const {error:activateError}=await service.from('admin_staff_directory').update({user_id:existingUser.id,status:'active',activated_at:new Date().toISOString()}).eq('email',email);
         if(activateError) return json({error:'Existing owner account could not be activated.'},500);
         return json({success:true,message:'Existing owner account is authorized. Sign in and enable TOTP.'});
       }
