@@ -36,6 +36,7 @@ async function authenticate(request,env,required=true){
     staff=created;
   }
   if(!staff) throw new Error('This email has not been invited to NUSQRA Administration.');
+  if(staff.staff_role==='supreme_admin' && email!==(env.SUPREME_ADMIN_EMAIL||'').toLowerCase()) throw new Error('The configured Supreme Admin identity does not match this account.');
   if(staff.status==='invited' && !staff.user_id){
     const {data:linked,error:linkError}=await service.from('admin_staff_directory').update({user_id:user.id,status:'active',activated_at:new Date().toISOString()}).eq('id',staff.id).eq('status','invited').select('*').single();
     if(linkError) throw new Error('Staff invitation could not be activated.');
