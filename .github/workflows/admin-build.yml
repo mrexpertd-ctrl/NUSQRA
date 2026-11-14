@@ -1,5 +1,6 @@
 name: Admin dashboard build
 on:
+  workflow_dispatch:
   push:
     paths:
       - 'admin-dashboard/**'
