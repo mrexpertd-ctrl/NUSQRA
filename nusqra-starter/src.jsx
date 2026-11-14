@@ -784,13 +784,14 @@ function App() {
           <img className="entry-brand-mark" src={nusqraSymbol} alt="" aria-hidden="true" />
           <span className="entry-brand-words"><strong lang="ar">نُسقرا</strong><small lang="en">NUSQRA</small></span>
         </a>
-        <nav className={'entry-nav '+(menu?'open':'')} id="entry-mobile-nav"><a href="#entry-categories" onClick={e=>{e.preventDefault();document.getElementById('entry-categories')?.scrollIntoView({behavior:'smooth'});setMenu(false);}}>{isAr?'التصنيفات':'Categories'}</a><a href="#entry-how-it-works" onClick={e=>{e.preventDefault();document.getElementById('entry-how-it-works')?.scrollIntoView({behavior:'smooth'});setMenu(false);}}>{isAr?'كيف تعمل':'How it works'}</a><span>{isAr?'للأفراد والشركات':'For individuals & businesses'}</span></nav>
+        <nav className={'entry-nav '+(menu?'open':'')} id="entry-mobile-nav"><a href="#home">{isAr?'الرئيسية':'Home'}</a><a href="#entry-categories">{isAr?'التصنيفات':'Categories'}</a><a href="#entry-about">{isAr?'عن نسقرا':'About'}</a><a href="#entry-how-it-works">{isAr?'كيف تعمل':'How It Works'}</a><a href="#entry-faq">{isAr?'الأسئلة الشائعة':'FAQ'}</a><a href="#entry-contact">{isAr?'اتصل بنا':'Contact'}</a></nav>
         <div className="entry-header-actions"><button type="button" className="entry-language" onClick={()=>setLang(isAr?'en':'ar')}><Globe2 size={16}/>{isAr?'English':'العربية'}</button><button type="button" className="entry-menu" aria-label={menu?'Close menu':'Open menu'} aria-expanded={menu} aria-controls="entry-mobile-nav" onClick={()=>setMenu(v=>!v)}>{menu?<X size={20}/>:<Menu size={20}/>}</button></div>
       </header>
       <main className={'entry-layout '+(entryStep==='auth'?'entry-layout-auth':'entry-layout-role')}>
         {entryStep==='role' && <section className="entry-hero">
-          <div className="entry-kicker">{isAr?'سوق واحد · فرص أكثر':'ONE MARKETPLACE · MORE OPPORTUNITY'}</div>
-          <h1>{isAr?'ما الخدمة التي تحتاجها اليوم؟':'What service do you need today?'}</h1>
+          <div className="entry-kicker">{isAr?'فرص الخليج تبدأ هنا':'CONNECT · CREATE · GROW'}</div>
+          <h1>{isAr?<>حيث تلتقي مواهب الخليج <em>بالفرص</em></>:<>Where Gulf Talent<br/>Meets <em>Opportunity</em></>}</h1>
+          <p className="entry-hero-subline">{isAr?'اعثر على محترفين موثوقين أو اعرض خدماتك في منطقة الخليج مع نسقرا.':'Find trusted professionals or offer your services in the Gulf region with NUSQRA.'}</p>
           <form className="entry-hero-search" onSubmit={submitEntrySearch} role="search">
             <Search size={20} aria-hidden="true"/>
             <input value={entrySearch} onChange={e=>setEntrySearch(e.target.value)} placeholder={isAr?'سباك، مصمم شعارات، مترجم...':'Plumber, logo designer, translator...'} aria-label={isAr?'ابحث عن خدمة':'Search for a service'}/>
@@ -799,12 +800,12 @@ function App() {
           <div className="entry-hero-choices" role="group" aria-label={isAr?'اختر طريقة الاستخدام':'Choose how to use NUSQRA'}>
               <button type="button" className="entry-hero-choice" onClick={()=>chooseEntryRole('customer')}>
                 <span className="entry-role-icon"><Users size={22}/></span>
-                <span className="entry-hero-choice-copy"><strong>{isAr?'أريد توظيف محترف':'I want to hire'}</strong><small>{isAr?'اعثر على محترفين وقارن العروض وانشر طلبك.':'Find professionals, compare proposals and post a request.'}</small></span>
+                <span className="entry-hero-choice-copy"><strong>{isAr?'أريد توظيف محترف':'I'm a Client'}</strong><small>{isAr?'اعثر على محترفين وقارن العروض وانشر طلبك.':'Find the best talent and services.'}</small></span>
                 <ArrowRight className="entry-hero-choice-arrow" size={20}/>
               </button>
               <button type="button" className="entry-hero-choice" onClick={()=>chooseEntryRole('professional')}>
                 <span className="entry-role-icon"><BriefcaseBusiness size={22}/></span>
-                <span className="entry-hero-choice-copy"><strong>{isAr?'أنا محترف':'I am a professional'}</strong><small>{isAr?'اكتشف الفرص وقدّم عروضك وأدر مشاريعك.':'Discover opportunities, submit proposals and manage projects.'}</small></span>
+                <span className="entry-hero-choice-copy"><strong>{isAr?'أنا محترف':'I'm a Professional'}</strong><small>{isAr?'اكتشف الفرص وقدّم عروضك وأدر مشاريعك.':'Grow your business with NUSQRA.'}</small></span>
                 <ArrowRight className="entry-hero-choice-arrow" size={20}/>
               </button>
             </div>
@@ -858,59 +859,55 @@ function App() {
         </section>}
       </main>
       {entryStep==='role' && <div className="entry-home-sections">
-        <section className="entry-content-section" id="entry-browse-categories">
-          <div className="entry-section-heading" style={{display:'block',opacity:1,visibility:'visible',margin:'0 0 20px',textAlign:'start'}}><span>{isAr?'اكتشف المجالات':'EXPLORE THE DIRECTORY'}</span><h2 style={{display:'block',margin:0,color:'#fff',WebkitTextFillColor:'#fff',fontSize:26,lineHeight:1.25,fontWeight:800,opacity:1,visibility:'visible'}}> {isAr?'تصفح حسب التصنيف':'Browse by category'}</h2></div>
+        <section className="entry-content-section" id="entry-categories">
+          <div className="entry-section-heading"><h2>{isAr?'تصفح حسب التصنيف':'Browse by Category'}</h2></div>
           <div className="entry-browse-grid">
-            {categories.map(c=><button type="button" className="entry-browse-card" key={c.id} onClick={()=>openEntryCategory(c.slug)}>
+            {categories.slice(0,6).map(c=><button type="button" className="entry-browse-card" key={c.id} onClick={()=>openEntryCategory(c.slug)}>
               <img src={homeCategoryImages[c.slug]||homeCategoryImages['business-services']} alt="" loading="lazy"/>
-              <span>{isAr?c.name_ar:c.name_en}</span><ArrowRight size={17} aria-hidden="true"/>
+              <span className="entry-category-icon" aria-hidden="true">✦</span><strong>{isAr?c.name_ar:c.name_en}</strong>
             </button>)}
           </div>
-          <button type="button" className="entry-view-all" onClick={()=>{if(session)navigatePage('categories');else document.getElementById('entry-browse-categories')?.scrollIntoView({behavior:'smooth',block:'start'});}}>{isAr?'عرض جميع التصنيفات':'View all categories'} <ArrowRight size={17}/></button>
+          <button type="button" className="entry-view-all" onClick={()=>{document.getElementById('entry-categories')?.scrollIntoView({behavior:'smooth'});}}>{isAr?'عرض جميع التصنيفات':'View all categories'} <ArrowRight size={17}/></button>
         </section>
-
-
         <section className="entry-content-section" id="entry-how-it-works">
-          <div className="entry-section-heading" style={{display:'block',opacity:1,visibility:'visible',margin:'0 0 20px',textAlign:'start'}}><span>{isAr?'خطوات بسيطة':'HOW IT WORKS'}</span><h2 style={{display:'block',margin:0,color:'#fff',WebkitTextFillColor:'#fff',fontSize:26,lineHeight:1.25,fontWeight:800,opacity:1,visibility:'visible'}}>{isAr?'كيف تعمل نسقرا':'How NUSQRA works'}</h2></div>
+          <div className="entry-section-heading"><h2>{isAr?'كيف تعمل نسقرا':'How NUSQRA Works'}</h2></div>
           <div className="entry-how-grid">
-            <article><b className="entry-step-number">1</b><h3>{isAr?'انشر طلباً':'Post a request'}</h3><p>{isAr?'صف الخدمة التي تحتاجها، بالعربية أو الإنجليزية.':'Describe the service you need, in Arabic or English.'}</p></article>
-            <article><b className="entry-step-number">2</b><h3>{isAr?'استقبل العروض':'Receive proposals'}</h3><p>{isAr?'يرسل المحترفون المستقلون طريقتهم والسعر المقترح.':'Independent professionals send their approach and price.'}</p></article>
-            <article><b className="entry-step-number">3</b><h3>{isAr?'قارن واختر':'Compare and choose'}</h3><p>{isAr?'اختر المحترف الذي تفضله واتفقا مباشرة على الشروط.':'Pick the professional you prefer and agree terms directly.'}</p></article>
+            <article><b className="entry-step-number">1</b><div className="entry-step-symbol">⌕</div><h3>{isAr?'ابحث واكتشف':'Search and Discover'}</h3><p>{isAr?'اعثر على الخدمة أو المحترف المناسب.':'Find the right service or professional.'}</p></article>
+            <article><b className="entry-step-number">2</b><div className="entry-step-symbol">⇄</div><h3>{isAr?'تواصل وتعاون':'Connect and Collaborate'}</h3><p>{isAr?'ناقش التفاصيل واتفق مباشرة.':'Chat, discuss and agree on the details.'}</p></article>
+            <article><b className="entry-step-number">3</b><div className="entry-step-symbol">✓</div><h3>{isAr?'أنجز العمل':'Get It Done'}</h3><p>{isAr?'ابدأ العمل وفق ما اتفقتما عليه.':'Get started based on your agreement.'}</p></article>
           </div>
         </section>
-
-        <section className="entry-content-section" id="entry-why-nusqra">
-          <div className="entry-section-heading" style={{display:'block',opacity:1,visibility:'visible',margin:'0 0 20px',textAlign:'start'}}><span>{isAr?'لماذا نسقرا':'THE NUSQRA APPROACH'}</span><h2 style={{display:'block',margin:0,color:'#fff',WebkitTextFillColor:'#fff',fontSize:26,lineHeight:1.25,fontWeight:800,opacity:1,visibility:'visible'}}>{isAr?'لماذا نسقرا؟':'Why NUSQRA'}</h2></div>
-          <div className="entry-why-grid">
-            <article><Globe2/><span>{isAr?'العربية والإنجليزية':'Arabic and English'}</span></article>
-            <article><Users/><span>{isAr?'عروض من محترفين مستقلين':'Proposals from independent professionals'}</span></article>
-            <article><CheckCircle2/><span>{isAr?'قارن قبل أن تختار':'Compare before you choose'}</span></article>
-            <article><MessageCircle/><span>{isAr?'اتفق على الشروط مباشرة':'Agree terms directly'}</span></article>
+        <section className="entry-content-section" id="entry-features">
+          <div className="entry-feature-grid">
+            <article><span>◈</span><div><strong>{isAr?'العربية والإنجليزية':'Arabic and English'}</strong><small>{isAr?'واجهة متاحة باللغتين':'Interface available in both languages'}</small></div></article>
+            <article><span>ϟ</span><div><strong>{isAr?'سريع وسهل':'Fast and easy'}</strong><small>{isAr?'ابدأ خلال دقائق':'Get started in minutes'}</small></div></article>
+            <article><span>♧</span><div><strong>{isAr?'الأمان أولاً':'Safety first'}</strong><small>{isAr?'مراجعة الملفات الشخصية وإمكانية الإبلاغ':'Profile review and reporting'}</small></div></article>
+            <article><span>✉</span><div><strong>{isAr?'الدعم عبر البريد الإلكتروني':'Support by email'}</strong><small>{isAr?'تواصل مع فريق الدعم عبر البريد':'Contact support by email'}</small></div></article>
           </div>
-          <p className="entry-disclaimer">{isAr?'لا توفر نسقرا في الإصدار الأول مدفوعات داخل المنصة أو خدمة ضمان مالي؛ يتم الاتفاق على الشروط مباشرة بين الطرفين.':'The first release does not provide platform payments or escrow. Customers and professionals agree terms directly.'}</p>
         </section>
-
         <section className="entry-content-section" id="entry-faq">
-          <div className="entry-section-heading" style={{display:'block',opacity:1,visibility:'visible',margin:'0 0 20px',textAlign:'start'}}><span>{isAr?'إجابات سريعة':'HELP & ANSWERS'}</span><h2 style={{display:'block',margin:0,color:'#fff',WebkitTextFillColor:'#fff',fontSize:26,lineHeight:1.25,fontWeight:800,opacity:1,visibility:'visible'}}>{isAr?'الأسئلة الشائعة':'FAQ'}</h2></div>
+          <div className="entry-section-heading"><h2>{isAr?'الأسئلة الشائعة':'Frequently Asked Questions'}</h2></div>
           <div className="entry-faq-list">
-            <details><summary>{isAr?'كيف أنشر طلباً؟':'How do I post a request?'}</summary><p>{isAr?'أنشئ حساباً كعميل، ثم اختر التصنيف وأضف وصف الخدمة والتفاصيل المطلوبة وانشر الطلب.':'Create an account as a customer, choose a category, add the service description and required details, then publish your request.'}</p></details>
-            <details><summary>{isAr?'كيف ينضم المحترفون؟':'How do professionals join?'}</summary><p>{isAr?'أنشئ حساباً واختر دور المحترف، ثم أكمل ملفك المهني واختر تخصصك.':'Create an account, choose the professional role, then complete your professional profile and select your category.'}</p></details>
-            <details><summary>{isAr?'ما اللغات المدعومة؟':'Which languages are supported?'}</summary><p>{isAr?'واجهة نسقرا متاحة بالعربية والإنجليزية.':'The NUSQRA interface is available in Arabic and English.'}</p></details>
-            <details><summary>{isAr?'ما الدول التي تخدمها نسقرا؟':'Which countries does NUSQRA serve?'}</summary><p>{isAr?'تتضمن خيارات الدولة الحالية السعودية والإمارات والبحرين والكويت وعُمان وقطر. يرجى التأكد من توفر الخدمة في منطقتك قبل الاعتماد عليها.':'The current country options are Saudi Arabia, the UAE, Bahrain, Kuwait, Oman and Qatar. Please confirm local availability before relying on service in a specific area.'}</p></details>
-            <details><summary>{isAr?'كيف أتواصل مع الدعم؟':'How do I contact support?'}</summary><p>{isAr?'سجّل الدخول وافتح دعم العملاء من حسابك لإرسال طلب دعم ومتابعة حالته.':'Sign in and open Customer support from your account to send a support request and follow its status.'}</p></details>
+            <details><summary>{isAr?'هل استخدام نسقرا مجاني؟':'Is NUSQRA free to use?'}</summary><p>{isAr?'قد تختلف بعض الخدمات أو الميزات. يرجى مراجعة الشروط قبل الاستخدام.':'Some services or features may have conditions. Please review the applicable terms before use.'} <strong>TODO: Founder to confirm pricing and free-access policy.</strong></p></details>
+            <details><summary>{isAr?'كيف أصبح محترفاً؟':'How do I become a professional?'}</summary><p>{isAr?'أنشئ حساباً كمحترف، وأكمل ملفك المهني واختر تخصصك.':'Create an account as a professional, complete your profile and select your category.'}</p></details>
+            <details><summary>{isAr?'كيف تتم المدفوعات؟':'What payment methods are available?'}</summary><p>{isAr?'يتم الاتفاق على الدفع مباشرة بين العميل والمحترف. لا توفر نسقرا مدفوعات داخل المنصة في هذا الإصدار.':'Payments are agreed directly between the customer and professional. NUSQRA does not process platform payments in this release.'}</p></details>
           </div>
-          {/* TODO: owner to confirm exact service-country coverage before launch. */}
         </section>
-
-        <section className="entry-closing-cta">
-          <div><span>{isAr?'خطوتك التالية تبدأ هنا':'YOUR NEXT STEP'}</span><h2>{isAr?'هل أنت مستعد للبدء؟':'Ready to get started?'}</h2></div>
+        <section className="entry-closing-cta" id="entry-about">
+          <div><h2>{isAr?'هل أنت مستعد للبدء؟':'Ready to get started?'}</h2></div>
           <div className="entry-cta-actions">
-            <button type="button" onClick={()=>{chooseEntryRole('customer');setAuthMode('register');}}>{isAr?'أنشئ حسابك':'Create your account'} <ArrowRight size={18}/></button>
-            <button type="button" className="entry-cta-secondary" onClick={()=>{chooseEntryRole('customer');setAuthMode('login');}}>{isAr?'تسجيل الدخول':'Sign in'}</button>
+            <button type="button" onClick={()=>{chooseEntryRole('customer');setAuthMode('register');}}>{isAr?'انضم الآن':'Join Now'} <ArrowRight size={18}/></button>
+            <button type="button" className="entry-cta-secondary" onClick={()=>document.getElementById('entry-how-it-works')?.scrollIntoView({behavior:'smooth'})}>{isAr?'اعرف المزيد':'Learn More'}</button>
           </div>
         </section>
       </div>}
-      <footer className="entry-footer"><img src={nusqraSymbol} alt="" aria-hidden="true"/><span>NUSQRA · نُسقرا</span><nav aria-label={isAr?'روابط التذييل':'Footer links'}><a href="#entry-categories" onClick={e=>{e.preventDefault();document.getElementById('entry-categories')?.scrollIntoView({behavior:'smooth'});}}>{isAr?'التصنيفات':'Categories'}</a><a href="#entry-how-it-works" onClick={e=>{e.preventDefault();document.getElementById('entry-how-it-works')?.scrollIntoView({behavior:'smooth'});}}>{isAr?'كيف تعمل':'How it works'}</a><button type="button" onClick={()=>chooseEntryRole('customer')}>{isAr?'إنشاء حساب':'Create account'}</button></nav><small>© {new Date().getFullYear()} NUSQRA · {isAr?'سوق الخدمات والفرص':'The marketplace for services & opportunities'}</small></footer>
+      <footer className="entry-footer"><img src={nusqraSymbol} alt="" aria-hidden="true"/><span>NUSQRA · نُسقرا</span><nav aria-label={isAr?'روابط التذييل':'Footer links'}><a href="#entry-categories">{isAr?'التصنيفات':'Categories'}</a><a href="#entry-how-it-works">{isAr?'كيف تعمل':'How It Works'}</a><a href="#entry-faq">{isAr?'الأسئلة الشائعة':'FAQ'}</a><a href="#entry-contact">{isAr?'اتصل بنا':'Contact'}</a></nav><small>© 2026 NUSQRA. All rights reserved.</small></footer>
+      {entryStep==='role' && <nav className="entry-bottom-tabs" aria-label="Mobile navigation">
+        <a href="#home" className="active"><span>⌂</span>{isAr?'الرئيسية':'Home'}</a>
+        <a href="#entry-categories"><span>▦</span>{isAr?'التصنيفات':'Categories'}</a>
+        <button type="button" onClick={()=>chooseEntryRole('customer')}><span>♙</span>{isAr?'الحساب':'Account'}</button>
+        <a href="#entry-footer"><span>•••</span>{isAr?'المزيد':'More'}</a>
+      </nav>}
     </div>;
   }
 
