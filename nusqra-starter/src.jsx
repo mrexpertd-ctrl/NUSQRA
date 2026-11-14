@@ -726,10 +726,11 @@ function App() {
                 <span className="entry-role-icon"><BriefcaseBusiness size={24}/></span><strong>{isAr?'أنا محترف وأبحث عن عمل':'I am a professional'}</strong><small>{isAr?'اكتشف فرص العمل، وقدّم العروض، وأدر مشاريعك وعملاءك.':'Find jobs, submit proposals and manage your projects and clients.'}</small>
               </button>
             </div>
-            <h2 id="access-gate-title">{isAr?'مرحباً بك في نسقرا':'Welcome to NUSQRA'}</h2>
-            {!authMode ? <>
+            {!selectedRole ? (
+              <p className="entry-role-prompt">{isAr?'يرجى اختيار ما تريد القيام به في نسقرا أولاً.':'First, choose how you want to use NUSQRA.'}</p>
+            ) : !authMode ? <>
               <h2 id="access-gate-title">{isAr?'مرحباً بك في نسقرا':'Welcome to NUSQRA'}</h2>
-              <p>{isAr?'اختر دورك ثم تابع باستخدام Google أو البريد الإلكتروني.':'Choose your role, then continue with Google or email.'}</p>
+              <p>{isAr?'تم اختيار نوع الاستخدام. تابع الآن باستخدام Google أو البريد الإلكتروني.':'Your role is selected. Now continue with Google or email.'}</p>
               {!isSupabaseConfigured && <p className="auth-warning" role="alert">{t.noConfig}</p>}
               {error && <p className="auth-error" role="alert">{error}</p>}
               <button type="button" className="google-auth access-gate-google" disabled={busy || !selectedRole} onClick={signInWithGoogle} aria-label={isAr?"تسجيل الدخول باستخدام Google":"Sign in with Google"}>
