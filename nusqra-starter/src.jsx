@@ -157,6 +157,75 @@ function App() {
   }, [lang]);
 
   useEffect(() => {
+    if ('serviceWorker' in navigator && window.isSecureContext) {
+      navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(() => {});
+    }
+
+    const makeDeviceId = () => {
+      if (window.crypto?.randomUUID) return window.crypto.randomUUID();
+      const bytes = new Uint8Array(16);
+      window.crypto.getRandomValues(bytes);
+      bytes[6] = (bytes[6] & 15) | 64;
+      bytes[8] = (bytes[8] & 63) | 128;
+      const hex = Array.from(bytes, b => b.toString(16).padStart(2, '0')).join('');
+      return `${hex.slice(0,8)}-${hex.slice(8,12)}-${hex.slice(12,16)}-${hex.slice(16,20)}-${hex.slice(20)}`;
+    };
+
+    const getPlatform = () => {
+      const value = navigator.userAgentData?.platform || navigator.platform || '';
+      if (/android/i.test(value)) return 'Android';
+      if (/iphone|ipad|ipod|ios/i.test(value)) return 'iOS';
+      if (/win/i.test(value)) return 'Windows';
+      if (/mac/i.test(value)) return 'macOS';
+      if (/cros|chrome.?os/i.test(value)) return 'ChromeOS';
+      if (/linux/i.test(value)) return 'Linux';
+      return 'Unknown';
+    };
+
+    const sendPendingInstall = async () => {
+      try {
+        if (localStorage.getItem('nusqra-install-pending') !== '1' ||
+            localStorage.getItem('nusqra-install-tracked') === '1') return;
+        let deviceId = localStorage.getItem('nusqra-install-device-id');
+        if (!deviceId) {
+          deviceId = makeDeviceId();
+          localStorage.setItem('nusqra-install-device-id', deviceId);
+        }
+        const headers = { 'content-type': 'application/json' };
+        if (supabase) {
+          const { data } = await supabase.auth.getSession();
+          if (data?.session?.access_token) headers.authorization = 'Bearer ' + data.session.access_token;
+        }
+        const response = await fetch('/api/track-install', {
+          method: 'POST',
+          headers,
+          cache: 'no-store',
+          body: JSON.stringify({ device_id: deviceId, platform: getPlatform() })
+        });
+        if (response.ok) {
+          localStorage.setItem('nusqra-install-tracked', '1');
+          localStorage.removeItem('nusqra-install-pending');
+        }
+      } catch {
+        // Keep the pending flag so a later online event or app launch can retry.
+      }
+    };
+
+    const onInstalled = () => {
+      try { localStorage.setItem('nusqra-install-pending', '1'); } catch {}
+      sendPendingInstall();
+    };
+    window.addEventListener('appinstalled', onInstalled);
+    window.addEventListener('online', sendPendingInstall);
+    sendPendingInstall();
+
+    return () => {
+      window.removeEventListener('appinstalled', onInstalled);
+      window.removeEventListener('online', sendPendingInstall);
+    };
+  }, []);
+
+  useEffect(() => {
     if (!menu) return undefined;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
