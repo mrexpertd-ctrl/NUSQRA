@@ -4842,3 +4842,5 @@ html,body,#root{width:100%;max-width:100%;min-width:0;overflow-x:hidden}
   .marketplace-entry .entry-category-strip,.marketplace-entry .entry-how-section{padding:34px 16px!important}
   .marketplace-entry .entry-category-tile{flex-basis:min(82vw,290px)!important}
 }
+
+.marketplace-entry{overflow-x:clip!important;overflow-y:visible!important}
