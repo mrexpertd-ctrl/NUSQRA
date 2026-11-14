@@ -209,9 +209,14 @@ function App() {
       if (!alive) return;
       if (p.error || r.error) { setError(p.error?.message || r.error?.message || t.authError); return; }
       setProfile(p.data || {});
-      setRoles((r.data || []).map(x => x.role));
+      const availableRoles = (r.data || []).map(x => x.role);
+      setRoles(availableRoles);
       const preferredRole = window.localStorage.getItem('nusqra-active-role');
-      if (preferredRole === 'customer' || preferredRole === 'professional') setActiveRole(preferredRole);
+      const restoredRole = (preferredRole === 'customer' || preferredRole === 'professional') && availableRoles.includes(preferredRole)
+        ? preferredRole
+        : (availableRoles.includes('customer') ? 'customer' : 'professional');
+      setActiveRole(restoredRole);
+      window.localStorage.setItem('nusqra-active-role',restoredRole);
       setStaffRole(sr?.data || null);
       setProfessional(pp.data || null);
       setProfileForm({
