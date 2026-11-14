@@ -1369,3 +1369,7 @@ html,body,#root{max-width:100%!important;min-width:0!important;overflow-x:hidden
  .marketplace-entry .entry-nav span{white-space:normal!important}
  .marketplace-entry>.entry-layout-role{min-height:calc(100svh - 96px)!important}
 }
+
+.header .nusqra-header-symbol{display:block!important;width:190px!important;height:54px!important;max-width:38vw!important;flex:0 1 190px!important;object-fit:contain!important;object-position:start center!important}
+.header>.brand-lockup{display:flex!important;align-items:center!important;min-width:0!important;gap:0!important}
+@media(max-width:600px){.header .nusqra-header-symbol{width:150px!important;height:44px!important;max-width:42vw!important;flex-basis:150px!important}}
