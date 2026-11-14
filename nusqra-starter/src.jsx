@@ -832,8 +832,8 @@ function App() {
             </> : <>
               <h2>{authMode==='register'?t.create:t.welcome}</h2>
               {!isSupabaseConfigured && <p className="auth-warning">{t.noConfig}</p>}
-              {authMode==='register' && <>
-                <button type="button" className="google-auth access-gate-google register-google" disabled={busy} onClick={signInWithGoogle}>
+              {(authMode==='register' || authMode==='login') && <>
+                <button type="button" className="google-auth access-gate-google register-google" disabled={busy || !isSupabaseConfigured} onClick={signInWithGoogle}>
                   <span className="google-g" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path fill="#4285F4" d="M23.49 12.27c0-.79-.07-1.54-.2-2.27H12v4.3h6.44a5.5 5.5 0 0 1-2.33 3.36v2.8h3.77c2.2-2.03 3.61-5.02 3.61-8.19z"/><path fill="#34A853" d="M12 24c3.24 0 5.96-1.08 7.95-2.92l-3.77-2.8c-1.05.7-2.4 1.12-4.18 1.12-3.21 0-5.93-2.17-6.9-5.09H1.2v2.89C3.18 21.16 7.27 24 12 24z"/><path fill="#FBBC05" d="M5.1 14.31A7.2 7.2 0 0 1 4.72 12c0-.8.14-1.58.38-2.31V6.8H1.2A12 12 0 0 0 0 12c0 1.94.46 3.77 1.2 5.2l3.9-2.89z"/><path fill="#EA4335" d="M12 4.6c1.77 0 3.36.61 4.61 1.8l3.45-3.45C17.95 1.12 15.24 0 12 0 7.27 0 3.18 2.84 1.2 6.8l3.9 2.89C6.07 6.77 8.79 4.6 12 4.6z"/></svg></span>
                   {isAr?'المتابعة باستخدام Google':'Continue with Google'}
                 </button>
