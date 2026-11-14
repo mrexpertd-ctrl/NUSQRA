@@ -5471,3 +5471,17 @@ body{margin:0;background:linear-gradient(145deg,#0b0a2b 0%,#100d3b 54%,#17104a 1
 .marketplace-entry .entry-header-actions .entry-login-button,.marketplace-entry .entry-header-actions .entry-register-button{display:inline-flex;align-items:center;justify-content:center;border:1px solid rgba(167,139,250,.65);border-radius:11px;padding:10px 14px;background:linear-gradient(120deg,#7a2ff7,#5b21d6);color:#fff;font-size:12px;font-weight:800}
 .marketplace-entry .entry-header-actions .entry-register-button{background:transparent}
 @media(max-width:900px){.marketplace-entry .entry-header-actions .entry-login-button,.marketplace-entry .entry-header-actions .entry-register-button{display:none}}
+
+
+/* Final specificity layer: neutralize legacy green component surfaces */
+.access-gate.marketplace-entry{background:linear-gradient(145deg,#0b0a2b 0%,#100d3b 54%,#17104a 100%)!important;color:#f8f7ff!important}
+.access-gate.marketplace-entry .entry-header{background:rgba(4,6,30,.94)!important;border-color:rgba(167,139,250,.48)!important}
+.access-gate.marketplace-entry .entry-hero{background-color:#0b0a2b!important;background-image:linear-gradient(90deg,rgba(6,7,34,.96) 0%,rgba(8,8,43,.83) 44%,rgba(11,8,48,.18) 100%),linear-gradient(0deg,#0b0a2b 0%,transparent 34%),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1400 500'%3E%3Cdefs%3E%3ClinearGradient id='n' x2='0' y2='1'%3E%3Cstop stop-color='%238b5cf6' stop-opacity='.22'/%3E%3Cstop offset='1' stop-color='%230b0a2b'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='1400' height='500' fill='url(%23n)'/%3E%3Cpath fill='%23060929' d='M0 350h40V270h32v80h34V220h40v130h36V170h46v180h40V245h32v105h40V145h52v205h38V220h38v130h36V95h58v255h42V210h40v140h34V250h34v100h36V125h52v225h40V220h45v130h42V180h58v170h36V245h40v105h38V195h52v155h42V245h38v105h42V210h50v140h42V260h45v90h80v150H0z'/%3E%3Cpath stroke='%23a78bfa' stroke-opacity='.5' stroke-width='4' d='M0 370H1400'/%3E%3Cpath stroke='%237a2ff7' stroke-opacity='.65' stroke-width='7' d='M0 380H1400'/%3E%3C/svg%3E")!important;background-size:cover!important;background-position:center 56%!important}
+.access-gate.marketplace-entry .entry-hero-search{background:#f8f7ff!important;border-color:#fff!important;color:#17133a!important}
+.access-gate.marketplace-entry .entry-hero-search input{background:transparent!important;color:#17133a!important}
+.access-gate.marketplace-entry .entry-role-icon{background:linear-gradient(135deg,#8b35ff,#5b21d6)!important;color:#fff!important}
+.access-gate.marketplace-entry .entry-how-grid article{background:rgba(255,255,255,.045)!important;border:1px solid rgba(167,139,250,.26)!important;border-radius:14px!important;color:#fff!important}
+.access-gate.marketplace-entry .entry-faq-list details{background:rgba(255,255,255,.055)!important;border:1px solid rgba(167,139,250,.3)!important;color:#fff!important}
+.access-gate.marketplace-entry .entry-faq-list summary,.access-gate.marketplace-entry .entry-how-grid h3{color:#fff!important}
+.access-gate.marketplace-entry .entry-faq-list p,.access-gate.marketplace-entry .entry-how-grid p{color:#e6e1f8!important}
+.access-gate.marketplace-entry .entry-category-icon{background:linear-gradient(135deg,#8b35ff,#5b21d6)!important}
