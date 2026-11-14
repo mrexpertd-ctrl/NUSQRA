@@ -9,9 +9,10 @@
     "not_found_handling": "single-page-application"
   },
   "secrets": {
-    "required": ["SUPABASE_SERVICE_ROLE_KEY", "SUPABASE_ANON_KEY", "SUPREME_ADMIN_EMAIL"]
+    "required": ["SUPABASE_SERVICE_ROLE_KEY", "SUPREME_ADMIN_EMAIL"]
   },
   "vars": {
     "SUPABASE_URL": "https://oybodlncqgerucwwkqvp.supabase.co",
+    "SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im95Ym9kbG5jcWdlcnVjd3drcXZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ1NjEzOTksImV4cCI6MjExMDEzNzM5OX0.2kefEQGP4waDjwH4WUONjODltM0EnAXIJC4R3lFsBMQ"
   }
 }
