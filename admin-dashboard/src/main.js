@@ -85,7 +85,7 @@ function renderAnalyticsChart(rows,barColor){
  const values=Array.isArray(rows)?rows:[];
  const max=Math.max(1,...values.map(x=>Number(x.count)||0));
  const barWidth=22,gap=15,startX=8,baseY=76,chartHeight=54;
- return `<svg viewBox="0 0 280 104" role="img" aria-hidden="true" focusable="false"><line x1="4" y1="77" x2="276" y2="77" stroke="#555660" stroke-width="1"/>${values.map((item,index)=>{const value=Number(item.count)||0;const height=Math.max(value?4:2,(value/max)*chartHeight);const x=startX+index*(barWidth+gap);const y=baseY-height;return `<rect x="${x}" y="${y}" width="${barWidth}" height="${height}" rx="4" fill="${barColor}" opacity=".92"><title>${esc(item.label)}: ${value}</title></rect><text x="${x+barWidth/2}" y="94" text-anchor="middle" fill="#c5c6cf" font-size="9">${esc(item.label)}</text>`;}).join('')}</svg>`;
+ return `<svg viewBox="0 0 280 104" role="img" aria-hidden="true" focusable="false"><line x1="4" y1="77" x2="276" y2="77" stroke="#555660" stroke-width="1"/>${values.map((item,index)=>{const value=Number(item.count)||0;const height=Math.max(value?4:2,(value/max)*chartHeight);const x=startX+index*(barWidth+gap);const y=baseY-height;return `<rect x="${x}" y="${y}" width="${barWidth}" height="${height}" rx="4" fill="${barColor}" opacity=".92"><title>${esc(item.label)}: ${value}</title></rect><text x="${x+barWidth/2}" y="94" text-anchor="middle" fill="#c5c6cf" font-size="10">${esc(item.label)}</text>`;}).join('')}</svg>`;
 }
 function animateAnalyticsNumber(id,value){
  const el=document.getElementById(id);if(!el)return;
