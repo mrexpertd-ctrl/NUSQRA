@@ -16,11 +16,10 @@ Independent Cloudflare Worker application. It is not part of the public NUSQRA f
 - Dark mobile-first interface.
 
 ## Required secrets
-From this directory, run:
+The public Supabase anon key and project URL are configured as non-secret Worker variables. Keep only the service-role key and Supreme Admin email as Worker secrets. From this directory, run:
 ```sh
 npx wrangler login
 npx wrangler secret put SUPREME_ADMIN_EMAIL
-npx wrangler secret put SUPABASE_ANON_KEY
 npx wrangler secret put SUPABASE_SERVICE_ROLE_KEY
 ```
 Each command prompts locally. Enter the value only into that terminal prompt. Do not paste it into ChatGPT or commit it.
@@ -64,3 +63,11 @@ After secrets, TOTP and deployment are configured:
 The repository workflows build both applications. Once the Cloudflare GitHub Actions secret is configured and the Worker secrets below are set, run the **Admin dashboard build** workflow manually from GitHub Actions to deploy the admin Worker. The public frontend workflow can also be manually run to publish the public-site removal of the old admin UI.
 
 Add a repository Actions secret named `CLOUDFLARE_API_TOKEN` (Cloudflare token with Workers Scripts Edit permission for the NUSQRA account). Do not put it in chat. The deployment steps are skipped until that secret exists.
+
+## Live Overview analytics (Phase 2)
+- Supreme Admin and Admin roles can view live install and completed-task counts; Moderators cannot.
+- The public PWA install endpoint records a single UUID per browser device and stores only the platform, install timestamp, and nullable authenticated user ID.
+- The Overview API returns aggregate counts and timestamp-only activity feed entries. The browser subscribes to Supabase Realtime and falls back to 3-second polling if disconnected.
+- Completed tasks use the existing `public.jobs.status = 'completed'` value. The migration adds `completed_at` for accurate future date buckets and a minimal `job_completion_events` table for private realtime notifications.
+- Counts are based on real rows only. App-store installs are not included.
+- The separate admin Worker requires the GitHub Actions secrets `SUPABASE_SERVICE_ROLE_KEY` and `SUPREME_ADMIN_EMAIL`, in addition to `CLOUDFLARE_API_TOKEN`. Never paste the service-role key into chat or commit it.
