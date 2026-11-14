@@ -622,28 +622,25 @@ function App() {
     return <div className="access-gate marketplace-entry" dir={isAr ? 'rtl' : 'ltr'}>
       <header className="entry-header">
         <a className="entry-brand" href="#home" aria-label="NUSQRA home">
-          <img src={nusqraLogo} alt="NUSQRA نسقرا" />
+          <img src={nusqraLogo} alt="نُسقرا NUSQRA" />
         </a>
         <div className="entry-nav"><span>{isAr?'سوق الخدمات المهنية':'Professional marketplace'}</span><span>{isAr?'للأفراد والشركات':'For individuals & businesses'}</span></div>
         <button type="button" className="entry-language" onClick={()=>setLang(isAr?'en':'ar')}><Globe2 size={16}/>{isAr?'English':'العربية'}</button>
       </header>
       <main className={'entry-layout '+(entryStep==='auth'?'entry-layout-auth':'entry-layout-role')}>
         {entryStep==='role' && <section className="entry-hero">
-          <div className="entry-brand-large"><img src={nusqraLogo} alt="NUSQRA نسقرا" /></div>
-          <div className="entry-kicker">{isAr?'سوق واحد · فرص أكثر':'ONE MARKETPLACE · MORE OPPORTUNITY'}</div>
+          <div className="entry-kicker"><span className="entry-kicker-mark"/> {isAr?'سوق واحد · فرص أكثر':'ONE MARKETPLACE · MORE OPPORTUNITY'}</div>
           <h1>{isAr?'اكتشف المحترفين، واستكشف الفرص، وابدأ الآن.':'Find Professionals, Explore Opportunities, Get Started.'}</h1>
           <p>{isAr?'منصة حديثة تربط العملاء بالمحترفين والشركات لإنجاز الأعمال وتنمية الفرص.':'A modern marketplace connecting clients, professionals and businesses for smarter work and better opportunities.'}</p>
           <div className="entry-hero-points">
-            <div><Users size={22}/><span>{isAr?'اعثر على المحترفين':'Find professionals'}</span></div>
-            <div><BriefcaseBusiness size={22}/><span>{isAr?'استكشف الفرص':'Explore opportunities'}</span></div>
-            <div><Globe2 size={22}/><span>{isAr?'نمُ معاً':'Grow together'}</span></div>
+            <div><Users size={20}/><span>{isAr?'اعثر على المحترفين':'Find professionals'}</span></div>
+            <div><BriefcaseBusiness size={20}/><span>{isAr?'استكشف الفرص':'Explore opportunities'}</span></div>
+            <div><Globe2 size={20}/><span>{isAr?'نمُ معاً':'Grow together'}</span></div>
           </div>
-          <div className="entry-visual"><img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1200&q=85" alt={isAr?'مساحة عمل رقمية حديثة':'Modern digital workspace'} /><div className="entry-visual-caption"><span> NUSQRA MARKETPLACE </span><strong>{isAr?'المهارات تلتقي بالفرص':'Where skills meet opportunity'}</strong></div></div>
         </section>}
         <section className="entry-auth-wrap">
           <div className="entry-auth-card">
-            <div className="entry-auth-logo"><img src={nusqraLogoDark} alt="NUSQRA نسقرا" /></div>
-            <div className="entry-auth-eyebrow">{entryStep==='role'?(isAr?'اختر طريقة استخدام المنصة':'CHOOSE YOUR NUSQRA EXPERIENCE'):(isAr?'تسجيل الدخول الآمن':'SECURE ACCOUNT ACCESS')}</div>
+            {entryStep==='role' ? <div className="entry-choice-heading"><span className="entry-auth-eyebrow">{isAr?'ابدأ من هنا':'GET STARTED'}</span><h2>{isAr?'اختر طريقة استخدام نسقرا':'Choose your NUSQRA experience'}</h2></div> : <div className="entry-auth-eyebrow">{isAr?'تسجيل الدخول الآمن':'SECURE ACCOUNT ACCESS'}</div>}
             {entryStep==='role' && <div className="entry-role-picker" role="group" aria-label={isAr?'اختر نوع الحساب':'Choose account type'}>
               <button type="button" className={'entry-role-card '+(selectedRole==='customer'?'selected':'')} onClick={()=>{setSelectedRole('customer');setActiveRole('customer');setForm(x=>({...x,account_type:'customer'}));window.localStorage.setItem('nusqra-active-role','customer');window.localStorage.setItem('nusqra-pending-role','customer');setError('');window.history.pushState({ ...(window.history.state || {}), nusqraEntryStep: 'auth' }, '', '#login');setEntryStep('auth');}}>
                 <span className="entry-role-icon"><Users size={24}/></span><strong>{isAr?'أبحث عن محترف':'I want to hire'}</strong><small>{isAr?'تصفح الملفات المهنية والتوفر، وقارن الخبرات، وانشر طلبك.':'Browse professional profiles and availability, compare skills and post a job.'}</small>
@@ -652,9 +649,7 @@ function App() {
                 <span className="entry-role-icon"><BriefcaseBusiness size={24}/></span><strong>{isAr?'أنا محترف وأبحث عن عمل':'I am a professional'}</strong><small>{isAr?'اكتشف فرص العمل، وقدّم العروض، وأدر مشاريعك وعملاءك.':'Find jobs, submit proposals and manage your projects and clients.'}</small>
               </button>
             </div>}
-            {!selectedRole || entryStep==='role' ? (
-              <p className="entry-role-prompt">{isAr?'يرجى اختيار ما تريد القيام به في نسقرا أولاً.':'First, choose how you want to use NUSQRA.'}</p>
-            ) : !authMode ? <>
+            {!selectedRole || entryStep==='role' ? null : !authMode ? <>
 
               <h2 id="access-gate-title">{isAr?'مرحباً بك في نسقرا':'Welcome to NUSQRA'}</h2>
               <p>{isAr?'تم اختيار نوع الاستخدام. تابع الآن باستخدام Google أو البريد الإلكتروني.':'Your role is selected. Now continue with Google or email.'}</p>
@@ -697,7 +692,27 @@ function App() {
           <div className="entry-auth-note">{isAr?'حساب واحد للوصول إلى خدمات وفرص نسقرا':'One account for the NUSQRA services marketplace'}</div>
         </section>
       </main>
-      <footer className="entry-footer">© {new Date().getFullYear()} NUSQRA <span>·</span> {isAr?'سوق الخدمات والفرص':'The marketplace for services & opportunities'}</footer>
+      {entryStep==='role' && <div className="entry-home-sections">
+        <section className="entry-category-strip" aria-label={isAr?'استكشف التصنيفات':'Explore categories'}>
+          <div className="entry-section-heading"><span>{isAr?'استكشف السوق':'EXPLORE THE MARKETPLACE'}</span><h2>{isAr?'مجالات وخبرات متنوعة':'Explore services and opportunities'}</h2></div>
+          <div className="entry-category-track">
+            <a className="entry-category-tile" href="#categories" onClick={e=>{e.preventDefault();window.location.hash='categories';}}><img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=640&q=76" loading="lazy" alt="Technology and web"/><span>{isAr?'التقنية والويب':'Technology & Web'}</span></a>
+            <a className="entry-category-tile" href="#categories" onClick={e=>{e.preventDefault();window.location.hash='categories';}}><img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=640&q=76" loading="lazy" alt="Marketing and sales"/><span>{isAr?'التسويق والمبيعات':'Marketing & Sales'}</span></a>
+            <a className="entry-category-tile" href="#categories" onClick={e=>{e.preventDefault();window.location.hash='categories';}}><img src="https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?auto=format&fit=crop&w=640&q=76" loading="lazy" alt="Automotive services"/><span>{isAr?'خدمات السيارات':'Automotive Services'}</span></a>
+            <a className="entry-category-tile" href="#categories" onClick={e=>{e.preventDefault();window.location.hash='categories';}}><img src="https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=640&q=76" loading="lazy" alt="Construction and engineering"/><span>{isAr?'البناء والهندسة':'Construction & Engineering'}</span></a>
+          </div>
+        </section>
+        <section className="entry-how-section">
+          <div className="entry-section-heading"><span>{isAr?'بكل بساطة':'HOW IT WORKS'}</span><h2>{isAr?'من احتياجك إلى إنجازك في ثلاث خطوات':'A simple path from need to opportunity'}</h2></div>
+          <div className="entry-how-grid">
+            <article><b>01</b><h3>{isAr?'انشر طلبك':'Post a request'}</h3><p>{isAr?'وضّح ما تحتاجه والخبرة المطلوبة.':'Describe what you need and the skills required.'}</p></article>
+            <article><b>02</b><h3>{isAr?'استقبل العروض':'Receive proposals'}</h3><p>{isAr?'راجع عروض المحترفين وتفاصيلها.':'Review proposals from interested professionals.'}</p></article>
+            <article><b>03</b><h3>{isAr?'اختر واتفق':'Choose and agree'}</h3><p>{isAr?'اختر العرض المناسب وابدأ العمل.':'Choose the right proposal and get started.'}</p></article>
+          </div>
+        </section>
+        <section className="entry-closing-cta"><div><span>{isAr?'فرصتك تبدأ هنا':'YOUR NEXT STEP STARTS HERE'}</span><h2>{isAr?'ابدأ رحلتك مع نسقرا':'Make your next move with NUSQRA'}</h2></div><button type="button" onClick={()=>{setSelectedRole('customer');setActiveRole('customer');setForm(x=>({...x,account_type:'customer'}));window.localStorage.setItem('nusqra-active-role','customer');window.localStorage.setItem('nusqra-pending-role','customer');window.history.pushState({...window.history.state,nusqraEntryStep:'auth'},'','#login');setEntryStep('auth');setAuthMode('register');}}>{isAr?'أنشئ حسابك':'Create your account'} <ArrowRight size={18}/></button></section>
+      </div>}
+      <footer className="entry-footer"><img src={nusqraSymbol} alt="" aria-hidden="true"/><span>NUSQRA · نُسقرا</span><nav><a href="#categories" onClick={e=>{e.preventDefault();window.location.hash='categories';}}>{isAr?'التصنيفات':'Categories'}</a><a href="#how-it-works" onClick={e=>e.preventDefault()}>{isAr?'كيف تعمل':'How it works'}</a><button type="button" onClick={()=>setLang(isAr?'en':'ar')}>{isAr?'English':'العربية'}</button></nav><small>© {new Date().getFullYear()} NUSQRA · {isAr?'سوق الخدمات والفرص':'The marketplace for services & opportunities'}</small></footer>
     </div>;
   }
 
