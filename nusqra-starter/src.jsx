@@ -141,6 +141,26 @@ function App() {
   const [messageDraft,setMessageDraft] = useState('');
   const t = dictionary[lang];
   const isAr = lang === 'ar';
+
+  useEffect(() => {
+    if (!session) {
+      if (!window.history.state?.nusqraEntryStep) {
+        window.history.replaceState({ ...(window.history.state || {}), nusqraEntryStep: 'role' }, '', window.location.href);
+      }
+      const handleEntryBack = (event) => {
+        if (event.state?.nusqraEntryStep === 'role') {
+          setEntryStep('role');
+          setAuthMode(null);
+          setError('');
+          setNotice('');
+        } else if (event.state?.nusqraEntryStep === 'auth') {
+          setEntryStep('auth');
+        }
+      };
+      window.addEventListener('popstate', handleEntryBack);
+      return () => window.removeEventListener('popstate', handleEntryBack);
+    }
+  }, [session]);
   const isProfessional = roles.includes('professional') && activeRole === 'professional';
   const isCustomer = roles.includes('customer') && activeRole === 'customer';
   const isStaff = !!staffRole?.is_active;
@@ -720,17 +740,17 @@ function App() {
             <div className="entry-auth-logo"><img src={nusqraLogoDark} alt="NUSQRA نسقرا" /></div>
             <div className="entry-auth-eyebrow">{entryStep==='role'?(isAr?'اختر طريقة استخدام المنصة':'CHOOSE YOUR NUSQRA EXPERIENCE'):(isAr?'تسجيل الدخول الآمن':'SECURE ACCOUNT ACCESS')}</div>
             {entryStep==='role' && <div className="entry-role-picker" role="group" aria-label={isAr?'اختر نوع الحساب':'Choose account type'}>
-              <button type="button" className={'entry-role-card '+(selectedRole==='customer'?'selected':'')} onClick={()=>{setSelectedRole('customer');setActiveRole('customer');setForm(x=>({...x,account_type:'customer'}));window.localStorage.setItem('nusqra-active-role','customer');window.localStorage.setItem('nusqra-pending-role','customer');setError('');setEntryStep('auth');}}>
+              <button type="button" className={'entry-role-card '+(selectedRole==='customer'?'selected':'')} onClick={()=>{setSelectedRole('customer');setActiveRole('customer');setForm(x=>({...x,account_type:'customer'}));window.localStorage.setItem('nusqra-active-role','customer');window.localStorage.setItem('nusqra-pending-role','customer');setError('');window.history.pushState({ ...(window.history.state || {}), nusqraEntryStep: 'auth' }, '', '#login');setEntryStep('auth');}}>
                 <span className="entry-role-icon"><Users size={24}/></span><strong>{isAr?'أبحث عن محترف':'I want to hire'}</strong><small>{isAr?'تصفح الملفات المهنية والتوفر، وقارن الخبرات، وانشر طلبك.':'Browse professional profiles and availability, compare skills and post a job.'}</small>
               </button>
-              <button type="button" className={'entry-role-card '+(selectedRole==='professional'?'selected':'')} onClick={()=>{setSelectedRole('professional');setActiveRole('professional');setForm(x=>({...x,account_type:'professional'}));window.localStorage.setItem('nusqra-active-role','professional');window.localStorage.setItem('nusqra-pending-role','professional');setError('');setEntryStep('auth');}}>
+              <button type="button" className={'entry-role-card '+(selectedRole==='professional'?'selected':'')} onClick={()=>{setSelectedRole('professional');setActiveRole('professional');setForm(x=>({...x,account_type:'professional'}));window.localStorage.setItem('nusqra-active-role','professional');window.localStorage.setItem('nusqra-pending-role','professional');setError('');window.history.pushState({ ...(window.history.state || {}), nusqraEntryStep: 'auth' }, '', '#login');setEntryStep('auth');}}>
                 <span className="entry-role-icon"><BriefcaseBusiness size={24}/></span><strong>{isAr?'أنا محترف وأبحث عن عمل':'I am a professional'}</strong><small>{isAr?'اكتشف فرص العمل، وقدّم العروض، وأدر مشاريعك وعملاءك.':'Find jobs, submit proposals and manage your projects and clients.'}</small>
               </button>
             </div>}
             {!selectedRole || entryStep==='role' ? (
               <p className="entry-role-prompt">{isAr?'يرجى اختيار ما تريد القيام به في نسقرا أولاً.':'First, choose how you want to use NUSQRA.'}</p>
             ) : !authMode ? <>
-              <button type="button" className="entry-back-role" onClick={()=>{setEntryStep('role');setAuthMode(null);setError('');setNotice('');}}>{isAr?'العودة لاختيار نوع الاستخدام':'Back to role selection'}</button>
+
               <h2 id="access-gate-title">{isAr?'مرحباً بك في نسقرا':'Welcome to NUSQRA'}</h2>
               <p>{isAr?'تم اختيار نوع الاستخدام. تابع الآن باستخدام Google أو البريد الإلكتروني.':'Your role is selected. Now continue with Google or email.'}</p>
               {!isSupabaseConfigured && <p className="auth-warning" role="alert">{t.noConfig}</p>}
@@ -756,7 +776,7 @@ function App() {
                 {notice && <p className="auth-success" role="status">{notice}</p>}
                 <button className="btn primary" type="submit" disabled={busy||!isSupabaseConfigured}>{busy?t.working:authMode==='register'?t.signup:t.login}</button>
               </form>
-              <button type="button" className="auth-switch" onClick={()=>{setAuthMode(null);setEntryStep('role');setError('');setNotice('');}}>{isAr?'العودة لاختيار نوع الحساب':'Back to role selection'}</button>
+
             </>}
           </div>
           <div className="entry-auth-note">{isAr?'حساب واحد للوصول إلى خدمات وفرص نسقرا':'One account for the NUSQRA services marketplace'}</div>
