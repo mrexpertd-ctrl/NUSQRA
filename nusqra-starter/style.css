@@ -2725,3 +2725,20 @@ footer{padding:32px clamp(22px,5vw,76px)!important}
 .header>.actions .btn.primary {
   color:#07150c!important;
 }
+
+
+/* Riyadh welcome backdrop — Pexels photo by Abdulmeilk Aldawsari */
+.hero{
+  background:
+    linear-gradient(90deg,rgba(4,9,7,.96) 0%,rgba(4,9,7,.88) 36%,rgba(4,9,7,.56) 66%,rgba(4,9,7,.72) 100%),
+    linear-gradient(0deg,rgba(4,9,7,.38),rgba(4,9,7,.18)),
+    url("https://images.pexels.com/photos/35761/pexels-photo.jpg?auto=compress&cs=tinysrgb&w=2400") center 43%/cover no-repeat!important;
+  background-color:#050806!important;
+}
+@media(max-width:900px){
+  .hero{
+    background:
+      linear-gradient(180deg,rgba(4,9,7,.84) 0%,rgba(4,9,7,.91) 48%,rgba(4,9,7,.97) 100%),
+      url("https://images.pexels.com/photos/35761/pexels-photo.jpg?auto=compress&cs=tinysrgb&w=1600") center 35%/cover no-repeat!important;
+  }
+}
