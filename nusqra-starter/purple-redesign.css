@@ -139,3 +139,205 @@ body{margin:0;background:linear-gradient(145deg,#0b0a2b 0%,#100d3b 54%,#17104a 1
 .access-gate.marketplace-entry .entry-hero-search{background:#f8f7ff!important;border:1px solid #fff!important}
 .access-gate.marketplace-entry .entry-hero-search input{color:#17133a!important}
 .access-gate.marketplace-entry .entry-header{background:rgba(4,6,30,.94)!important}
+
+
+/* =========================================================
+   NUSQRA authenticated app — purple/indigo interior system
+   Applies only to the signed-in application, not the entry hero.
+   ========================================================= */
+:root{
+  --nusqra-bg:#0b0a2b;--nusqra-bg2:#17104a;--nusqra-panel:rgba(255,255,255,.055);
+  --nusqra-panel-strong:rgba(22,17,67,.94);--nusqra-line:rgba(167,139,250,.34);
+  --nusqra-purple:#7a2ff7;--nusqra-purple-dark:#5b21d6;--nusqra-lilac:#a78bfa;
+  --nusqra-text:#f8f7ff;--nusqra-muted:#d7d2ee;
+}
+html,body,#root{background:#0b0a2b!important;color:#f8f7ff}
+#root>div:not(.marketplace-entry){
+  min-height:100vh!important;overflow-x:clip!important;
+  color:var(--nusqra-text)!important;
+  background:radial-gradient(ellipse at 50% -12%,rgba(122,47,247,.18),transparent 42%),linear-gradient(145deg,#0b0a2b 0%,#100d3b 54%,#17104a 100%)!important;
+}
+#root>div:not(.marketplace-entry) .header{
+  position:sticky!important;top:0!important;z-index:50!important;
+  background:rgba(7,7,34,.94)!important;backdrop-filter:blur(18px)!important;
+  border-bottom:1px solid var(--nusqra-line)!important;
+  box-shadow:0 8px 30px rgba(0,0,0,.22)!important;
+}
+#root>div:not(.marketplace-entry) .brand,
+#root>div:not(.marketplace-entry) .brand-lockup,
+#root>div:not(.marketplace-entry) .nusqra-wordmark{color:#fff!important}
+#root>div:not(.marketplace-entry) .navlink,
+#root>div:not(.marketplace-entry) .lang{
+  color:#eeeaff!important;background:transparent!important;border:1px solid transparent!important;
+}
+#root>div:not(.marketplace-entry) .navlink:hover,
+#root>div:not(.marketplace-entry) .navlink.active,
+#root>div:not(.marketplace-entry) .lang:hover{
+  color:#fff!important;background:rgba(122,47,247,.22)!important;border-color:var(--nusqra-line)!important;border-radius:10px!important;
+}
+#root>div:not(.marketplace-entry) main{
+  min-height:calc(100vh - 84px)!important;padding-bottom:44px!important;
+  background:transparent!important;color:var(--nusqra-text)!important;
+}
+#root>div:not(.marketplace-entry) .section,
+#root>div:not(.marketplace-entry) .marketplace-section,
+#root>div:not(.marketplace-entry) .professional-directory,
+#root>div:not(.marketplace-entry) .category-section{
+  color:var(--nusqra-text)!important;background:transparent!important;
+}
+#root>div:not(.marketplace-entry) .section-label,
+#root>div:not(.marketplace-entry) .eyebrow,
+#root>div:not(.marketplace-entry) .profile-studio-kicker{
+  color:#c4b5fd!important;letter-spacing:.12em!important;
+}
+#root>div:not(.marketplace-entry) h1,
+#root>div:not(.marketplace-entry) h2,
+#root>div:not(.marketplace-entry) h3,
+#root>div:not(.marketplace-entry) h4,
+#root>div:not(.marketplace-entry) h5,
+#root>div:not(.marketplace-entry) strong,
+#root>div:not(.marketplace-entry) label{color:#fff!important}
+#root>div:not(.marketplace-entry) p,
+#root>div:not(.marketplace-entry) small,
+#root>div:not(.marketplace-entry) .section-intro,
+#root>div:not(.marketplace-entry) .profile-guidance{color:#d7d2ee!important}
+#root>div:not(.marketplace-entry) .feature,
+#root>div:not(.marketplace-entry) .step-grid article,
+#root>div:not(.marketplace-entry) .category-card,
+#root>div:not(.marketplace-entry) .home-category-card,
+#root>div:not(.marketplace-entry) .job-card,
+#root>div:not(.marketplace-entry) .account-card,
+#root>div:not(.marketplace-entry) .dashboard,
+#root>div:not(.marketplace-entry) .profile-studio,
+#root>div:not(.marketplace-entry) .profile-tab-panel,
+#root>div:not(.marketplace-entry) .marketplace-panel,
+#root>div:not(.marketplace-entry) .support-panel,
+#root>div:not(.marketplace-entry) .professional-directory-card,
+#root>div:not(.marketplace-entry) .proposal-card,
+#root>div:not(.marketplace-entry) .conversation-list,
+#root>div:not(.marketplace-entry) .conversation-thread,
+#root>div:not(.marketplace-entry) .messaging-layout>aside,
+#root>div:not(.marketplace-entry) .messaging-layout>div,
+#root>div:not(.marketplace-entry) .support-ticket,
+#root>div:not(.marketplace-entry) .directory-work-highlights,
+#root>div:not(.marketplace-entry) .professional-category-editor,
+#root>div:not(.marketplace-entry) .submitted-document-list>div{
+  background:rgba(255,255,255,.055)!important;color:#f8f7ff!important;
+  border:1px solid rgba(167,139,250,.34)!important;border-radius:16px!important;
+  box-shadow:0 12px 28px rgba(0,0,0,.16)!important;
+}
+#root>div:not(.marketplace-entry) .home-trust-band,
+#root>div:not(.marketplace-entry) .home-intro,
+#root>div:not(.marketplace-entry) .home-steps,
+#root>div:not(.marketplace-entry) .steps,
+#root>div:not(.marketplace-entry) .professional-onboarding-heading,
+#root>div:not(.marketplace-entry) .profile-studio-heading{
+  background:transparent!important;color:#fff!important;
+}
+#root>div:not(.marketplace-entry) .btn.primary,
+#root>div:not(.marketplace-entry) button.primary,
+#root>div:not(.marketplace-entry) .enable-pro{
+  background:linear-gradient(120deg,#7a2ff7,#5b21d6)!important;
+  color:#fff!important;border:1px solid rgba(196,181,253,.55)!important;
+  box-shadow:0 7px 18px rgba(91,33,214,.28)!important;
+}
+#root>div:not(.marketplace-entry) .btn.secondary,
+#root>div:not(.marketplace-entry) button.secondary{
+  background:rgba(255,255,255,.07)!important;color:#f8f7ff!important;
+  border:1px solid rgba(167,139,250,.48)!important;
+}
+#root>div:not(.marketplace-entry) input:not([type=checkbox]):not([type=file]),
+#root>div:not(.marketplace-entry) select,
+#root>div:not(.marketplace-entry) textarea{
+  min-width:0!important;background:#17143f!important;color:#fff!important;
+  border:1px solid rgba(167,139,250,.48)!important;border-radius:11px!important;
+  box-shadow:none!important;
+}
+#root>div:not(.marketplace-entry) input::placeholder,
+#root>div:not(.marketplace-entry) textarea::placeholder{color:#c4b5fd!important;opacity:1!important}
+#root>div:not(.marketplace-entry) option{background:#17143f!important;color:#fff!important}
+#root>div:not(.marketplace-entry) .marketplace-layout,
+#root>div:not(.marketplace-entry) .support-layout,
+#root>div:not(.marketplace-entry) .messaging-layout{
+  align-items:start!important;gap:18px!important;
+}
+#root>div:not(.marketplace-entry) .job-list,
+#root>div:not(.marketplace-entry) .proposal-list,
+#root>div:not(.marketplace-entry) .professional-directory-grid,
+#root>div:not(.marketplace-entry) .conversation-list{
+  display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:14px!important;
+}
+#root>div:not(.marketplace-entry) .job-card,
+#root>div:not(.marketplace-entry) .proposal-card{padding:18px!important;min-width:0!important}
+#root>div:not(.marketplace-entry) .job-status,
+#root>div:not(.marketplace-entry) .verified-profile-badge,
+#root>div:not(.marketplace-entry) .support-ticket.active{
+  background:rgba(122,47,247,.22)!important;color:#e9ddff!important;
+  border:1px solid rgba(167,139,250,.5)!important;
+}
+#root>div:not(.marketplace-entry) .profile-editor-tabs{
+  display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:8px!important;background:rgba(8,7,37,.65)!important;padding:7px!important;
+  border:1px solid var(--nusqra-line)!important;border-radius:14px!important;
+}
+#root>div:not(.marketplace-entry) .profile-editor-tabs button{
+  min-width:0!important;background:transparent!important;color:#e8e2ff!important;
+  border:1px solid transparent!important;border-radius:10px!important;
+}
+#root>div:not(.marketplace-entry) .profile-editor-tabs button.active{
+  background:linear-gradient(120deg,#7a2ff7,#5b21d6)!important;
+  color:#fff!important;border-color:#a78bfa!important;
+}
+#root>div:not(.marketplace-entry) table{
+  width:100%!important;border-collapse:separate!important;border-spacing:0!important;
+  overflow:hidden!important;background:rgba(255,255,255,.045)!important;
+  border:1px solid var(--nusqra-line)!important;border-radius:14px!important;color:#fff!important;
+}
+#root>div:not(.marketplace-entry) th{
+  background:rgba(122,47,247,.28)!important;color:#fff!important;
+  text-align:start!important;padding:13px 15px!important;border-bottom:1px solid var(--nusqra-line)!important;
+}
+#root>div:not(.marketplace-entry) td{
+  background:rgba(255,255,255,.025)!important;color:#eeeaff!important;
+  padding:12px 15px!important;border-bottom:1px solid rgba(167,139,250,.18)!important;
+}
+#root>div:not(.marketplace-entry) tr:last-child td{border-bottom:0!important}
+#root>div:not(.marketplace-entry) footer{
+  background:rgba(5,5,29,.9)!important;color:#e9e4ff!important;
+  border-top:1px solid var(--nusqra-line)!important;
+}
+#root>div:not(.marketplace-entry) footer a{color:#c4b5fd!important}
+#root>div:not(.marketplace-entry) .auth-backdrop{background:rgba(3,3,20,.78)!important;backdrop-filter:blur(8px)!important}
+#root>div:not(.marketplace-entry) .auth-dialog{
+  background:#121039!important;color:#fff!important;border:1px solid var(--nusqra-line)!important;
+}
+#root>div:not(.marketplace-entry) .auth-dialog label{color:#fff!important}
+#root>div:not(.marketplace-entry) .auth-switch{color:#c4b5fd!important}
+#root>div:not(.marketplace-entry) .auth-error{color:#fecaca!important}
+#root>div:not(.marketplace-entry) .auth-success{color:#bbf7d0!important}
+#root>div:not(.marketplace-entry) .site-notice{background:#21135b!important;color:#fff!important;border:1px solid var(--nusqra-line)!important}
+@media(max-width:760px){
+  #root>div:not(.marketplace-entry) .header{min-height:64px!important;padding:10px 14px!important}
+  #root>div:not(.marketplace-entry) .nav{background:#0e0b35!important;border:1px solid var(--nusqra-line)!important;border-radius:0 0 16px 16px!important}
+  #root>div:not(.marketplace-entry) .nav.open{box-shadow:0 18px 34px rgba(0,0,0,.4)!important}
+  #root>div:not(.marketplace-entry) .marketplace-layout,
+  #root>div:not(.marketplace-entry) .support-layout,
+  #root>div:not(.marketplace-entry) .messaging-layout{grid-template-columns:minmax(0,1fr)!important}
+  #root>div:not(.marketplace-entry) .job-list,
+  #root>div:not(.marketplace-entry) .proposal-list,
+  #root>div:not(.marketplace-entry) .professional-directory-grid,
+  #root>div:not(.marketplace-entry) .conversation-list{grid-template-columns:minmax(0,1fr)!important}
+  #root>div:not(.marketplace-entry) .profile-editor-tabs{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+  #root>div:not(.marketplace-entry) .profile-upload-grid,
+  #root>div:not(.marketplace-entry) .profile-template-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  #root>div:not(.marketplace-entry) .section{padding-left:16px!important;padding-right:16px!important}
+  #root>div:not(.marketplace-entry) table{display:block!important;max-width:100%!important;overflow-x:auto!important;white-space:nowrap!important}
+}
+@media(max-width:390px){
+  #root>div:not(.marketplace-entry) .profile-upload-grid,
+  #root>div:not(.marketplace-entry) .profile-template-grid{grid-template-columns:minmax(0,1fr)!important}
+  #root>div:not(.marketplace-entry) .profile-editor-tabs button{font-size:11px!important;padding:9px 5px!important}
+}
+[dir=rtl] #root>div:not(.marketplace-entry) .section-label{letter-spacing:0!important}
+[dir=rtl] #root>div:not(.marketplace-entry) table th,
+[dir=rtl] #root>div:not(.marketplace-entry) table td{text-align:right!important}
