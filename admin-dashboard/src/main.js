@@ -3,6 +3,7 @@ import './style.css';
 
 const root=document.querySelector('#app');
 let supabase,session,staffRole;
+let liveStatsChannel=null,liveStatsPoll=null,liveStatsTicker=null,liveStatsLastUpdated=null,liveStatsInFlight=false;
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const shell=(content)=>{root.innerHTML=content;};
 const api=async(path,options={})=>{
@@ -64,10 +65,103 @@ function renderMfaChallenge(factorId){
  document.querySelector('#logout').onclick=()=>supabase.auth.signOut().then(()=>{session=null;renderLogin();});
 }
 function renderDashboard(info){
+ stopLiveStats();
  const supreme=info.role==='supreme_admin';
- shell(`<main class="app-shell"><header class="top"><div class="brandline"><div class="mark small">N</div><div><b>NUSQRA</b><span>ADMINISTRATION</span></div></div><button id="signout" class="ghost smallbtn">Sign out</button></header><section class="welcome"><p class="eyebrow">SECURE OPERATIONS</p><h1>Administration</h1><p class="muted">Signed in as <b>${esc(info.user.email)}</b></p><span class="role-pill">${esc(info.role.replace('_',' ').toUpperCase())}</span></section><section class="grid"><article class="tile purple"><span>PHASE 01</span><h2>Identity & access</h2><p>Authentication, mandatory TOTP and server-side staff authorization.</p><b class="status">ACTIVE</b></article><article class="tile green"><span>SECURITY</span><h2>Audit protection</h2><p>Append-only audit records. Administrative actions are recorded by the Worker.</p><b class="status">ENABLED</b></article><article class="tile"><span>SESSION POLICY</span><h2>30-minute idle limit</h2><p>Sessions expire after 30 minutes without an authenticated request.</p><b class="status">ENFORCED</b></article></section>${supreme?`<section class="panel section"><h2>Invite staff</h2><p class="muted">Only the Supreme Admin can invite staff. Role is fixed when invited. Admin seats are limited to three.</p><form id="invite"><label>Staff email<input name="email" type="email" required placeholder="colleague@example.com"></label><label>Role<select name="role"><option value="admin">Admin</option><option value="moderator">Moderator</option></select></label><button class="primary">Send invitation</button></form><p id="inviteMsg" class="message" aria-live="polite"></p></section><section class="panel section"><div class="row"><h2>Staff management</h2><span id="seats" class="role-pill">0 / 3 Admin seats</span></div><p class="muted">Supreme Admin only. Admin and Moderator roles are enforced by the Worker and database.</p><div id="staffList" class="audit muted">Loading staff…</div></section><section class="panel section"><div class="row"><h2>Audit log</h2><button id="refresh" class="ghost">Refresh</button></div><div id="audit" class="audit muted">Loading audit events…</div></section>`:''}<footer>Private NUSQRA system · English interface · Arabic RTL readiness planned</footer></main>`);
- document.querySelector('#signout').onclick=async()=>{await supabase.auth.signOut();session=null;renderLogin();};
+ const adminAnalytics=['supreme_admin','admin'].includes(info.role);
+ shell(`<main class="app-shell"><header class="top"><div class="brandline"><div class="mark small">N</div><div><b>NUSQRA</b><span>ADMINISTRATION</span></div></div><button id="signout" class="ghost smallbtn">Sign out</button></header><section class="welcome"><p class="eyebrow">SECURE OPERATIONS</p><h1>Administration</h1><p class="muted">Signed in as <b>${esc(info.user.email)}</b></p><span class="role-pill">${esc(info.role.replace('_',' ').toUpperCase())}</span></section><section class="grid"><article class="tile purple"><span>PHASE 01</span><h2>Identity & access</h2><p>Authentication, mandatory TOTP and server-side staff authorization.</p><b class="status">ACTIVE</b></article><article class="tile green"><span>SECURITY</span><h2>Audit protection</h2><p>Append-only audit records. Administrative actions are recorded by the Worker.</p><b class="status">ENABLED</b></article><article class="tile"><span>SESSION POLICY</span><h2>30-minute idle limit</h2><p>Sessions expire after 30 minutes without an authenticated request.</p><b class="status">ENFORCED</b></article></section>${adminAnalytics?`<section class="panel section analytics-panel" id="liveAnalytics">
+ <div class="analytics-heading"><div><p class="eyebrow">LIVE OVERVIEW</p><h2>App installs & completed tasks</h2></div><div class="analytics-live-status"><span id="statsConnectionDot" class="connection-dot reconnecting"></span><span id="statsConnectionText">Connecting</span><span id="statsUpdated">Updated just now</span></div></div>
+ <p class="muted install-count-note">Counts installs made through the browser's Add to Home Screen / Install button. App-store installs are not included.</p>
+ <div class="analytics-grid">
+  <article class="analytics-card"><div class="analytics-card-top"><div><p>APP INSTALLS</p><strong id="installTotal" class="analytics-total" data-value="0">0</strong></div><span class="analytics-icon purple-icon">↗</span></div><div class="analytics-periods"><span>Today <b id="installToday">0</b></span><span>Last 7 days <b id="installWeek">0</b></span></div><p id="installEmpty" class="analytics-empty">No installs yet</p><div id="installChart" class="analytics-chart" aria-label="App installs over the last 7 days"></div></article>
+  <article class="analytics-card"><div class="analytics-card-top"><div><p>COMPLETED TASKS</p><strong id="taskTotal" class="analytics-total" data-value="0">0</strong></div><span class="analytics-icon green-icon">✓</span></div><div class="analytics-periods"><span>Today <b id="taskToday">0</b></span><span>Last 7 days <b id="taskWeek">0</b></span></div><p id="taskEmpty" class="analytics-empty">No completed tasks yet</p><div id="taskChart" class="analytics-chart" aria-label="Completed tasks over the last 7 days"></div></article>
+ </div>
+ <div class="analytics-feed"><div class="row"><h3>Live activity</h3><span class="muted">Latest events · no personal data</span></div><div id="liveFeed" class="audit muted">Waiting for activity…</div></div>
+</section>`:''}${supreme?`<section class="panel section"><h2>Invite staff</h2><p class="muted">Only the Supreme Admin can invite staff. Role is fixed when invited. Admin seats are limited to three.</p><form id="invite"><label>Staff email<input name="email" type="email" required placeholder="colleague@example.com"></label><label>Role<select name="role"><option value="admin">Admin</option><option value="moderator">Moderator</option></select></label><button class="primary">Send invitation</button></form><p id="inviteMsg" class="message" aria-live="polite"></p></section><section class="panel section"><div class="row"><h2>Staff management</h2><span id="seats" class="role-pill">0 / 3 Admin seats</span></div><p class="muted">Supreme Admin only. Admin and Moderator roles are enforced by the Worker and database.</p><div id="staffList" class="audit muted">Loading staff…</div></section><section class="panel section"><div class="row"><h2>Audit log</h2><button id="refresh" class="ghost">Refresh</button></div><div id="audit" class="audit muted">Loading audit events…</div></section>`:''}<footer>Private NUSQRA system · English interface · Arabic RTL readiness planned</footer></main>`);
+ document.querySelector('#signout').onclick=async()=>{stopLiveStats();await supabase.auth.signOut();session=null;renderLogin();};
+ if(adminAnalytics) startLiveStats();
  if(supreme){document.querySelector('#invite').onsubmit=async e=>{e.preventDefault();const f=new FormData(e.currentTarget);const el=document.querySelector('#inviteMsg');try{const r=await api('/api/staff/invite',{method:'POST',body:JSON.stringify({email:f.get('email'),role:f.get('role')})});el.textContent=r.message;e.currentTarget.reset();}catch(err){el.textContent=err.message;el.className='message bad';}};document.querySelector('#refresh').onclick=loadAudit;loadAudit();loadStaff();}
+}
+function renderAnalyticsChart(rows,barColor){
+ const values=Array.isArray(rows)?rows:[];
+ const max=Math.max(1,...values.map(x=>Number(x.count)||0));
+ const barWidth=22,gap=15,startX=8,baseY=76,chartHeight=54;
+ return `<svg viewBox="0 0 280 104" role="img" aria-hidden="true" focusable="false"><line x1="4" y1="77" x2="276" y2="77" stroke="#555660" stroke-width="1"/>${values.map((item,index)=>{const value=Number(item.count)||0;const height=Math.max(value?4:2,(value/max)*chartHeight);const x=startX+index*(barWidth+gap);const y=baseY-height;return `<rect x="${x}" y="${y}" width="${barWidth}" height="${height}" rx="4" fill="${barColor}" opacity=".92"><title>${esc(item.label)}: ${value}</title></rect><text x="${x+barWidth/2}" y="94" text-anchor="middle" fill="#c5c6cf" font-size="9">${esc(item.label)}</text>`;}).join('')}</svg>`;
+}
+function animateAnalyticsNumber(id,value){
+ const el=document.getElementById(id);if(!el)return;
+ const target=Math.max(0,Number(value)||0),from=Number(el.dataset.value||0);
+ el.dataset.value=String(target);
+ if(from===target){el.textContent=target.toLocaleString();return;}
+ const start=performance.now(),duration=420;
+ const frame=now=>{const progress=Math.min(1,(now-start)/duration);const eased=1-Math.pow(1-progress,3);el.textContent=Math.round(from+(target-from)*eased).toLocaleString();if(progress<1)requestAnimationFrame(frame);};
+ requestAnimationFrame(frame);
+}
+function formatFeedTime(value){
+ try{return new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Riyadh',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}).format(new Date(value));}
+ catch{return '--:--:--';}
+}
+function updateAnalyticsAge(){
+ const el=document.getElementById('statsUpdated');if(!el||!liveStatsLastUpdated)return;
+ const seconds=Math.max(0,Math.floor((Date.now()-liveStatsLastUpdated)/1000));
+ el.textContent=seconds<2?'Updated just now':`Updated ${seconds}s ago`;
+}
+async function loadLiveStats(){
+ if(liveStatsInFlight||!document.getElementById('liveAnalytics'))return;
+ liveStatsInFlight=true;
+ try{
+  const data=await api('/api/overview/stats');
+  animateAnalyticsNumber('installTotal',data.installs?.total);
+  animateAnalyticsNumber('installToday',data.installs?.today);
+  animateAnalyticsNumber('installWeek',data.installs?.last_7_days);
+  animateAnalyticsNumber('taskTotal',data.completed_tasks?.total);
+  animateAnalyticsNumber('taskToday',data.completed_tasks?.today);
+  animateAnalyticsNumber('taskWeek',data.completed_tasks?.last_7_days);
+  const installTotal=Number(data.installs?.total)||0,taskTotal=Number(data.completed_tasks?.total)||0;
+  document.querySelector('#installEmpty').hidden=installTotal!==0;
+  document.querySelector('#taskEmpty').hidden=taskTotal!==0;
+  document.querySelector('#installChart').innerHTML=renderAnalyticsChart(data.installs?.chart,'#8f62d0');
+  document.querySelector('#taskChart').innerHTML=renderAnalyticsChart(data.completed_tasks?.chart,'#19c37d');
+  const feed=document.querySelector('#liveFeed');
+  const events=Array.isArray(data.feed)?data.feed:[];
+  feed.innerHTML=events.length?events.slice(0,10).map(item=>`<div class="analytics-event"><b>${esc(item.type)}</b><time>${formatFeedTime(item.at)}</time></div>`).join(''):'No activity yet.';
+  liveStatsLastUpdated=Date.now();updateAnalyticsAge();
+ }catch(e){
+  const feed=document.querySelector('#liveFeed');if(feed&&feed.textContent==='Waiting for activity…')feed.textContent=e.message;
+ }finally{liveStatsInFlight=false;}
+}
+function setAnalyticsConnection(connected){
+ const dot=document.querySelector('#statsConnectionDot'),label=document.querySelector('#statsConnectionText');
+ if(!dot||!label)return;
+ dot.classList.toggle('connected',connected);dot.classList.toggle('reconnecting',!connected);
+ label.textContent=connected?'Live updates connected':'Reconnecting';
+}
+function startAnalyticsPolling(){
+ if(liveStatsPoll||!document.getElementById('liveAnalytics'))return;
+ liveStatsPoll=window.setInterval(loadLiveStats,3000);
+}
+function stopAnalyticsPolling(){
+ if(liveStatsPoll){clearInterval(liveStatsPoll);liveStatsPoll=null;}
+}
+function startLiveStats(){
+ if(!supabase||!document.getElementById('liveAnalytics'))return;
+ loadLiveStats();
+ if(liveStatsTicker)clearInterval(liveStatsTicker);
+ liveStatsTicker=window.setInterval(updateAnalyticsAge,1000);
+ try{
+  liveStatsChannel=supabase.channel('nusqra-admin-live-overview')
+   .on('postgres_changes',{event:'*',schema:'public',table:'app_installs'},()=>loadLiveStats())
+   .on('postgres_changes',{event:'*',schema:'public',table:'job_completion_events'},()=>loadLiveStats())
+   .subscribe(status=>{
+    if(status==='SUBSCRIBED'){setAnalyticsConnection(true);stopAnalyticsPolling();}
+    else if(status==='CHANNEL_ERROR'||status==='TIMED_OUT'||status==='CLOSED'){setAnalyticsConnection(false);startAnalyticsPolling();}
+   });
+ }catch{setAnalyticsConnection(false);startAnalyticsPolling();}
+}
+function stopLiveStats(){
+ stopAnalyticsPolling();
+ if(liveStatsTicker){clearInterval(liveStatsTicker);liveStatsTicker=null;}
+ if(liveStatsChannel&&supabase){supabase.removeChannel(liveStatsChannel);liveStatsChannel=null;}
+ liveStatsLastUpdated=null;liveStatsInFlight=false;
 }
 async function loadStaff(){
  const el=document.querySelector('#staffList');if(!el)return;
