@@ -795,12 +795,6 @@ function App() {
             <input value={entrySearch} onChange={e=>setEntrySearch(e.target.value)} placeholder={isAr?'سباك، مصمم شعارات، مترجم...':'Plumber, logo designer, translator...'} aria-label={isAr?'ابحث عن خدمة':'Search for a service'}/>
             <button type="submit">{isAr?'بحث':'Search'}</button>
           </form>
-          
-          
-          
-            <div><Clock3 size={17}/><span>{isAr?'انشر طلبك في دقائق':'Post a request in minutes'}</span></div>
-            <div><Users size={17}/><span>{isAr?'عروض من محترفين مستقلين':'Proposals from independent professionals'}</span></div>
-          </div>
         </section>}
         <section className={"entry-auth-wrap "+(entryStep==='role'?"entry-experience-section":"")}>
           <div className="entry-auth-card">
