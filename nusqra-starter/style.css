@@ -3214,3 +3214,22 @@ body:has(.settings-popover-panel){overflow:hidden!important;overscroll-behavior:
   .header>.brand-lockup .nusqra-wordmark>span:first-child{font-size:12px!important}
   .header>.brand-lockup .nusqra-wordmark>span[lang="ar"]{font-size:11px!important}
 }
+
+
+/* WCAG text contrast corrections for green controls */
+.settings-popover-panel .role-chip.selected{
+  background:linear-gradient(120deg,#0b7048,#075238)!important;
+  border-color:#35b77b!important;color:#fff!important;
+}
+.settings-popover-panel .profile-upload-card input[type=file]::file-selector-button{
+  background:#0b7048!important;color:#fff!important;
+}
+.settings-popover-panel .profile-save-row .btn,
+.settings-popover-panel .enable-pro,
+.settings-popover-panel .settings-actions .btn{
+  background:#0b7048!important;border:1px solid #35b77b!important;color:#fff!important;
+}
+.settings-popover-panel .profile-editor-tabs button.active{
+  background:linear-gradient(120deg,#0b7048,#075238)!important;
+  border-color:#35b77b!important;color:#fff!important;
+}
