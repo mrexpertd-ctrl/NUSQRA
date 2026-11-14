@@ -2861,3 +2861,40 @@ footer{padding:32px clamp(22px,5vw,76px)!important}
 .availability-available{color:#087a50;background:rgba(16,185,129,.12)}
 .availability-busy{color:#9a6700;background:rgba(234,179,8,.15)}
 .availability-unavailable{color:#66736d;background:rgba(107,114,128,.12)}
+
+
+/* Category directory readability and role-specific professional intake */
+.category-section .category-select-card{
+  position:relative!important;
+  background:#fff!important;
+  color:#101713!important;
+  border:1px solid #d8e1db!important;
+  box-shadow:0 12px 28px rgba(0,0,0,.12)!important;
+}
+.category-section .category-select-card :is(h3,p,.category-audience,.investor-disclaimer){
+  color:#101713!important;
+  -webkit-text-fill-color:#101713!important;
+}
+.category-section .category-select-card p{color:#34443a!important;line-height:1.65}
+.category-section .category-select-card .category-image{background:#e9efeb!important}
+.category-section .category-select-card .category-symbol{color:#10251a!important;background:#fff!important;border:1px solid #dce5df!important}
+.category-section .category-select-card .category-audience{display:inline-flex;margin-top:10px;padding:7px 10px;border-radius:999px;background:#edf5ef!important;color:#14532d!important;font-weight:750}
+.category-section .category-select-card.is-selected{border:2px solid #0b8b62!important;box-shadow:0 0 0 3px rgba(11,139,98,.12),0 14px 32px rgba(0,0,0,.14)!important}
+.category-selected-mark{position:absolute;top:12px;inset-inline-end:12px;padding:6px 10px;border-radius:999px;background:#0b8b62;color:#fff!important;font-size:12px;font-weight:800}
+.category-flow-note{margin:18px 0 24px;padding:14px 18px;border:1px solid rgba(32,216,120,.28);border-radius:14px;background:#f1f7f2;color:#12251a;font-weight:650;line-height:1.7}
+.professional-onboarding-card{margin:30px 0 10px;padding:clamp(20px,3vw,34px);border:1px solid #d7e2da;border-radius:22px;background:#fff;color:#101713;box-shadow:0 18px 50px rgba(0,0,0,.16)}
+.professional-onboarding-card :is(h3,strong,p,label){color:#101713}
+.professional-onboarding-card .section-label{color:#087a50!important}
+.professional-onboarding-heading h3{margin:8px 0;font-size:clamp(22px,3vw,30px)}
+.professional-onboarding-heading p,.professional-onboarding-privacy{color:#46554b!important;line-height:1.7}
+.professional-onboarding-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:22px 0}
+.professional-onboarding-grid label{display:flex;flex-direction:column;gap:8px;font-weight:700}
+.professional-onboarding-grid input,.professional-onboarding-grid select{width:100%;min-height:48px;padding:11px 13px;border:1px solid #cbd8ce!important;border-radius:11px;background:#fff!important;color:#101713!important;-webkit-text-fill-color:#101713!important}
+.professional-onboarding-grid input::placeholder{color:#69786e!important}
+.professional-onboarding-categories{padding:18px;border:1px solid #dce5df;border-radius:14px;background:#f7faf8}
+.professional-onboarding-categories>strong{display:block;margin-bottom:12px}
+.professional-onboarding-card .professional-category-options label{color:#15231a!important}
+.professional-onboarding-privacy{margin:18px 0;padding:12px 14px;border-radius:10px;background:#f1f6f2}
+.professional-onboarding-actions{display:flex;gap:12px;flex-wrap:wrap}
+.travel-ready-badge{display:inline-flex;width:max-content;padding:6px 10px;border-radius:999px;background:#e8f5ec;color:#14532d;font-size:12px;font-weight:750}
+@media(max-width:620px){.professional-onboarding-grid{grid-template-columns:1fr}.professional-onboarding-actions{flex-direction:column}.professional-onboarding-actions .btn{width:100%}}
