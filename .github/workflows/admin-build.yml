@@ -13,6 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
     defaults:
       run:
         working-directory: admin-dashboard
@@ -27,5 +29,14 @@ jobs:
       - run: npm run build
       - name: Validate Worker bundle syntax
         run: npx esbuild src/worker.js --bundle --platform=browser --format=esm --external:@supabase/supabase-js --outfile=/tmp/nusqra-admin-worker-check.js
-      - name: Build only; deployment is performed separately with Wrangler
-        run: echo "Admin build complete. Deploy from a trusted terminal after configuring Worker secrets."
+      - name: Deploy separate administration Worker
+        if: env.CLOUDFLARE_API_TOKEN != ''
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ env.CLOUDFLARE_API_TOKEN }}
+          accountId: 7d871be22dc8c73b109a1075ee5a911a
+          command: deploy
+          workingDirectory: admin-dashboard
+      - name: Deployment skipped until Cloudflare token is configured
+        if: env.CLOUDFLARE_API_TOKEN == ''
+        run: echo "Admin build passed. Configure Worker secrets and CLOUDFLARE_API_TOKEN before deployment."
