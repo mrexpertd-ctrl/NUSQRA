@@ -2898,3 +2898,59 @@ footer{padding:32px clamp(22px,5vw,76px)!important}
 .professional-onboarding-actions{display:flex;gap:12px;flex-wrap:wrap}
 .travel-ready-badge{display:inline-flex;width:max-content;padding:6px 10px;border-radius:999px;background:#e8f5ec;color:#14532d;font-size:12px;font-weight:750}
 @media(max-width:620px){.professional-onboarding-grid{grid-template-columns:1fr}.professional-onboarding-actions{flex-direction:column}.professional-onboarding-actions .btn{width:100%}}
+
+
+/* NUSQRA two-step entry: role choice first, dedicated access screen second */
+.entry-layout-role{grid-template-columns:minmax(0,1fr) minmax(390px,.82fr)}
+.entry-layout-auth{display:grid;grid-template-columns:minmax(0,560px);justify-content:center;align-items:center;min-height:calc(100vh - 130px);padding-top:34px;padding-bottom:42px}
+.entry-layout-auth .entry-auth-wrap{width:100%;max-width:560px;margin-inline:auto}
+.entry-layout-auth .entry-auth-card{width:100%;padding:clamp(28px,5vw,48px);background:rgba(255,255,255,.96);backdrop-filter:blur(18px)}
+.entry-layout-auth .entry-auth-logo{margin-bottom:18px}
+.entry-back-role{display:inline-flex;align-items:center;gap:8px;margin:0 0 14px;padding:8px 12px;border:1px solid #d7e2da;border-radius:999px;background:#f3f8f4;color:#174331;font-weight:750;cursor:pointer}
+.entry-role-prompt{margin:16px 0 0;padding:12px 14px;border:1px solid rgba(225,199,145,.42);border-radius:13px;background:rgba(255,255,255,.09);color:#f6f3e9;line-height:1.6}
+.entry-layout-auth .entry-auth-note{text-align:center}
+@media(max-width:900px){.entry-layout-role{grid-template-columns:1fr}.entry-layout-auth{min-height:calc(100vh - 110px);padding:28px 18px}.entry-layout-auth .entry-auth-wrap{max-width:520px}}
+@media(max-width:560px){.entry-layout-auth{padding:16px 10px 28px}.entry-layout-auth .entry-auth-card{padding:24px 18px}.entry-layout-auth .entry-auth-logo img{max-width:180px}}
+
+/* Compact settings popover: quick controls without navigating away */
+.settings-popover-panel{
+  position:fixed!important;z-index:120!important;top:76px!important;
+  inset-inline-end:clamp(12px,3vw,38px)!important;inset-inline-start:auto!important;
+  width:min(430px,calc(100vw - 24px))!important;max-width:430px!important;
+  max-height:calc(100dvh - 94px)!important;overflow:auto!important;overscroll-behavior:contain;
+  margin:0!important;padding:18px!important;border:1px solid rgba(204,174,112,.55)!important;
+  border-radius:22px!important;background:linear-gradient(155deg,#fbfdfb 0%,#eef6f0 58%,#fffaf0 100%)!important;
+  box-shadow:0 24px 80px rgba(0,0,0,.32),0 0 0 1px rgba(255,255,255,.55) inset!important;color:#173b2d!important;
+}
+.settings-popover-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 14px;padding:2px 2px 12px;border-bottom:1px solid #d8e5dc}
+.settings-popover-heading span{font-size:10px;letter-spacing:.16em;font-weight:850;color:#9a7736}
+.settings-popover-heading h2{margin:4px 0 0;font-size:20px;color:#103b2a}
+.settings-popover-heading>button{display:grid;place-items:center;width:34px;height:34px;border:1px solid #d6e2da;border-radius:11px;background:#fff;color:#174331;cursor:pointer}
+.settings-popover-panel .account-card{max-width:none;margin:0;padding:14px;border:1px solid #dbe7df;border-radius:16px;background:rgba(255,255,255,.72);box-shadow:0 8px 24px rgba(13,60,39,.06)}
+.settings-popover-panel .account-heading{display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.settings-popover-panel .account-heading h3{font-size:16px;margin:0 0 4px;color:#103b2a}
+.settings-popover-panel .account-heading p{font-size:12px;color:#66786d;overflow-wrap:anywhere}
+.settings-popover-panel .settings-actions{width:100%;justify-content:flex-start}
+.settings-popover-panel .settings-actions .btn{padding:8px 11px;font-size:12px}
+.settings-popover-panel .language-preference{margin:10px 0;padding:10px 12px;border:1px solid #dce7df;border-radius:12px;background:#f7faf7}
+.settings-popover-panel .role-list{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:12px 0;padding:12px;border:1px solid #dce7df;border-radius:12px;background:#f7faf7}
+.settings-popover-panel .profile-studio{margin-top:14px;padding-top:14px;border-top:1px solid #d8e5dc}
+.settings-popover-panel .profile-studio-heading h3{font-size:17px}
+.settings-popover-panel .profile-studio-heading p{font-size:11px}
+.settings-popover-panel .profile-editor-tabs{gap:5px}
+.settings-popover-panel .profile-editor-tabs button{padding:8px 10px;font-size:11px}
+.settings-popover-panel .profile-upload-grid{grid-template-columns:1fr 1fr}
+.settings-popover-panel .profile-upload-card{padding:10px;background:#f7faf7;border:1px solid #dce7df}
+.settings-popover-panel .profile-save-row{position:sticky;bottom:-18px;padding:12px 0 0;background:linear-gradient(0deg,#f3f8f3 80%,transparent)}
+@media(max-width:560px){.settings-popover-panel{top:66px!important;inset-inline-end:8px!important;width:calc(100vw - 16px)!important;max-height:calc(100dvh - 76px)!important;padding:13px!important}.settings-popover-panel .profile-upload-grid{grid-template-columns:1fr 1fr}}
+
+/* Clean image crops: eliminate unintended nested white mats and frames */
+.entry-visual,.hero-visual,.hero-card,.category-image,.home-category-card,.profile-cover-preview,.template-preview-cover{background-color:transparent!important}
+.entry-visual img,.hero-visual img,.category-image img,.home-category-card img,.profile-cover-preview img,.template-preview-cover img{
+  display:block;width:100%;height:100%;object-fit:cover;border:0!important;outline:0!important;box-shadow:none!important
+}
+.category-image img,.home-category-card img{vertical-align:middle}
+.profile-upload-card,.profile-template-option{outline:0!important}
+.profile-template-option .template-mini{border:0!important;box-shadow:none!important}
+.profile-template-option.selected{border-color:#b18b45!important;box-shadow:0 0 0 2px rgba(177,139,69,.15),0 12px 28px rgba(13,60,39,.08)!important}
+.settings-popover-panel :is(.language-preference,.role-list,.profile-upload-card,.professional-category-editor,.verification-status-panel){border-color:#d8e5dc!important}
