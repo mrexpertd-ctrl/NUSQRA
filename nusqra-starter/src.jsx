@@ -267,8 +267,12 @@ function App() {
     setEntryStep('auth');
   };
 
-  const openEntryCategory = (slug) => {
-    const match = categories.find(c => c.slug === slug);
+  const openEntryCategory = async (slug) => {
+    let match = categories.find(c => c.slug === slug);
+    if (!match && supabase) {
+      const { data } = await supabase.from('categories').select('id,slug').eq('slug',slug).eq('is_active',true).maybeSingle();
+      if (data) match = data;
+    }
     if (!match) { navigatePage('categories'); return; }
     setSelectedCategoryId(match.id);
     setJobForm(v=>({...v,category_id:match.id}));
