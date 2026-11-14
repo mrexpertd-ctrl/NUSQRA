@@ -786,7 +786,7 @@ function App() {
           <span className="entry-brand-words"><strong lang="ar">نُسقرا</strong><small lang="en">NUSQRA</small></span>
         </a>
         <nav className={'entry-nav '+(menu?'open':'')} id="entry-mobile-nav"><a href="#home">{isAr?'الرئيسية':'Home'}</a><a href="#entry-categories">{isAr?'التصنيفات':'Categories'}</a><a href="#entry-about">{isAr?'عن نسقرا':'About'}</a><a href="#entry-how-it-works">{isAr?'كيف تعمل':'How It Works'}</a><a href="#entry-faq">{isAr?'الأسئلة الشائعة':'FAQ'}</a><a href="#entry-contact">{isAr?'اتصل بنا':'Contact'}</a></nav>
-        <div className="entry-header-actions"><button type="button" className="entry-language" onClick={()=>setLang(isAr?'en':'ar')}><Globe2 size={16}/>{isAr?'English':'العربية'}</button><button type="button" className="entry-menu" aria-label={menu?'Close menu':'Open menu'} aria-expanded={menu} aria-controls="entry-mobile-nav" onClick={()=>setMenu(v=>!v)}>{menu?<X size={20}/>:<Menu size={20}/>}</button></div>
+        <div className="entry-header-actions"><button type="button" className="entry-language" onClick={()=>setLang(isAr?'en':'ar')}><Globe2 size={16}/>{isAr?'EN':'EN'}</button><button type="button" className="entry-login-button" onClick={()=>{chooseEntryRole('customer');setAuthMode('login');}}>{isAr?'دخول':'Login'}</button><button type="button" className="entry-register-button" onClick={()=>{chooseEntryRole('customer');setAuthMode('register');}}>{isAr?'تسجيل':'Register'}</button><button type="button" className="entry-menu" aria-label={menu?'Close menu':'Open menu'} aria-expanded={menu} aria-controls="entry-mobile-nav" onClick={()=>setMenu(v=>!v)}>{menu?<X size={20}/>:<Menu size={20}/>}</button></div>
       </header>
       <main className={'entry-layout '+(entryStep==='auth'?'entry-layout-auth':'entry-layout-role')}>
         {entryStep==='role' && <section className="entry-hero">
@@ -902,7 +902,7 @@ function App() {
           </div>
         </section>
       </div>}
-      <footer className="entry-footer"><img src={nusqraSymbol} alt="" aria-hidden="true"/><span>NUSQRA · نُسقرا</span><nav aria-label={isAr?'روابط التذييل':'Footer links'}><a href="#entry-categories">{isAr?'التصنيفات':'Categories'}</a><a href="#entry-how-it-works">{isAr?'كيف تعمل':'How It Works'}</a><a href="#entry-faq">{isAr?'الأسئلة الشائعة':'FAQ'}</a><a href="#entry-contact">{isAr?'اتصل بنا':'Contact'}</a></nav><small>© 2026 NUSQRA. All rights reserved.</small></footer>
+      <footer className="entry-footer" id="entry-footer"><img src={nusqraSymbol} alt="" aria-hidden="true"/><span>NUSQRA · نُسقرا</span><nav aria-label={isAr?'روابط التذييل':'Footer links'}><a href="#entry-categories">{isAr?'التصنيفات':'Categories'}</a><a href="#entry-how-it-works">{isAr?'كيف تعمل':'How It Works'}</a><a href="#entry-faq">{isAr?'الأسئلة الشائعة':'FAQ'}</a><a href="#entry-contact">{isAr?'اتصل بنا':'Contact'}</a></nav><small>© 2026 NUSQRA. All rights reserved.</small></footer>
       {entryStep==='role' && <nav className="entry-bottom-tabs" aria-label="Mobile navigation">
         <a href="#home" className="active"><span>⌂</span>{isAr?'الرئيسية':'Home'}</a>
         <a href="#entry-categories"><span>▦</span>{isAr?'التصنيفات':'Categories'}</a>
