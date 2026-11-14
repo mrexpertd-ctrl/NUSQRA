@@ -112,6 +112,12 @@ export default {
    let ctx;
    try{ctx=await authenticate(request,env);}catch(e){return json({error:e.message},401);}
    if(url.pathname==='/api/me'&&request.method==='GET') return json({user:{email:ctx.user.email},role:ctx.staff.staff_role,sessionExpiresInMinutes:30});
+   if(url.pathname==='/api/overview/stats'&&request.method==='GET'){
+    if(!['supreme_admin','admin'].includes(ctx.staff.staff_role)) return json({error:'Live analytics are available to Admins and the Supreme Admin only.'},403);
+    const {data,error}=await ctx.service.rpc('admin_live_stats');
+    if(error) return json({error:'Live analytics could not be loaded.'},500);
+    return json(data);
+   }
    if(url.pathname==='/api/staff/invite'&&request.method==='POST'){
     if(ctx.staff.staff_role!=='supreme_admin') return json({error:'Only the Supreme Admin can manage staff.'},403);
     let body; try{body=await request.json();}catch{return json({error:'Invalid JSON.'},400);}
