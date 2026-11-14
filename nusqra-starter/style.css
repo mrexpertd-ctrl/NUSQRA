@@ -4844,3 +4844,7 @@ html,body,#root{width:100%;max-width:100%;min-width:0;overflow-x:hidden}
 }
 
 .marketplace-entry{overflow-x:clip!important;overflow-y:visible!important}
+
+.marketplace-entry .entry-layout-role,
+.marketplace-entry .entry-home-sections,
+.marketplace-entry .entry-footer{flex:0 0 auto!important}
