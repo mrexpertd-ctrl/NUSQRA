@@ -625,7 +625,7 @@ function App() {
           <span className="entry-brand-words"><strong lang="ar">نُسقرا</strong><small lang="en">NUSQRA</small></span>
         </a>
         <nav className={'entry-nav '+(menu?'open':'')} id="entry-mobile-nav"><a href="#entry-categories" onClick={e=>{e.preventDefault();document.getElementById('entry-categories')?.scrollIntoView({behavior:'smooth'});setMenu(false);}}>{isAr?'التصنيفات':'Categories'}</a><a href="#entry-how-it-works" onClick={e=>{e.preventDefault();document.getElementById('entry-how-it-works')?.scrollIntoView({behavior:'smooth'});setMenu(false);}}>{isAr?'كيف تعمل':'How it works'}</a><span>{isAr?'للأفراد والشركات':'For individuals & businesses'}</span></nav>
-        <div className="entry-header-actions"><button type="button" className="entry-language" onClick={()=>setLang(isAr?'en':'ar')}><Globe2 size={16}/>{isAr?'English':'العربية'}</button><button type="button" className="entry-menu" aria-label={menu?'Close menu':'Open menu'} aria-expanded={menu} aria-controls="entry-mobile-nav" onClick={()=>setMenu(v=>!v)}>{menu?<X size={20}/>:<Menu size={20}/>}</button></div>
+        <div className="entry-header-actions"><button type="button" className="entry-menu" aria-label={menu?'Close menu':'Open menu'} aria-expanded={menu} aria-controls="entry-mobile-nav" onClick={()=>setMenu(v=>!v)}>{menu?<X size={20}/>:<Menu size={20}/>}</button><button type="button" className="entry-language" onClick={()=>setLang(isAr?'en':'ar')}><Globe2 size={16}/>{isAr?'English':'العربية'}</button></div>
       </header>
       <main className={'entry-layout '+(entryStep==='auth'?'entry-layout-auth':'entry-layout-role')}>
         {entryStep==='role' && <section className="entry-hero">
