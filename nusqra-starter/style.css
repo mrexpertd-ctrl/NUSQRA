@@ -3238,7 +3238,7 @@ body:has(.settings-popover-panel){overflow:hidden!important;overscroll-behavior:
 /* Mobile overflow and category readability — root cause fix before clipping overflow */
 *,*::before,*::after{box-sizing:border-box}
 html,body,#root{width:100%;max-width:100%;min-width:0}
-body{overflow-x:hidden}
+/* Keep document overflow visible while constraining the actual app root. */
 #root{overflow-x:clip}
 .section,.home-intro,.home-steps,.category-section,.marketplace-section,
 .home-intro-heading,.home-intro-heading>div,.category-flow-note,.category-grid{
@@ -3280,4 +3280,36 @@ body{overflow-x:hidden}
   .category-section .category-select-card{padding:10px!important}
   .category-section .category-select-card h3{font-size:13px!important}
   .category-section .category-select-card p{font-size:14px!important;line-height:1.5!important}
+}
+
+
+/* Category cards: target the actual rendered grid, not an assumed section wrapper. */
+.category-grid{
+  display:grid!important;
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+}
+.category-grid > .category-select-card{
+  min-width:0!important;
+  max-width:100%!important;
+}
+.category-grid > .category-select-card p{
+  color:#c4d6ca!important;
+  -webkit-text-fill-color:#c4d6ca!important;
+  font-size:14px!important;
+  line-height:1.5!important;
+  white-space:normal!important;
+  overflow-wrap:anywhere!important;
+}
+.category-grid > .category-select-card :is(h3,.category-audience,.investor-disclaimer){
+  max-width:100%!important;
+  white-space:normal!important;
+  overflow-wrap:anywhere!important;
+}
+@media(max-width:390px){
+  .category-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}
+  .category-grid > .category-select-card{padding:10px!important}
+  .category-grid > .category-select-card p{font-size:13px!important;line-height:1.45!important}
 }
