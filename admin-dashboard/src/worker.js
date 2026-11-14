@@ -80,6 +80,20 @@ export default {
   if(url.pathname.startsWith('/api/')){
    if(!sameOrigin(request)) return json({error:'Cross-origin request blocked.'},403);
    if(url.pathname==='/api/config'&&request.method==='GET') return json({supabaseUrl:env.SUPABASE_URL,anonKey:env.SUPABASE_ANON_KEY});
+   if(url.pathname==='/api/bootstrap'&&request.method==='POST'){
+    try {
+      const {service}=getClients(env);
+      const email=(env.SUPREME_ADMIN_EMAIL||'').toLowerCase();
+      if(!email) return json({error:'Supreme Admin email is not configured.'},503);
+      const {count}=await service.from('admin_staff_directory').select('*',{count:'exact',head:true}).eq('staff_role','supreme_admin').in('status',['invited','active']);
+      if(count>0) return json({success:true,message:'Supreme Admin invitation already exists.'});
+      const {error:rowError}=await service.from('admin_staff_directory').insert({email,staff_role:'supreme_admin',status:'invited'});
+      if(rowError) return json({error:'Supreme Admin seat could not be reserved.'},409);
+      const {error:inviteError}=await service.auth.admin.inviteUserByEmail(email,{redirectTo:new URL('/',request.url).toString(),data:{nusqra_admin_invite:true}});
+      if(inviteError){await service.from('admin_staff_directory').delete().eq('email',email).eq('status','invited');return json({error:'Supreme Admin invitation email could not be sent.'},503);}
+      return json({success:true,message:'Supreme Admin setup email sent.'});
+    } catch(e){return json({error:'Supreme Admin bootstrap failed.'},500);}
+   }
    if(url.pathname==='/api/session'&&request.method==='POST'){
     try { const ctx=await authenticate(request,env); await audit(ctx,request,'admin_session_authenticated'); return json({user:{email:ctx.user.email},role:ctx.staff.staff_role,sessionExpiresInMinutes:30}); }
     catch(e){return json({error:e.message},401);}
