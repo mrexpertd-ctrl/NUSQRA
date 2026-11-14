@@ -43,10 +43,9 @@ async function trackInstall(request, env) {
     return json({ error: "Install tracking is not configured." }, 503);
   }
 
-  if (env.INSTALL_RATE_LIMIT) {
-    const { success } = await env.INSTALL_RATE_LIMIT.limit({ key: deviceId });
-    if (!success) return json({ error: "Too many install requests. Try again later." }, 429);
-  }
+  if (!env.INSTALL_RATE_LIMIT) return json({ error: "Install rate limiting is not configured." }, 503);
+  const { success } = await env.INSTALL_RATE_LIMIT.limit({ key: deviceId });
+  if (!success) return json({ error: "Too many install requests. Try again later." }, 429);
 
   let userId = null;
   const authorization = request.headers.get("authorization") || "";
