@@ -877,7 +877,7 @@ function App() {
             }}>
               <div className="category-image"><img src={images[c.slug]||images['business-services']} alt={isAr?c.name_ar:c.name_en} loading="lazy" decoding="async"/><span className="category-symbol">{symbols[c.slug]||'✧'}</span></div>
               <h3>{isAr?c.name_ar:c.name_en}</h3>
-              <p>{isAr?(c.description_ar||''): (c.description_en||'')}</p>
+              <p className="category-description">{isAr?(c.description_ar||''): (c.description_en||'')}</p>
               <span className="category-audience">{c.slug==='investors-opportunities'?t.audienceInvestors:(isProfessional?(isAr?'اختر هذا التخصص لإضافته إلى ملفك':'Choose this category for your profile'):(isAr?'عرض المحترفين في هذا التصنيف':'View professionals in this category'))}</span>
               {isProfessional&&professionalCategoryIds.includes(c.id)&&<span className="category-selected-mark">{isAr?'تم الاختيار':'Selected'}</span>}
               {c.slug==='investors-opportunities'&&<small className="investor-disclaimer">{t.investorDisclaimer}</small>}
