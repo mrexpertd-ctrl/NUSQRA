@@ -117,3 +117,59 @@ footer:not(.entry-footer){background:#041e17!important;color:#d6e6dc!important}
   .marketplace-entry .entry-hero-choices{grid-template-columns:1fr!important}
   .marketplace-entry .entry-nav:not(.open){display:none!important}
 }
+
+
+/* Restoration v2: eliminate the global rock photo overlay and enforce
+   accessible, opaque section surfaces regardless of legacy style.css. */
+html body .marketplace-entry{
+ background:#f5f8f5!important;
+ background-image:none!important;
+ color:#13291f!important;
+}
+html body .marketplace-entry::before,
+html body .marketplace-entry::after{
+ content:none!important;display:none!important;
+ background:none!important;
+}
+html body .marketplace-entry .entry-layout,
+html body .marketplace-entry .entry-layout-role,
+html body .marketplace-entry .entry-home-sections{
+ background:#f5f8f5!important;background-image:none!important;
+}
+html body .marketplace-entry .entry-hero{
+ background:#075239!important;background-image:linear-gradient(125deg,#063a2b,#0c7754)!important;
+ isolation:isolate!important;
+}
+html body .marketplace-entry .entry-hero::before,
+html body .marketplace-entry .entry-hero::after{
+ content:none!important;display:none!important;background:none!important;
+}
+html body .marketplace-entry .entry-hero h1,
+html body .marketplace-entry .entry-kicker{
+ color:#fff!important;opacity:1!important;visibility:visible!important;
+ text-shadow:none!important;
+}
+html body .marketplace-entry .entry-content-section,
+html body .marketplace-entry .entry-home-sections>section{
+ background:#f5f8f5!important;background-image:none!important;
+ color:#13291f!important;
+}
+html body .marketplace-entry .entry-section-heading h2,
+html body .marketplace-entry .entry-section-heading p{
+ color:#073d2b!important;opacity:1!important;visibility:visible!important;
+}
+html body .marketplace-entry .entry-browse-grid{
+ display:grid!important;visibility:visible!important;opacity:1!important;
+}
+html body .marketplace-entry .entry-how-grid article{
+ background:#fff!important;color:#073d2b!important;
+}
+html body .marketplace-entry .entry-how-grid h3{color:#073d2b!important}
+html body .marketplace-entry .entry-how-grid p{color:#4b6356!important}
+html body .marketplace-entry .entry-layout-auth{
+ background:#f5f8f5!important;background-image:none!important;
+}
+@media(max-width:699px){
+ html body .marketplace-entry .entry-hero{padding:28px 18px!important}
+ html body .marketplace-entry .entry-hero h1{font-size:clamp(28px,7vw,38px)!important}
+}
