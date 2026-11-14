@@ -17,7 +17,10 @@ async function boot(){
   const cfg=await api('/api/config');
   supabase=createClient(cfg.supabaseUrl,cfg.anonKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
   const {data}=await supabase.auth.getSession(); session=data.session;
-  if(session){await continueAuth();}else renderLogin();
+  if(session){
+   if(session.user?.user_metadata?.nusqra_admin_invite && session.user?.user_metadata?.admin_password_initialized!==true){renderSetPassword();return;}
+   await continueAuth();
+  }else renderLogin();
  }catch(e){renderError(e.message);}
 }
 function renderLogin(){
@@ -36,6 +39,10 @@ async function continueAuth(){
   renderMfaEnroll();return;
  }
  try{const info=await api('/api/session',{method:'POST'});staffRole=info.role;renderDashboard(info);}catch(e){renderError(e.message);}
+}
+function renderSetPassword(){
+ shell(`<main class="auth-wrap"><section class="brand"><div class="mark">N</div><p class="eyebrow">FIRST SIGN-IN</p><h1>Create your <span>password</span></h1><p class="muted">Choose your own private password. NUSQRA Administration never stores or sees it.</p></section><section class="panel"><form id="setPassword"><label>New password<input name="password" type="password" autocomplete="new-password" minlength="12" required></label><label>Confirm password<input name="confirm" type="password" autocomplete="new-password" minlength="12" required></label><button class="primary">Save password securely</button></form><p id="msg" class="message" aria-live="polite"></p></section></main>`);
+ document.querySelector('#setPassword').onsubmit=async e=>{e.preventDefault();const f=new FormData(e.currentTarget);if(f.get('password')!==f.get('confirm')){message('Passwords do not match.',true);return;}const {data,error}=await supabase.auth.updateUser({password:f.get('password'),data:{admin_password_initialized:true}});if(error){message(error.message,true);return;}session=(await supabase.auth.getSession()).data.session;await continueAuth();};
 }
 function renderMfaEnroll(){
  shell(`<main class="auth-wrap"><section class="brand"><div class="mark">N</div><p class="eyebrow">SECURITY SETUP</p><h1>Enable <span>Authenticator</span></h1><p class="muted">Scan the QR code with an authenticator app, then enter its six-digit code.</p></section><section class="panel"><button id="enroll" class="primary">Set up authenticator</button><div id="factor"></div><p id="msg" class="message" aria-live="polite"></p><button id="logout" class="ghost">Sign out</button></section></main>`);
