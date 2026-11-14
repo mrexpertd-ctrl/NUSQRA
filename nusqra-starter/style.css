@@ -5068,7 +5068,7 @@ html,body,#root{width:100%;max-width:100%;min-width:0;overflow-x:hidden}
 }
 .marketplace-entry .entry-home-sections *{box-sizing:border-box!important;min-width:0}
 @media(min-width:700px){
-  .marketplace-entry .entry-home-sections{padding-inline:clamp(20px,4vw,56px)!important}
+  .marketplace-entry .entry-home-sections{padding-inline:16px!important}
   .marketplace-entry .entry-experience-section .entry-role-picker{grid-template-columns:repeat(2,minmax(0,1fr))!important}
   .marketplace-entry .entry-content-section .entry-how-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}
   .marketplace-entry .entry-browse-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:16px!important}
@@ -5081,7 +5081,7 @@ html,body,#root{width:100%;max-width:100%;min-width:0;overflow-x:hidden}
   .marketplace-entry .entry-trust-facts{grid-template-columns:repeat(3,minmax(0,1fr))!important}
 }
 @media(max-width:699px){
-  .marketplace-entry .entry-home-sections{gap:42px!important;padding-bottom:36px!important}
+  .marketplace-entry .entry-home-sections{gap:48px!important;padding-bottom:36px!important}
   .marketplace-entry .entry-browse-card{min-height:126px!important}
 }
 @media(max-width:390px){
