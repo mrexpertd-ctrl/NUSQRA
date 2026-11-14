@@ -25,14 +25,5 @@ jobs:
           cache-dependency-path: admin-dashboard/package.json
       - run: npm install
       - run: npm run build
-      - name: Deploy separate administration Worker
-        if: env.CLOUDFLARE_API_TOKEN != ''
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ env.CLOUDFLARE_API_TOKEN }}
-          accountId: 7d871be22dc8c73b109a1075ee5a911a
-          command: deploy
-          workingDirectory: admin-dashboard
-      - name: Deployment skipped until Cloudflare token is configured
-        if: env.CLOUDFLARE_API_TOKEN == ''
-        run: echo "Admin build passed. Configure Worker secrets and CLOUDFLARE_API_TOKEN before deployment."
+      - name: Build only; deployment is performed separately with Wrangler
+        run: echo "Admin build complete. Deploy from a trusted terminal after configuring Worker secrets."
