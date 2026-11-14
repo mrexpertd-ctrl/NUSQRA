@@ -60,7 +60,7 @@ After secrets, TOTP and deployment are configured:
 - **All roles:** without a verified TOTP factor, protected API requests must return 401. After 30 minutes without an authenticated API request, the session must be rejected.
 - **Database:** anon and authenticated have no table privileges; explicit deny-all RLS policies protect all three admin tables. PostgreSQL tests verified a fourth Admin seat and a second Supreme Admin are rejected, and audit UPDATE/DELETE are blocked.
 
-The repository workflows build both applications. Once the Cloudflare GitHub Actions secret is configured and the Worker secrets below are set, run the **Admin dashboard build** workflow manually from GitHub Actions to deploy the admin Worker. The public frontend workflow can also be manually run to publish the public-site removal of the old admin UI.
+The repository workflows build both applications. Once the Cloudflare GitHub Actions secret is configured and the Worker secrets below are set, run the **NUSQRA Admin dashboard build and deploy** workflow manually from GitHub Actions to deploy the admin Worker. The separate **Admin dashboard build and validation** workflow does not deploy. The public frontend workflow can also be manually run to publish the public-site removal of the old admin UI.
 
 Add a repository Actions secret named `CLOUDFLARE_API_TOKEN` (Cloudflare token with Workers Scripts Edit permission for the NUSQRA account). Do not put it in chat. The deployment steps are skipped until that secret exists.
 
