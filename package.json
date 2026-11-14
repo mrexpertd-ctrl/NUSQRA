@@ -3,10 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "vite --host 0.0.0.0",
-    "build": "vite build",
-    "preview": "vite preview --host 0.0.0.0",
-    "deploy": "vite build && wrangler deploy"
+    "dev": "npm run dev --prefix nusqra-starter",
+    "build": "npm run build --prefix nusqra-starter",
+    "preview": "npm run preview --prefix nusqra-starter",
+    "deploy": "npm run build && wrangler deploy",
+    "install:app": "npm install --prefix nusqra-starter"
   },
   "dependencies": {
     "vite": "^6.1.0",
