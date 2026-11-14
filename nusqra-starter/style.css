@@ -2676,3 +2676,52 @@ footer{padding:32px clamp(22px,5vw,76px)!important}
   .home-trust-points{display:grid!important;grid-template-columns:1fr 1fr;gap:13px!important}
 }
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+
+/* Accessibility fixes: keep authentication actions visible and header controls readable. */
+.google-auth,
+.entry-auth-card .google-auth,
+.auth-dialog .google-auth {
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  width:100%!important;
+  min-height:54px!important;
+  gap:12px!important;
+  padding:14px 18px!important;
+  border:1px solid #d7dfda!important;
+  border-radius:13px!important;
+  background:#fff!important;
+  color:#14251c!important;
+  font-size:15px!important;
+  font-weight:750!important;
+  line-height:1.35!important;
+  opacity:1!important;
+  visibility:visible!important;
+}
+.google-auth .google-g {
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  flex:0 0 24px!important;
+  width:24px!important;
+  height:24px!important;
+  color:#4285f4!important;
+  font-size:22px!important;
+  font-weight:900!important;
+}
+.google-auth:disabled { opacity:.65!important; }
+.header>.actions .navlink,
+.header>.actions .lang,
+.header>.actions .btn,
+.header .actions button {
+  color:#14251c!important;
+}
+.header>.actions .navlink,
+.header>.actions .lang {
+  background:#fff!important;
+  border-color:#dce4df!important;
+}
+.header>.actions .btn.primary {
+  color:#07150c!important;
+}
