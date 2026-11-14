@@ -4375,3 +4375,122 @@ html,body,#root{width:100%;max-width:100%;min-width:0;overflow-x:hidden}
   .marketplace-entry .entry-header-actions{gap:6px!important}
   .marketplace-entry .entry-language,.marketplace-entry .entry-menu{width:44px!important;min-width:44px!important;flex-basis:44px!important}
 }
+
+/* NUSQRA welcome hero: service-first layout; header and logo intentionally unchanged */
+.marketplace-entry .entry-layout-role{
+  box-sizing:border-box!important;display:flex!important;flex-direction:column!important;
+  align-items:stretch!important;gap:24px!important;width:min(1120px,100%)!important;
+  max-width:100%!important;margin:0 auto!important;padding:24px 20px 42px!important;
+}
+.marketplace-entry .entry-hero{
+  box-sizing:border-box!important;position:static!important;inset:auto!important;
+  width:100%!important;min-width:0!important;margin:0!important;padding:0!important;
+  transform:none!important;
+}
+.marketplace-entry .entry-kicker{margin:0 0 12px!important;color:#2bd18a!important;font-size:11px!important;letter-spacing:1.8px!important;line-height:1.5!important}
+.marketplace-entry .entry-hero h1{
+  max-width:820px!important;margin:0 0 18px!important;color:#fff!important;
+  font-size:clamp(32px,5vw,40px)!important;line-height:1.2!important;letter-spacing:-.8px!important;
+  font-weight:800!important;text-wrap:balance;
+}
+.marketplace-entry .entry-hero-search{
+  box-sizing:border-box!important;display:flex!important;align-items:center!important;gap:10px!important;
+  width:100%!important;height:56px!important;min-height:56px!important;padding:5px 6px 5px 16px!important;
+  border:1px solid rgba(255,255,255,.2)!important;border-radius:16px!important;
+  background:rgba(255,255,255,.08)!important;color:#fff!important;
+}
+.marketplace-entry .entry-hero-search>svg{flex:0 0 auto!important;color:#b8d0c2!important}
+.marketplace-entry .entry-hero-search input{
+  flex:1 1 auto!important;min-width:0!important;width:100%!important;height:44px!important;
+  padding:0!important;border:0!important;outline:0!important;background:transparent!important;
+  color:#fff!important;font-size:16px!important;box-shadow:none!important;
+}
+.marketplace-entry .entry-hero-search input::placeholder{color:#a9c0b1!important;opacity:1!important}
+.marketplace-entry .entry-hero-search button{
+  flex:0 0 auto!important;height:44px!important;padding:0 20px!important;border:0!important;
+  border-radius:12px!important;background:linear-gradient(135deg,#20d68b,#078b58)!important;
+  color:#041b11!important;font-size:15px!important;font-weight:800!important;cursor:pointer!important;
+}
+.marketplace-entry .entry-category-chips{
+  display:flex!important;flex-wrap:nowrap!important;align-items:center!important;gap:9px!important;
+  width:100%!important;max-width:100%!important;margin:14px 0 0!important;padding:2px 0 9px!important;
+  overflow-x:auto!important;overflow-y:hidden!important;overscroll-behavior-x:contain!important;
+  scrollbar-width:thin!important;scrollbar-color:rgba(43,209,138,.55) transparent!important;
+  -webkit-overflow-scrolling:touch!important;
+}
+.marketplace-entry .entry-category-chips button{
+  flex:0 0 auto!important;min-height:40px!important;height:40px!important;padding:0 15px!important;
+  border:1px solid rgba(255,255,255,.18)!important;border-radius:999px!important;
+  background:rgba(255,255,255,.07)!important;color:#f5fff8!important;
+  font-size:13px!important;font-weight:650!important;white-space:nowrap!important;cursor:pointer!important;
+}
+.marketplace-entry .entry-category-chips button:hover,
+.marketplace-entry .entry-category-chips button:focus-visible,
+.marketplace-entry .entry-category-chips button:active{border-color:#2bd18a!important;outline:none!important}
+.marketplace-entry .entry-hero-actions{display:flex!important;gap:12px!important;width:100%!important;margin:14px 0 0!important}
+.marketplace-entry .entry-hero-actions button{
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  flex:1 1 0!important;min-width:0!important;min-height:48px!important;padding:0 16px!important;
+  border-radius:14px!important;font-size:15px!important;font-weight:800!important;cursor:pointer!important;
+}
+.marketplace-entry .entry-hero-hire{border:1px solid #1fc982!important;background:linear-gradient(135deg,#21d68d,#078b58)!important;color:#041b11!important}
+.marketplace-entry .entry-hero-pro{border:1px solid rgba(43,209,138,.8)!important;background:rgba(255,255,255,.04)!important;color:#fff!important}
+.marketplace-entry .entry-trust-facts{
+  display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:10px!important;
+  width:100%!important;margin:17px 0 0!important;padding-top:13px!important;
+  border-top:1px solid rgba(255,255,255,.13)!important;
+}
+.marketplace-entry .entry-trust-facts>div{
+  display:flex!important;align-items:flex-start!important;gap:7px!important;min-width:0!important;
+  color:#f0f8f3!important;font-size:12px!important;font-weight:600!important;line-height:1.45!important;
+}
+.marketplace-entry .entry-trust-facts svg{flex:0 0 17px!important;color:#2bd18a!important}
+.marketplace-entry .entry-experience-section{
+  box-sizing:border-box!important;width:100%!important;max-width:100%!important;margin:0!important;
+  justify-self:stretch!important;
+}
+.marketplace-entry .entry-experience-section .entry-auth-card{
+  padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;
+  color:#fff!important;box-shadow:none!important;
+}
+.marketplace-entry .entry-experience-section .entry-auth-eyebrow{
+  margin:0 0 16px!important;text-align:start!important;color:#fff!important;
+  font-size:20px!important;letter-spacing:0!important;font-weight:800!important;
+}
+.marketplace-entry .entry-experience-section .entry-role-picker{
+  display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:14px!important;
+  margin:0!important;
+}
+.marketplace-entry .entry-experience-section .entry-role-card{
+  min-height:190px!important;padding:20px!important;border:1px solid rgba(255,255,255,.16)!important;
+  border-radius:18px!important;background:rgba(255,255,255,.06)!important;color:#fff!important;
+}
+.marketplace-entry .entry-experience-section .entry-role-card strong{color:#fff!important;font-size:17px!important}
+.marketplace-entry .entry-experience-section .entry-role-card small{color:#d9e7df!important;font-size:13px!important;line-height:1.6!important}
+.marketplace-entry .entry-experience-section .entry-role-prompt{color:#d9e7df!important}
+.marketplace-entry .entry-layout-role .entry-hero-points,.marketplace-entry .entry-layout-role .entry-visual{display:none!important}
+.marketplace-entry .entry-layout-role .entry-auth-wrap{width:100%!important;max-width:100%!important;justify-self:stretch!important}
+@media(max-width:600px){
+  .marketplace-entry .entry-layout-role{padding:24px 16px 36px!important;gap:24px!important}
+  .marketplace-entry .entry-hero h1{font-size:clamp(32px,8.4vw,36px)!important;line-height:1.2!important}
+  .marketplace-entry .entry-hero-search{gap:8px!important;padding-inline-start:12px!important}
+  .marketplace-entry .entry-hero-search button{padding:0 14px!important}
+  .marketplace-entry .entry-category-chips{margin-top:12px!important}
+  .marketplace-entry .entry-trust-facts>div{font-size:11px!important;gap:5px!important}
+  .marketplace-entry .entry-trust-facts svg{width:15px!important;height:15px!important;flex-basis:15px!important}
+  .marketplace-entry .entry-experience-section .entry-role-card{min-height:176px!important;padding:16px!important}
+}
+@media(max-width:379px){
+  .marketplace-entry .entry-hero-actions{flex-direction:column!important;gap:9px!important}
+  .marketplace-entry .entry-hero-actions button{flex:none!important;width:100%!important}
+  .marketplace-entry .entry-trust-facts{gap:6px!important}
+  .marketplace-entry .entry-trust-facts>div{font-size:10.5px!important}
+}
+@media(max-width:360px){
+  .marketplace-entry .entry-layout-role{padding-inline:14px!important}
+  .marketplace-entry .entry-hero h1{font-size:32px!important}
+  .marketplace-entry .entry-trust-facts>div{font-size:10px!important}
+}
+[dir="rtl"] .marketplace-entry .entry-hero-search{direction:rtl!important;padding:5px 16px 5px 6px!important}
+[dir="rtl"] .marketplace-entry .entry-hero-actions{direction:rtl!important}
+[dir="rtl"] .marketplace-entry .entry-trust-facts{direction:rtl!important}
