@@ -18,10 +18,12 @@ Independent Cloudflare Worker application. It is not part of the public NUSQRA f
 ## Required secrets
 From this directory, run:
 ```sh
+npx wrangler login
 npx wrangler secret put SUPREME_ADMIN_EMAIL
-npx wrangler secret put SUPABASE_SERVICE_ROLE_KEY
 npx wrangler secret put SUPABASE_ANON_KEY
+npx wrangler secret put SUPABASE_SERVICE_ROLE_KEY
 ```
+Each command prompts locally. Enter the value only into that terminal prompt. Do not paste it into ChatGPT or commit it.
 Paste each value only into Wrangler's interactive terminal prompt. Never place secrets in Git, chat, source files, or frontend environment variables.
 
 The SUPABASE_URL is the project URL in wrangler.jsonc and is not secret.
@@ -34,7 +36,7 @@ npm run build
 npx wrangler deploy
 ```
 
-The initial Worker uses its isolated workers.dev hostname. To attach admin.example.com later, configure a Cloudflare zone you control and add a custom domain in this Worker’s Domains & Routes settings or add a custom_domain route to wrangler.jsonc. Cloudflare Access can then be enabled for that hostname.
+The initial Worker uses its isolated workers.dev hostname. Wrangler prints the exact URL after deployment. Before opening that URL for the first time, add it to Supabase Authentication → URL Configuration → Redirect URLs (include the Worker URL with /**). This ensures invitation links return to the private dashboard rather than the public site. Confirm Supabase Auth email delivery/SMTP is configured. To attach admin.example.com later, first add a domain zone to this Cloudflare account, then add a custom domain in the Worker’s Domains & Routes settings. Cloudflare Access can then be enabled for that hostname.
 
 ## Important setup notes
 1. Enable TOTP MFA in Supabase Auth settings. The Worker enforces AAL2 for every protected API route.
@@ -48,3 +50,15 @@ The initial Worker uses its isolated workers.dev hostname. To attach admin.examp
 - Idle expiry is checked on authenticated API calls; Supabase JWT expiry remains the hard upper bound.
 - Cloudflare zone was not present in the connected account when this was created, so the custom admin hostname cannot yet be attached. Use workers.dev until a zone is available.
 - TOTP must be enabled in the Supabase project Auth configuration before production access.
+
+
+## Phase 1 role acceptance tests
+After secrets, TOTP and deployment are configured:
+
+- **Supreme Admin:** sign in, complete TOTP, view staff list and audit events, invite Admin/Moderator, change staff role, suspend/remove staff. Verify Admin seats display x/3.
+- **Admin:** sign in with TOTP. Direct requests to GET /api/staff, POST /api/staff/invite, POST /api/staff/manage and GET /api/audit must return 403.
+- **Moderator:** sign in with TOTP. The same staff-management and audit requests must return 403.
+- **All roles:** without a verified TOTP factor, protected API requests must return 401. After 30 minutes without an authenticated API request, the session must be rejected.
+- **Database:** anon and authenticated have no table privileges; explicit deny-all RLS policies protect all three admin tables. PostgreSQL tests verified a fourth Admin seat and a second Supreme Admin are rejected, and audit UPDATE/DELETE are blocked.
+
+The repository build workflows validate builds only. Deploy the public Worker and this admin Worker separately using Wrangler after credentials are configured.
