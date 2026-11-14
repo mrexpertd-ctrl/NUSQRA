@@ -244,3 +244,21 @@ html body .marketplace-entry .entry-step-number{background:#edf5f0!important;col
 html body .marketplace-entry .entry-layout-auth{background:linear-gradient(140deg,#181b1a,#173b30 65%,#126b53)!important;min-height:calc(100dvh - 80px)!important}
 html body .marketplace-entry .entry-auth-card{border:1px solid #c4a56b50!important;box-shadow:0 22px 50px #0004!important}
 @media(max-width:700px){html body .marketplace-entry .entry-hero{min-height:unset!important;padding:44px 20px 55px!important}html body .marketplace-entry .entry-content-section{padding:46px 20px!important}html body .marketplace-entry .entry-section-heading h2{font-size:clamp(24px,6vw,32px)!important}}
+
+/* Signature U: authenticated marketplace, customer/provider dashboards, and home */
+html body{background:#f8f7f3!important;color:#181b1a!important}
+html body .header{background:#fff!important;border-bottom:1px solid #e5e5de!important;box-shadow:0 4px 20px #181b1a0a!important}
+html body .navlink,html body .brand,html body .header .lang{color:#181b1a!important}
+html body .hero{background:linear-gradient(118deg,#181b1a 0%,#173c30 64%,#126b53 100%)!important;background-image:linear-gradient(118deg,#181b1a 0%,#173c30 64%,#126b53 100%)!important;color:#fff!important}
+html body .hero:before,html body .hero:after{background-image:none!important}
+html body .hero h1,html body .hero .eyebrow{color:#fff!important;-webkit-text-fill-color:#fff!important}
+html body .hero .eyebrow{color:#e3c892!important;-webkit-text-fill-color:#e3c892!important}
+html body .home-intro,html body .home-steps,html body .category-section,html body .marketplace-section,html body .professional-directory,html body .account-section,html body .section{background:#f8f7f3!important;color:#181b1a!important}
+html body .home-intro-heading,html body .section-intro h2,html body .section h2,html body .section-label{color:#181b1a!important;-webkit-text-fill-color:#181b1a!important}
+html body .home-category-card,html body .category-grid button,html body .professional-directory-card,html body .marketplace-panel,html body .job-card,html body .account-card,html body .feature,html body .step-grid article,html body .home-step-grid article,html body .support-panel,html body .chat-panel{border-radius:18px!important;border:1px solid #e3e7df!important;box-shadow:0 8px 28px #181b1a0b!important}
+html body .btn.primary,html body .market-form button[type=submit]{background:#126b53!important;border-color:#126b53!important;color:#fff!important}
+html body .btn.secondary,html body .home-outline{border-color:#126b53!important;color:#126b53!important}
+html body .section-label,html body .home-intro .section-label{color:#126b53!important}
+html body .entry-hero::before{content:none!important;display:none!important}
+html body .marketplace-entry .entry-hero{background:linear-gradient(118deg,#181b1a 0%,#173c30 64%,#126b53 100%)!important}
+html body .entry-hero h1{color:#fff!important}
