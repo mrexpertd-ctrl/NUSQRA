@@ -794,7 +794,8 @@ function App() {
             <Search size={20} aria-hidden="true"/>
             <input value={entrySearch} onChange={e=>setEntrySearch(e.target.value)} placeholder={isAr?'سباك، مصمم شعارات، مترجم...':'Plumber, logo designer, translator...'} aria-label={isAr?'ابحث عن خدمة':'Search for a service'}/>
             <button type="submit">{isAr?'بحث':'Search'}</button>
-            <div className="entry-hero-choices" role="group" aria-label={isAr?'اختر طريقة الاستخدام':'Choose how to use NUSQRA'}>
+          </form>
+          <div className="entry-hero-choices" role="group" aria-label={isAr?'اختر طريقة الاستخدام':'Choose how to use NUSQRA'}>
               <button type="button" className="entry-hero-choice" onClick={()=>chooseEntryRole('customer')}>
                 <span className="entry-role-icon"><Users size={22}/></span>
                 <span className="entry-hero-choice-copy"><strong>{isAr?'أريد توظيف محترف':'I want to hire'}</strong><small>{isAr?'اعثر على محترفين وقارن العروض وانشر طلبك.':'Find professionals, compare proposals and post a request.'}</small></span>
