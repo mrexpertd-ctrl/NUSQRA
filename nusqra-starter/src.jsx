@@ -156,6 +156,25 @@ function App() {
   }, [lang]);
 
   useEffect(() => {
+    if (!menu) return undefined;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const closeOnEscape = (event) => {
+      if (event.key === 'Escape') setMenu(false);
+    };
+    const closeOutside = (event) => {
+      if (!event.target.closest('.entry-header')) setMenu(false);
+    };
+    document.addEventListener('keydown', closeOnEscape);
+    document.addEventListener('pointerdown', closeOutside);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener('keydown', closeOnEscape);
+      document.removeEventListener('pointerdown', closeOutside);
+    };
+  }, [menu]);
+
+  useEffect(() => {
     const syncPage = () => { const next = window.location.hash.replace('#','') || 'home'; setPage(next); setSettingsOpen(next === 'settings'); setMenu(false); window.scrollTo(0,0); };
     window.addEventListener('hashchange', syncPage);
     return () => window.removeEventListener('hashchange', syncPage);
@@ -625,7 +644,7 @@ function App() {
           <span className="entry-brand-words"><strong lang="ar">نُسقرا</strong><small lang="en">NUSQRA</small></span>
         </a>
         <nav className={'entry-nav '+(menu?'open':'')} id="entry-mobile-nav"><a href="#entry-categories" onClick={e=>{e.preventDefault();document.getElementById('entry-categories')?.scrollIntoView({behavior:'smooth'});setMenu(false);}}>{isAr?'التصنيفات':'Categories'}</a><a href="#entry-how-it-works" onClick={e=>{e.preventDefault();document.getElementById('entry-how-it-works')?.scrollIntoView({behavior:'smooth'});setMenu(false);}}>{isAr?'كيف تعمل':'How it works'}</a><span>{isAr?'للأفراد والشركات':'For individuals & businesses'}</span></nav>
-        <div className="entry-header-actions"><button type="button" className="entry-menu" aria-label={menu?'Close menu':'Open menu'} aria-expanded={menu} aria-controls="entry-mobile-nav" onClick={()=>setMenu(v=>!v)}>{menu?<X size={20}/>:<Menu size={20}/>}</button><button type="button" className="entry-language" onClick={()=>setLang(isAr?'en':'ar')}><Globe2 size={16}/>{isAr?'English':'العربية'}</button></div>
+        <div className="entry-header-actions"><button type="button" className="entry-language" onClick={()=>setLang(isAr?'en':'ar')}><Globe2 size={16}/>{isAr?'English':'العربية'}</button><button type="button" className="entry-menu" aria-label={menu?'Close menu':'Open menu'} aria-expanded={menu} aria-controls="entry-mobile-nav" onClick={()=>setMenu(v=>!v)}>{menu?<X size={20}/>:<Menu size={20}/>}</button></div>
       </header>
       <main className={'entry-layout '+(entryStep==='auth'?'entry-layout-auth':'entry-layout-role')}>
         {entryStep==='role' && <section className="entry-hero">
@@ -646,10 +665,10 @@ function App() {
             <div className="entry-auth-eyebrow">{entryStep==='role'?(isAr?'اختر طريقة استخدام المنصة':'CHOOSE YOUR NUSQRA EXPERIENCE'):(isAr?'تسجيل الدخول الآمن':'SECURE ACCOUNT ACCESS')}</div>
             {entryStep==='role' && <div className="entry-role-picker" role="group" aria-label={isAr?'اختر نوع الحساب':'Choose account type'}>
               <button type="button" className={'entry-role-card '+(selectedRole==='customer'?'selected':'')} onClick={()=>{setSelectedRole('customer');setActiveRole('customer');setForm(x=>({...x,account_type:'customer'}));window.localStorage.setItem('nusqra-active-role','customer');window.localStorage.setItem('nusqra-pending-role','customer');setError('');window.history.pushState({ ...(window.history.state || {}), nusqraEntryStep: 'auth' }, '', '#login');setEntryStep('auth');}}>
-                <span className="entry-role-icon"><Users size={24}/></span><strong>{isAr?'أبحث عن محترف':'I want to hire'}</strong><small>{isAr?'تصفح الملفات المهنية والتوفر، وقارن الخبرات، وانشر طلبك.':'Browse professional profiles and availability, compare skills and post a job.'}</small>
+                <span className="entry-role-icon"><Users size={24}/></span><strong>{isAr?'أبحث عن محترف':'I want to hire'}</strong><small>{isAr?'تصفح الملفات المهنية والتوفر، وقارن الخبرات، وانشر طلبك.':'Browse professional profiles and availability, compare skills and post a job.'}</small><span className="entry-role-arrow" aria-hidden="true">{isAr?<ArrowLeft size={18}/>:<ArrowRight size={18}/>}</span>
               </button>
               <button type="button" className={'entry-role-card '+(selectedRole==='professional'?'selected':'')} onClick={()=>{setSelectedRole('professional');setActiveRole('professional');setForm(x=>({...x,account_type:'professional'}));window.localStorage.setItem('nusqra-active-role','professional');window.localStorage.setItem('nusqra-pending-role','professional');setError('');window.history.pushState({ ...(window.history.state || {}), nusqraEntryStep: 'auth' }, '', '#login');setEntryStep('auth');}}>
-                <span className="entry-role-icon"><BriefcaseBusiness size={24}/></span><strong>{isAr?'أنا محترف وأبحث عن عمل':'I am a professional'}</strong><small>{isAr?'اكتشف فرص العمل، وقدّم العروض، وأدر مشاريعك وعملاءك.':'Find jobs, submit proposals and manage your projects and clients.'}</small>
+                <span className="entry-role-icon"><BriefcaseBusiness size={24}/></span><strong>{isAr?'أنا محترف وأبحث عن عمل':'I am a professional'}</strong><small>{isAr?'اكتشف فرص العمل، وقدّم العروض، وأدر مشاريعك وعملاءك.':'Find jobs, submit proposals and manage your projects and clients.'}</small><span className="entry-role-arrow" aria-hidden="true">{isAr?<ArrowLeft size={18}/>:<ArrowRight size={18}/>}</span>
               </button>
             </div>}
             {!selectedRole || entryStep==='role' ? (
