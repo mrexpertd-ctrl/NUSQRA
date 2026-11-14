@@ -23,7 +23,6 @@ jobs:
       VITE_SUPABASE_URL: https://oybodlncqgerucwwkqvp.supabase.co
       VITE_SUPABASE_PUBLISHABLE_KEY: sb_publishable_MHBtLOwXxBQmfK6uNzZtww_uIW33AQa
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
     defaults:
       run:
         working-directory: nusqra-starter
