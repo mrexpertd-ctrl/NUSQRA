@@ -9,10 +9,9 @@
     "not_found_handling": "single-page-application"
   },
   "secrets": {
-    "required": ["SUPABASE_SERVICE_ROLE_KEY", "SUPREME_ADMIN_EMAIL"]
+    "required": ["SUPABASE_SERVICE_ROLE_KEY", "SUPABASE_ANON_KEY", "SUPREME_ADMIN_EMAIL"]
   },
   "vars": {
     "SUPABASE_URL": "https://oybodlncqgerucwwkqvp.supabase.co",
-    "SUPABASE_ANON_KEY": "SET_WITH_WRANGLER_SECRET"
   }
 }
