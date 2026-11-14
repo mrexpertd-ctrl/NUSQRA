@@ -4292,3 +4292,86 @@ html,body,#root{width:100%;max-width:100%;min-width:0;overflow-x:hidden}
 .marketplace-entry .entry-brand-words strong{direction:rtl;text-align:center}
 .marketplace-entry .entry-brand-words small{direction:ltr;text-align:center}
 .marketplace-entry .entry-header-actions{direction:ltr}
+
+
+/* NUSQRA home header + mobile navigation correction (logo artwork intentionally untouched) */
+.marketplace-entry .entry-header{
+  position:sticky!important;top:0!important;z-index:1000!important;
+  display:flex!important;align-items:center!important;flex-wrap:nowrap!important;
+  box-sizing:border-box!important;width:100%!important;max-width:100%!important;min-width:0!important;
+  background:#07100c!important;border-bottom:1px solid rgba(255,255,255,.1)!important;
+}
+.marketplace-entry .entry-brand{flex:0 0 auto!important;min-width:0!important}
+.marketplace-entry .entry-header-actions{display:flex!important;align-items:center!important;gap:8px!important;margin-inline-start:auto!important;flex:0 0 auto!important}
+.marketplace-entry .entry-nav a,.marketplace-entry .entry-nav span{color:#f5fff8!important;text-decoration:none!important}
+.marketplace-entry .entry-layout-role{position:static!important;margin:0!important}
+.marketplace-entry .entry-hero{position:static!important;inset:auto!important;margin:0!important;transform:none!important}
+.marketplace-entry .entry-role-card{
+  box-sizing:border-box!important;min-height:210px!important;
+  display:flex!important;flex-direction:column!important;align-items:flex-start!important;
+  padding:18px!important;border:1px solid rgba(255,255,255,.16)!important;
+  border-radius:18px!important;background:rgba(255,255,255,.06)!important;
+  color:#fff!important;box-shadow:none!important;
+}
+.marketplace-entry .entry-role-card strong{color:#fff!important}
+.marketplace-entry .entry-role-card small{color:rgba(255,255,255,.78)!important}
+.marketplace-entry .entry-role-card.selected{border-color:#19c37d!important;background:rgba(255,255,255,.08)!important}
+.marketplace-entry .entry-role-icon{background:rgba(25,195,125,.16)!important;color:#52e6a4!important}
+.marketplace-entry .entry-role-arrow{
+  display:grid!important;place-items:center!important;align-self:flex-end!important;
+  width:40px!important;height:40px!important;margin-top:auto!important;
+  border-radius:50%!important;background:#19c37d!important;color:#052116!important;
+}
+@media(max-width:899px){
+  .marketplace-entry .entry-header{
+    height:64px!important;min-height:64px!important;max-height:64px!important;
+    flex:0 0 64px!important;padding:0 16px!important;gap:10px!important;
+    direction:inherit!important;overflow:visible!important;
+  }
+  .marketplace-entry .entry-brand{height:40px!important;gap:7px!important;flex:0 0 auto!important}
+  .marketplace-entry .entry-brand-mark{width:36px!important;height:36px!important;flex:0 0 36px!important}
+  .marketplace-entry .entry-header-actions{gap:8px!important;direction:inherit!important}
+  .marketplace-entry .entry-language,.marketplace-entry .entry-menu{
+    box-sizing:border-box!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;
+    width:44px!important;height:44px!important;min-width:44px!important;min-height:44px!important;
+    padding:0!important;flex:0 0 44px!important;border:1px solid rgba(255,255,255,.18)!important;
+    border-radius:12px!important;background:rgba(255,255,255,.07)!important;color:#fff!important;
+  }
+  .marketplace-entry .entry-nav{
+    display:none!important;position:fixed!important;top:64px!important;left:0!important;right:0!important;
+    z-index:1100!important;box-sizing:border-box!important;width:100%!important;max-height:calc(100dvh - 64px)!important;
+    overflow-y:auto!important;padding:16px!important;flex-direction:column!important;align-items:stretch!important;
+    gap:0!important;background:#0b1a13!important;border:0!important;border-bottom:1px solid rgba(255,255,255,.14)!important;
+    box-shadow:0 18px 36px rgba(0,0,0,.45)!important;
+  }
+  .marketplace-entry .entry-nav.open{display:flex!important}
+  .marketplace-entry .entry-nav a,.marketplace-entry .entry-nav span{
+    display:flex!important;align-items:center!important;min-height:48px!important;height:48px!important;
+    box-sizing:border-box!important;padding:0 8px!important;border-bottom:1px solid rgba(255,255,255,.12)!important;
+    font-size:15px!important;line-height:1.35!important;white-space:normal!important;
+  }
+  .marketplace-entry .entry-nav span{border-bottom:0!important}
+  .marketplace-entry .entry-layout{
+    position:static!important;display:block!important;box-sizing:border-box!important;
+    width:100%!important;min-width:0!important;margin:0!important;padding:24px 16px 38px!important;
+  }
+  .marketplace-entry .entry-layout-role{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:22px!important}
+  .marketplace-entry .entry-hero,.marketplace-entry .entry-auth-wrap{position:static!important;inset:auto!important;min-width:0!important;max-width:100%!important;margin:0!important;transform:none!important}
+  .marketplace-entry .entry-hero{padding:0!important}
+  .marketplace-entry .entry-kicker,.marketplace-entry .entry-hero h1,.marketplace-entry .entry-hero p{position:static!important;margin-top:0!important}
+  .marketplace-entry .entry-kicker{margin-bottom:12px!important}
+  .marketplace-entry .entry-hero h1{margin-bottom:12px!important}
+  .marketplace-entry .entry-role-picker{grid-template-columns:minmax(0,1fr)!important}
+}
+@media(min-width:900px){
+  .marketplace-entry .entry-header{position:sticky!important;top:0!important}
+  .marketplace-entry .entry-nav{display:flex!important;position:static!important;align-items:center!important;gap:22px!important;margin-inline-start:auto!important;padding:0!important;background:transparent!important;box-shadow:none!important}
+  .marketplace-entry .entry-menu{display:none!important}
+  .marketplace-entry .entry-header-actions{margin-inline-start:0!important}
+}
+@media(max-width:390px){
+  .marketplace-entry .entry-header{padding-inline:16px!important}
+  .marketplace-entry .entry-brand-mark{width:36px!important;height:36px!important;flex-basis:36px!important}
+  .marketplace-entry .entry-header-actions{gap:6px!important}
+  .marketplace-entry .entry-language,.marketplace-entry .entry-menu{width:44px!important;min-width:44px!important;flex-basis:44px!important}
+}
