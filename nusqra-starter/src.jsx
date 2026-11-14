@@ -789,7 +789,7 @@ function App() {
               ['Home & Personal Services','الخدمات المنزلية والشخصية','home-maintenance','photo-1581578731548-c64695cc6952'],
               ['Writing & Translation','الكتابة والترجمة','writing-translation','photo-1455390582262-044c83d1b8d9'],
               ['Construction & Engineering','الإنشاءات والهندسة','construction-engineering','photo-1503387762-592deb58ef4e'],
-              ['Transport & Logistics','النقل والخدمات اللوجستية','transport-logistics','photo-物流'],
+              ['Transport & Logistics','النقل والخدمات اللوجستية','transport-logistics','photo-1494412519320-aa613dfb7738'],
               ['Finance & Administration','المالية والإدارة','finance-administration','photo-1554224155-6726b3ff858f'],
               ['HR & Recruitment','الموارد البشرية والتوظيف','hr-recruitment','photo-1521737711867-e3b97375f902'],
               ['Healthcare & Wellness','الرعاية الصحية والعافية','healthcare-wellness','photo-1576091160399-112ba8d25d1d'],
