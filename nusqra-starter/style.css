@@ -2875,7 +2875,7 @@ footer{padding:32px clamp(22px,5vw,76px)!important}
   color:#101713!important;
   -webkit-text-fill-color:#101713!important;
 }
-.category-section .category-select-card p{color:#34443a!important;line-height:1.65}
+.category-section .category-select-card p{color:#c4d6ca!important;-webkit-text-fill-color:#c4d6ca!important;font-size:14px;line-height:1.5}
 .category-section .category-select-card .category-image{background:#e9efeb!important}
 .category-section .category-select-card .category-symbol{color:#10251a!important;background:#fff!important;border:1px solid #dce5df!important}
 .category-section .category-select-card .category-audience{display:inline-flex;margin-top:10px;padding:7px 10px;border-radius:999px;background:#edf5ef!important;color:#14532d!important;font-weight:750}
@@ -3232,4 +3232,52 @@ body:has(.settings-popover-panel){overflow:hidden!important;overscroll-behavior:
 .settings-popover-panel .profile-editor-tabs button.active{
   background:linear-gradient(120deg,#0b7048,#075238)!important;
   border-color:#35b77b!important;color:#fff!important;
+}
+
+
+/* Mobile overflow and category readability — root cause fix before clipping overflow */
+*,*::before,*::after{box-sizing:border-box}
+html,body,#root{width:100%;max-width:100%;min-width:0}
+body{overflow-x:hidden}
+#root{overflow-x:clip}
+.section,.home-intro,.home-steps,.category-section,.marketplace-section,
+.home-intro-heading,.home-intro-heading>div,.category-flow-note,.category-grid{
+  box-sizing:border-box!important;max-width:100%!important;min-width:0!important;
+}
+.home-intro h2,.home-intro-heading h2,.category-section>h2,
+.section-intro,.category-intro,.category-flow-note{
+  max-width:100%!important;white-space:normal!important;overflow-wrap:anywhere!important;word-break:normal!important;
+}
+.category-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+.category-section .category-select-card{min-width:0!important;max-width:100%!important}
+.category-section .category-select-card :is(h3,p,.category-audience,.investor-disclaimer){
+  max-width:100%!important;overflow-wrap:anywhere!important;white-space:normal!important;
+}
+.category-section .category-select-card p{
+  color:#c4d6ca!important;-webkit-text-fill-color:#c4d6ca!important;
+  font-size:14px!important;line-height:1.5!important;
+}
+.category-section .category-select-card .category-audience,
+.category-section .category-select-card .investor-disclaimer{
+  color:#c4d6ca!important;-webkit-text-fill-color:#c4d6ca!important;
+}
+.entry-auth-card .entry-google-divider{
+  display:flex!important;align-items:center!important;gap:12px!important;
+  width:100%!important;margin:20px 0!important;
+  color:#a9c0b1!important;font-size:13px!important;font-weight:600!important;
+  letter-spacing:0!important;line-height:1!important;
+}
+.entry-auth-card .entry-google-divider::before,
+.entry-auth-card .entry-google-divider::after{
+  content:"";display:block;flex:1 1 auto;height:1px;
+  background:rgba(255,255,255,.15)!important;
+}
+.entry-auth-card .entry-google-divider span{flex:0 0 auto;color:#a9c0b1!important}
+.entry-auth-card .entry-email-action{margin-top:0!important;width:100%!important}
+.entry-auth-card .access-gate-google{width:100%!important;max-width:100%!important}
+@media(max-width:379px){
+  .category-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .category-section .category-select-card{padding:10px!important}
+  .category-section .category-select-card h3{font-size:13px!important}
+  .category-section .category-select-card p{font-size:14px!important;line-height:1.5!important}
 }
