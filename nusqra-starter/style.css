@@ -2954,3 +2954,41 @@ footer{padding:32px clamp(22px,5vw,76px)!important}
 .profile-template-option .template-mini{border:0!important;box-shadow:none!important}
 .profile-template-option.selected{border-color:#b18b45!important;box-shadow:0 0 0 2px rgba(177,139,69,.15),0 12px 28px rgba(13,60,39,.08)!important}
 .settings-popover-panel :is(.language-preference,.role-list,.profile-upload-card,.professional-category-editor,.verification-status-panel){border-color:#d8e5dc!important}
+
+
+
+/* Refined visual previews for the four selectable profile templates */
+.profile-template-option{position:relative;overflow:hidden;border-radius:17px;background:linear-gradient(145deg,#f7fbf7,#eaf2eb)!important;color:#183b2d!important;transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease}
+.profile-template-option:hover{transform:translateY(-3px);box-shadow:0 14px 28px rgba(7,61,43,.12)!important}
+.profile-template-option .template-mini{height:86px;position:relative;overflow:hidden;border-radius:12px;padding:12px 13px 10px;align-items:flex-end;gap:7px}
+.profile-template-option .template-mini:before{content:"";position:absolute;top:12px;left:13px;width:36px;height:8px;border-radius:8px;background:rgba(255,255,255,.8)}
+.profile-template-option .template-mini i{position:relative;z-index:1;flex:1;border-radius:7px 7px 3px 3px;height:25px;opacity:1;box-shadow:0 3px 9px rgba(0,0,0,.12)}
+.profile-template-option .template-mini i:nth-child(2){height:39px}
+.profile-template-option .template-mini i:nth-child(3){height:30px}
+.profile-template-option .template-mini.template-classic{background:linear-gradient(135deg,#e8f2e9,#b9d5c0)!important}
+.profile-template-option .template-mini.template-classic i{background:linear-gradient(180deg,#0d8055,#075238)!important}
+.profile-template-option .template-mini.template-modern{background:linear-gradient(135deg,#061f19,#0c7750)!important}
+.profile-template-option .template-mini.template-modern:before{background:#d8c18a}
+.profile-template-option .template-mini.template-modern i{background:linear-gradient(180deg,#e4d19e,#b18b45)!important}
+.profile-template-option .template-mini.template-executive{background:linear-gradient(135deg,#273a32,#7d8b7e)!important}
+.profile-template-option .template-mini.template-executive:before{background:#e8d5a7}
+.profile-template-option .template-mini.template-executive i{background:linear-gradient(180deg,#f0dfb5,#b39456)!important}
+.profile-template-option .template-mini.template-creative{background:linear-gradient(135deg,#253c46,#668e91)!important}
+.profile-template-option .template-mini.template-creative:before{background:#f3d6a2}
+.profile-template-option .template-mini.template-creative i{background:linear-gradient(180deg,#f2d8a6,#c08e58)!important}
+.profile-template-option.selected{background:linear-gradient(145deg,#fdfbf3,#eaf3eb)!important;border:1px solid #b18b45!important;box-shadow:0 0 0 2px rgba(177,139,69,.16),0 14px 30px rgba(7,61,43,.1)!important}
+.settings-popover-panel .account-card,.settings-popover-panel .profile-studio,
+.settings-popover-panel .profile-tab-panel,.settings-popover-panel .profile-template-option,
+.settings-popover-panel .profile-upload-card,.settings-popover-panel .professional-category-editor,
+.settings-popover-panel .verification-status-panel{
+  border-radius:14px!important;
+}
+.settings-popover-panel .profile-tab-panel{background:transparent!important;box-shadow:none!important;border:0!important}
+.settings-popover-panel .professional-category-editor{padding:12px!important;background:rgba(226,239,229,.62)!important;border:1px solid #d2e1d5!important}
+.settings-popover-panel input:not([type=checkbox]):not([type=file]),
+.settings-popover-panel select,.settings-popover-panel textarea{
+  border:1px solid #c9d9cd!important;border-radius:10px!important;background:#fff!important;color:#173b2d!important;
+}
+.settings-popover-panel .profile-upload-card{background:linear-gradient(145deg,#f5faf6,#e8f1e9)!important;border:1px solid #cbdccd!important}
+.settings-popover-panel .profile-upload-card small{color:#52675a!important}
+.settings-popover-panel .profile-save-row{border-top:1px solid #d1dfd4!important}
