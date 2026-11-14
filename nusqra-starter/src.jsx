@@ -859,7 +859,7 @@ function App() {
       </main>
       {entryStep==='role' && <div className="entry-home-sections">
         <section className="entry-content-section" id="entry-browse-categories">
-          <div className="entry-section-heading" style={{display:'block',opacity:1,visibility:'visible',margin:'0 0 20px',textAlign:'start'}}><span>{isAr?'اكتشف المجالات':'EXPLORE THE DIRECTORY'}</span><h2 style={{display:'block',margin:0,color:'#fff',WebkitTextFillColor:'#fff',fontSize:26,lineHeight:1.25,fontWeight:800,opacity:1,visibility:'visible'}}> {isAr?'تصفح حسب التصنيف':'Browse by category'}</h2></div>
+          <div className="entry-section-heading" style={{display:'block',opacity:1,visibility:'visible',margin:'0 0 20px',textAlign:'start'}}><span>{isAr?'اكتشف المجالات':'EXPLORE THE DIRECTORY'}</span><h2 style={{display:'block',margin:0,color:'#143e2c',WebkitTextFillColor:'#143e2c',fontSize:26,lineHeight:1.25,fontWeight:800,opacity:1,visibility:'visible'}}> {isAr?'تصفح حسب التصنيف':'Browse by category'}</h2></div>
           <div className="entry-browse-grid">
             {categories.map(c=><button type="button" className="entry-browse-card" key={c.id} onClick={()=>openEntryCategory(c.slug)}>
               <img src={homeCategoryImages[c.slug]||homeCategoryImages['business-services']} alt="" loading="lazy"/>
@@ -871,7 +871,7 @@ function App() {
 
 
         <section className="entry-content-section" id="entry-how-it-works">
-          <div className="entry-section-heading" style={{display:'block',opacity:1,visibility:'visible',margin:'0 0 20px',textAlign:'start'}}><span>{isAr?'خطوات بسيطة':'HOW IT WORKS'}</span><h2 style={{display:'block',margin:0,color:'#fff',WebkitTextFillColor:'#fff',fontSize:26,lineHeight:1.25,fontWeight:800,opacity:1,visibility:'visible'}}>{isAr?'كيف تعمل نسقرا':'How NUSQRA works'}</h2></div>
+          <div className="entry-section-heading" style={{display:'block',opacity:1,visibility:'visible',margin:'0 0 20px',textAlign:'start'}}><span>{isAr?'خطوات بسيطة':'HOW IT WORKS'}</span><h2 style={{display:'block',margin:0,color:'#143e2c',WebkitTextFillColor:'#143e2c',fontSize:26,lineHeight:1.25,fontWeight:800,opacity:1,visibility:'visible'}}>{isAr?'كيف تعمل نسقرا':'How NUSQRA works'}</h2></div>
           <div className="entry-how-grid">
             <article><b className="entry-step-number">1</b><h3>{isAr?'انشر طلباً':'Post a request'}</h3><p>{isAr?'صف الخدمة التي تحتاجها، بالعربية أو الإنجليزية.':'Describe the service you need, in Arabic or English.'}</p></article>
             <article><b className="entry-step-number">2</b><h3>{isAr?'استقبل العروض':'Receive proposals'}</h3><p>{isAr?'يرسل المحترفون المستقلون طريقتهم والسعر المقترح.':'Independent professionals send their approach and price.'}</p></article>
@@ -880,7 +880,7 @@ function App() {
         </section>
 
         <section className="entry-content-section" id="entry-why-nusqra">
-          <div className="entry-section-heading" style={{display:'block',opacity:1,visibility:'visible',margin:'0 0 20px',textAlign:'start'}}><span>{isAr?'لماذا نسقرا':'THE NUSQRA APPROACH'}</span><h2 style={{display:'block',margin:0,color:'#fff',WebkitTextFillColor:'#fff',fontSize:26,lineHeight:1.25,fontWeight:800,opacity:1,visibility:'visible'}}>{isAr?'لماذا نسقرا؟':'Why NUSQRA'}</h2></div>
+          <div className="entry-section-heading" style={{display:'block',opacity:1,visibility:'visible',margin:'0 0 20px',textAlign:'start'}}><span>{isAr?'لماذا نسقرا':'THE NUSQRA APPROACH'}</span><h2 style={{display:'block',margin:0,color:'#143e2c',WebkitTextFillColor:'#143e2c',fontSize:26,lineHeight:1.25,fontWeight:800,opacity:1,visibility:'visible'}}>{isAr?'لماذا نسقرا؟':'Why NUSQRA'}</h2></div>
           <div className="entry-why-grid">
             <article><Globe2/><span>{isAr?'العربية والإنجليزية':'Arabic and English'}</span></article>
             <article><Users/><span>{isAr?'عروض من محترفين مستقلين':'Proposals from independent professionals'}</span></article>
@@ -891,7 +891,7 @@ function App() {
         </section>
 
         <section className="entry-content-section" id="entry-faq">
-          <div className="entry-section-heading" style={{display:'block',opacity:1,visibility:'visible',margin:'0 0 20px',textAlign:'start'}}><span>{isAr?'إجابات سريعة':'HELP & ANSWERS'}</span><h2 style={{display:'block',margin:0,color:'#fff',WebkitTextFillColor:'#fff',fontSize:26,lineHeight:1.25,fontWeight:800,opacity:1,visibility:'visible'}}>{isAr?'الأسئلة الشائعة':'FAQ'}</h2></div>
+          <div className="entry-section-heading" style={{display:'block',opacity:1,visibility:'visible',margin:'0 0 20px',textAlign:'start'}}><span>{isAr?'إجابات سريعة':'HELP & ANSWERS'}</span><h2 style={{display:'block',margin:0,color:'#143e2c',WebkitTextFillColor:'#143e2c',fontSize:26,lineHeight:1.25,fontWeight:800,opacity:1,visibility:'visible'}}>{isAr?'الأسئلة الشائعة':'FAQ'}</h2></div>
           <div className="entry-faq-list">
             <details><summary>{isAr?'كيف أنشر طلباً؟':'How do I post a request?'}</summary><p>{isAr?'أنشئ حساباً كعميل، ثم اختر التصنيف وأضف وصف الخدمة والتفاصيل المطلوبة وانشر الطلب.':'Create an account as a customer, choose a category, add the service description and required details, then publish your request.'}</p></details>
             <details><summary>{isAr?'كيف ينضم المحترفون؟':'How do professionals join?'}</summary><p>{isAr?'أنشئ حساباً واختر دور المحترف، ثم أكمل ملفك المهني واختر تخصصك.':'Create an account, choose the professional role, then complete your professional profile and select your category.'}</p></details>
