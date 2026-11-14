@@ -91,6 +91,7 @@ function App() {
   const [entryStep, setEntryStep] = useState('role');
   const [activeRole, setActiveRole] = useState(() => window.localStorage.getItem('nusqra-active-role') || 'customer');
   const [menu, setMenu] = useState(false);
+  const [showAllEntryCategories, setShowAllEntryCategories] = useState(false);
   const [entrySearch, setEntrySearch] = useState('');
   const [page, setPage] = useState(() => { const requested = window.location.hash.replace('#','') || 'home'; return requested === 'login' ? 'home' : requested; });
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -862,12 +863,12 @@ function App() {
         <section className="entry-content-section" id="entry-categories">
           <div className="entry-section-heading"><h2>{isAr?'تصفح حسب التصنيف':'Browse by Category'}</h2></div>
           <div className="entry-browse-grid">
-            {categories.slice(0,6).map(c=><button type="button" className="entry-browse-card" key={c.id} onClick={()=>openEntryCategory(c.slug)}>
+            {categories.slice(0,showAllEntryCategories?categories.length:6).map(c=><button type="button" className="entry-browse-card" key={c.id} onClick={()=>openEntryCategory(c.slug)}>
               <img src={homeCategoryImages[c.slug]||homeCategoryImages['business-services']} alt="" loading="lazy"/>
               <span className="entry-category-icon" aria-hidden="true">✦</span><strong>{isAr?c.name_ar:c.name_en}</strong>
             </button>)}
           </div>
-          <button type="button" className="entry-view-all" onClick={()=>{document.getElementById('entry-categories')?.scrollIntoView({behavior:'smooth'});}}>{isAr?'عرض جميع التصنيفات':'View all categories'} <ArrowRight size={17}/></button>
+          <button type="button" className="entry-view-all" onClick={()=>setShowAllEntryCategories(v=>!v)}>{isAr?(showAllEntryCategories?'عرض أقل':'عرض جميع التصنيفات'):(showAllEntryCategories?'Show fewer':'View all categories')} <ArrowRight size={17}/></button>
         </section>
         <section className="entry-content-section" id="entry-how-it-works">
           <div className="entry-section-heading"><h2>{isAr?'كيف تعمل نسقرا':'How NUSQRA Works'}</h2></div>
