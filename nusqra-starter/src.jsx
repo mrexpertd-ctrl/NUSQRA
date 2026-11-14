@@ -68,7 +68,9 @@ const dictionary = {
 const countryCodes = ['SA','AE','BH','KW','OM','QA'];
 
 function App() {
-  const [lang, setLang] = useState('en');
+  const [lang, setLang] = useState(() => window.localStorage.getItem('nusqra-language') || 'ar');
+  const [selectedRole, setSelectedRole] = useState(null);
+  const [activeRole, setActiveRole] = useState(() => window.localStorage.getItem('nusqra-active-role') || 'customer');
   const [menu, setMenu] = useState(false);
   const [page, setPage] = useState(() => window.location.hash.replace('#','') || 'home');
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -138,13 +140,20 @@ function App() {
   const [messageDraft,setMessageDraft] = useState('');
   const t = dictionary[lang];
   const isAr = lang === 'ar';
-  const isProfessional = roles.includes('professional');
+  const isProfessional = roles.includes('professional') && activeRole === 'professional';
+  const isCustomer = roles.includes('customer') && activeRole === 'customer';
   const isStaff = !!staffRole?.is_active;
   const isSuperAdmin = staffRole?.staff_role === 'super_admin';
   const canModerateProfiles = ['super_admin','moderator'].includes(staffRole?.staff_role);
   const canPostJobs = !accountControl || accountControl.account_status!=='restricted' || accountControl.restrictions?.can_post_jobs!==false;
   const canSubmitProposals = !accountControl || accountControl.account_status!=='restricted' || accountControl.restrictions?.can_submit_proposals!==false;
   const canMessage = !accountControl || accountControl.account_status!=='restricted' || accountControl.restrictions?.can_message!==false;
+
+  useEffect(() => {
+    document.documentElement.lang = lang;
+    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+    window.localStorage.setItem('nusqra-language', lang);
+  }, [lang]);
 
   useEffect(() => {
     const syncPage = () => { const next = window.location.hash.replace('#','') || 'home'; setPage(next); setSettingsOpen(next === 'settings'); setMenu(false); window.scrollTo(0,0); };
@@ -201,6 +210,8 @@ function App() {
       if (p.error || r.error) { setError(p.error?.message || r.error?.message || t.authError); return; }
       setProfile(p.data || {});
       setRoles((r.data || []).map(x => x.role));
+      const preferredRole = window.localStorage.getItem('nusqra-active-role');
+      if (preferredRole === 'customer' || preferredRole === 'professional') setActiveRole(preferredRole);
       setStaffRole(sr?.data || null);
       setProfessional(pp.data || null);
       setProfileForm({
@@ -213,6 +224,28 @@ function App() {
     return () => { alive = false; };
   }, [session, t.authError]);
 
+  useEffect(() => {
+    if (!session || !supabase) return;
+    const pendingRole = window.localStorage.getItem('nusqra-pending-role');
+    if (pendingRole !== 'customer' && pendingRole !== 'professional') return;
+    let alive = true;
+    (async () => {
+      const {error:roleError} = await supabase.from('user_roles').insert({user_id:session.user.id,role:pendingRole});
+      if (roleError && !roleError.message.toLowerCase().includes('duplicate')) { if (alive) setError(roleError.message); return; }
+      if (pendingRole === 'professional') {
+        const {error:profileError} = await supabase.from('professional_profiles').insert({user_id:session.user.id,country_code:'SA'});
+        if (profileError && !profileError.message.toLowerCase().includes('duplicate')) { if (alive) setError(profileError.message); return; }
+      }
+      if (!alive) return;
+      setRoles(old => [...new Set([...old,pendingRole])]);
+      setActiveRole(pendingRole);
+      window.localStorage.removeItem('nusqra-pending-role');
+      const destination = pendingRole === 'professional' ? 'marketplace' : 'professionals';
+      setPage(destination); window.location.hash = destination;
+    })();
+    return () => { alive = false; };
+  }, [session]);
+
   const setField = (key,value) => setForm(old => ({...old,[key]:value}));
   const setProfileField = (key,value) => setProfileForm(old => ({...old,[key]:value}));
 
@@ -223,6 +256,9 @@ function App() {
     setNotice('');
     setBusy(true);
     try {
+      if (!selectedRole) { setError(isAr ? 'اختر طريقة استخدام نسقرا أولاً.' : 'Choose how you want to use NUSQRA first.'); setBusy(false); return; }
+      window.localStorage.setItem('nusqra-pending-role', selectedRole);
+      window.localStorage.setItem('nusqra-active-role', selectedRole);
       const {error:oauthError} = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: { redirectTo: window.location.origin }
@@ -651,15 +687,26 @@ function App() {
         <section className="entry-auth-wrap">
           <div className="entry-auth-card">
             <div className="entry-auth-logo"><img src={nusqraLogoDark} alt="NUSQRA نسقرا" /></div>
-            <div className="entry-auth-eyebrow">{isAr?'بوابة الأعضاء':'MEMBER ACCESS'}</div>
+            <div className="entry-auth-eyebrow">{isAr?'اختر طريقة استخدام المنصة':'CHOOSE YOUR NUSQRA EXPERIENCE'}</div>
+            <div className="entry-role-picker" role="group" aria-label={isAr?'اختر نوع الحساب':'Choose account type'}>
+              <button type="button" className={'entry-role-card '+(selectedRole==='customer'?'selected':'')} onClick={()=>{setSelectedRole('customer');setActiveRole('customer');setForm(x=>({...x,account_type:'customer'}));window.localStorage.setItem('nusqra-active-role','customer');window.localStorage.setItem('nusqra-pending-role','customer');setError('');}}>
+                <span className="entry-role-icon"><Users size={24}/></span><strong>{isAr?'أبحث عن محترف':'I want to hire'}</strong><small>{isAr?'تصفح الملفات المهنية والتوفر، وقارن الخبرات، وانشر طلبك.':'Browse professional profiles and availability, compare skills and post a job.'}</small>
+              </button>
+              <button type="button" className={'entry-role-card '+(selectedRole==='professional'?'selected':'')} onClick={()=>{setSelectedRole('professional');setActiveRole('professional');setForm(x=>({...x,account_type:'professional'}));window.localStorage.setItem('nusqra-active-role','professional');window.localStorage.setItem('nusqra-pending-role','professional');setError('');}}>
+                <span className="entry-role-icon"><BriefcaseBusiness size={24}/></span><strong>{isAr?'أنا محترف وأبحث عن عمل':'I am a professional'}</strong><small>{isAr?'اكتشف فرص العمل، وقدّم العروض، وأدر مشاريعك وعملاءك.':'Find jobs, submit proposals and manage your projects and clients.'}</small>
+              </button>
+            </div>
+            <h2 id="access-gate-title">{isAr?'مرحباً بك في نسقرا':'Welcome to NUSQRA'}</h2>
             <h2 id="access-gate-title">{isAr?'مرحباً بك في نسقرا':'Welcome to NUSQRA'}</h2>
             <p>{isAr?'سجّل الدخول باستخدام حساب Google للمتابعة إلى السوق.':'Sign in with your Google account to continue to the marketplace.'}</p>
             {!isSupabaseConfigured && <p className="auth-warning" role="alert">{t.noConfig}</p>}
             {error && <p className="auth-error" role="alert">{error}</p>}
-            <button type="button" className="google-auth access-gate-google" disabled={busy} onClick={signInWithGoogle} aria-label={isAr?"تسجيل الدخول باستخدام Google":"Sign in with Google"}>
+            <button type="button" className="google-auth access-gate-google" disabled={busy || !selectedRole} onClick={signInWithGoogle} aria-label={isAr?"تسجيل الدخول باستخدام Google":"Sign in with Google"}>
               <span className="google-g" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path fill="#4285F4" d="M23.49 12.27c0-.79-.07-1.54-.2-2.27H12v4.3h6.44a5.5 5.5 0 0 1-2.33 3.36v2.8h3.77c2.2-2.03 3.61-5.02 3.61-8.19z"/><path fill="#34A853" d="M12 24c3.24 0 5.96-1.08 7.95-2.92l-3.77-2.8c-1.05.7-2.4 1.12-4.18 1.12-3.21 0-5.93-2.17-6.9-5.09H1.2v2.89C3.18 21.16 7.27 24 12 24z"/><path fill="#FBBC05" d="M5.1 14.31A7.2 7.2 0 0 1 4.72 12c0-.8.14-1.58.38-2.31V6.8H1.2A12 12 0 0 0 0 12c0 1.94.46 3.77 1.2 5.2l3.9-2.89z"/><path fill="#EA4335" d="M12 4.6c1.77 0 3.36.61 4.61 1.8l3.45-3.45C17.95 1.12 15.24 0 12 0 7.27 0 3.18 2.84 1.2 6.8l3.9 2.89C6.07 6.77 8.79 4.6 12 4.6z"/></svg></span>
               {busy ? (isAr?'جارٍ الاتصال بـ Google…':'Connecting to Google…') : (isAr?'المتابعة باستخدام Google':'Continue with Google')}
             </button>
+            <button type="button" className="entry-email-action" disabled={!selectedRole} onClick={()=>{window.localStorage.setItem('nusqra-pending-role',selectedRole);window.localStorage.setItem('nusqra-active-role',selectedRole);setForm(x=>({...x,account_type:selectedRole}));setAuthMode('register');setError('');setNotice('');}}>{isAr?'إنشاء حساب بالبريد الإلكتروني':'Create account with email'}</button>
+            <button type="button" className="entry-login-action" disabled={!selectedRole} onClick={()=>{window.localStorage.setItem('nusqra-pending-role',selectedRole);window.localStorage.setItem('nusqra-active-role',selectedRole);setForm(x=>({...x,account_type:selectedRole}));setAuthMode('login');setError('');setNotice('');}}>{isAr?'لديك حساب بالفعل؟ تسجيل الدخول':'Already have an account? Log in'}</button>
             <div className="entry-auth-divider"><span>{isAr?'دخول آمن':'SECURE ACCESS'}</span></div>
             <div className="access-gate-security"><ShieldCheck size={17}/><span>{isAr?'بياناتك محمية وآمنة':'Your data is secure and private'}</span></div>
           </div>
@@ -765,7 +812,7 @@ function App() {
       </section>}
 
       {page === 'admin' && isStaff && <section className="section admin-centre">
-        <div className="admin-centre-head"><div><div className="section-label">NUSQRA · CONTROL ROOM</div><h2>{isAr?'مركز إدارة نسقرا':'Administration Centre'}</h2><p className="section-intro">{isAr?'إدارة المنصة والمستخدمين والمراجعات والدعم من لوحة مستقلة.':'Independent control room for platform operations, safety, support and performance.'}</p></div><span className="admin-role-pill">{staffRole.staff_role.replace('_',' ').toUpperCase()}</span></div>
+        <div className="admin-centre-head"><div><div className="section-label">NUSQRA · CONTROL ROOM</div><h2>{isAr?'مركز إدارة نسقرا':'Administration Centre'}</h2><p className="section-intro">{isAr?'إدارة المنصة والمستخدمين والمراجعات والدعم من لوحة مستقلة.':'Independent control room for platform operations, safety, support and performance.'}</p></div><span className="admin-role-pill">{staffRole.staff_role==='super_admin'?(isAr?'مالك المنصة':'PLATFORM OWNER'):staffRole.staff_role.replace('_',' ').toUpperCase()}</span></div>
         <nav className="admin-tabs">
           {[...(isSuperAdmin?['overview','accounts','staff','cases','support','ratings']:staffRole.staff_role==='class2_admin'?['accounts','cases']:['support'])].map(tab=><button key={tab} className={adminTab===tab?'active':''} onClick={()=>setAdminTab(tab)} type="button">{tab==='overview'?'Overview':tab==='accounts'?'Accounts':tab==='staff'?'Staff access':tab==='cases'?'Case studies':tab==='support'?'Customer support':'Skill stars'}</button>)}
           {canModerateProfiles&&<button type="button" onClick={()=>navigatePage('admin-review')}>Profile review queue</button>}
@@ -773,7 +820,7 @@ function App() {
         {error&&<p className="auth-error" role="alert">{error}</p>}{notice&&<p className="auth-success" role="status">{notice}</p>}
         {adminTab==='overview'&&<><div className="admin-metric-grid">{[['Total accounts','accounts'],['Customers','customers'],['Professionals','professionals'],['All jobs','jobs'],['Open jobs','open_jobs'],['Completed jobs','completed_jobs'],['Pending profiles','pending_profiles'],['Banned accounts','banned_accounts'],['Open support','open_support'],['Open cases','open_cases']].map(([label,key])=><article className="admin-metric" key={key}><span>{label}</span><strong>{adminMetrics?.[key]??'—'}</strong></article>)}</div><div className="admin-chart-card"><h3>Marketplace activity</h3>{[['Customers',adminMetrics?.customers],['Professionals',adminMetrics?.professionals],['Open jobs',adminMetrics?.open_jobs],['Completed jobs',adminMetrics?.completed_jobs]].map(([label,value])=><div className="admin-bar-row" key={label}><span>{label}</span><div><i style={{width:Math.max(2,Math.min(100,((value||0)/Math.max(1,adminMetrics?.accounts||adminMetrics?.jobs||1))*100))+'%'}}/></div><b>{value??0}</b></div>)}</div></>}
         {adminTab==='accounts'&&<div className="admin-panel"><div className="admin-panel-title"><h3>Account management</h3><input placeholder="Search name or email" value={adminSearch} onChange={e=>setAdminSearch(e.target.value)}/></div><div className="admin-account-list">{adminAccounts.filter(a=>(a.email||'').toLowerCase().includes(adminSearch.toLowerCase())||(a.full_name||'').toLowerCase().includes(adminSearch.toLowerCase())).map(a=><article className="admin-account-row" key={a.user_id}><div><strong>{a.full_name||'NUSQRA user'}</strong><small>{a.email} · {new Date(a.created_at).toLocaleDateString()}</small><span className={'account-status '+a.account_status}>{a.account_status.replace('_',' ')}</span>{a.control_reason&&<small>Reason: {a.control_reason}</small>}</div><div className="admin-account-actions"><input placeholder="Reason required" value={adminReason[a.user_id]||''} onChange={e=>setAdminReason(v=>({...v,[a.user_id]:e.target.value}))}/>{(isSuperAdmin||staffRole.staff_role==='class2_admin')&&a.account_status!=='banned'&&<button className="btn secondary" onClick={()=>changeAccountStatus(a.user_id,'banned')} type="button">Ban</button>}{isSuperAdmin&&<><button className="btn secondary" onClick={()=>changeAccountStatus(a.user_id,'active')} type="button">Unban / restore</button><button className="btn secondary" onClick={()=>changeAccountStatus(a.user_id,'restricted',{can_post_jobs:false,can_submit_proposals:false})} type="button">Restrict jobs & bids</button><button className="btn secondary" onClick={()=>changeAccountStatus(a.user_id,'restricted',{can_message:false})} type="button">Restrict messaging</button><button className="btn secondary" onClick={()=>changeAccountStatus(a.user_id,'deletion_requested')} type="button">Mark for deletion</button><button className="btn secondary danger" onClick={()=>permanentlyDeleteAccount(a.user_id)} type="button">Permanently delete</button></>}</div></article>)}</div><p className="admin-footnote">Permanent deletion removes the Auth account and associated profile files after a confirmation prompt. It cannot be undone.</p></div>}
-        {adminTab==='staff'&&<div className="admin-panel"><h3>Staff appointments</h3>{isSuperAdmin?<form className="admin-appoint-form" onSubmit={appointStaff}><label>Existing account email<input type="email" required value={staffEmail} onChange={e=>setStaffEmail(e.target.value)} placeholder="person@example.com"/></label><label>Staff permission<select value={staffAppointment} onChange={e=>setStaffAppointment(e.target.value)}><option value="class2_admin">Class 2 Admin — cases & bans</option><option value="moderator">Moderator — support & profile review</option></select></label><button className="btn primary" type="submit">Appoint staff</button></form>:<p>Only the Super Admin can appoint or change staff roles.</p>}<div className="admin-staff-list">{adminStaff.map(a=><div key={a.user_id}><strong>{adminAccounts.find(x=>x.user_id===a.user_id)?.email||a.user_id}</strong><span>{a.staff_role}</span>{a.staff_role!=='super_admin'&&<button className="btn secondary" type="button" onClick={async()=>{if(!window.confirm('Revoke this staff member’s access?'))return;const {error:e}=await supabase.rpc('admin_revoke_staff_role',{target_user_id:a.user_id});if(e)setError(e.message);else{setNotice('Staff access revoked.');loadAdminCentre();}}}>Revoke access</button>}</div>)}</div></div>}
+        {adminTab==='staff'&&<div className="admin-panel"><h3>Staff appointments</h3>{isSuperAdmin?<form className="admin-appoint-form" onSubmit={appointStaff}><label>Existing account email<input type="email" required value={staffEmail} onChange={e=>setStaffEmail(e.target.value)} placeholder="person@example.com"/></label><label>Staff permission<select value={staffAppointment} onChange={e=>setStaffAppointment(e.target.value)}><option value="class2_admin">Class 2 Admin — cases & bans</option><option value="moderator">Moderator — support & profile review</option></select></label><button className="btn primary" type="submit">Appoint staff</button></form>:<p>Only the platform owner can appoint or change staff roles.</p>}<div className="admin-staff-list">{adminStaff.map(a=><div key={a.user_id}><strong>{adminAccounts.find(x=>x.user_id===a.user_id)?.email||a.user_id}</strong><span>{a.staff_role}</span>{a.staff_role!=='super_admin'&&<button className="btn secondary" type="button" onClick={async()=>{if(!window.confirm('Revoke this staff member’s access?'))return;const {error:e}=await supabase.rpc('admin_revoke_staff_role',{target_user_id:a.user_id});if(e)setError(e.message);else{setNotice('Staff access revoked.');loadAdminCentre();}}}>Revoke access</button>}</div>)}</div></div>}
         {adminTab==='cases'&&<div className="admin-panel"><h3>Case study & reports queue</h3>{adminCases.length===0&&adminCaseStudies.length===0?<p className="market-empty">No moderation cases or case studies need review.</p>:<>{adminCaseStudies.map(c=><article className="admin-account-row" key={c.id}><div><strong>Portfolio case study · {c.review_status}</strong><p>{c.title} — {c.description}</p><small>Professional ID: {c.professional_user_id.slice(0,8)} · {new Date(c.created_at).toLocaleDateString()}</small>{c.media_url&&<a href={c.media_url} target="_blank" rel="noreferrer">Open work image</a>}{c.project_url&&<a href={c.project_url} target="_blank" rel="noreferrer">Open project</a>}</div><div className="admin-account-actions"><button className="btn primary" type="button" onClick={async()=>{const {error:e}=await supabase.from('professional_portfolio').update({review_status:'approved',reviewed_by:session.user.id,reviewed_at:new Date().toISOString()}).eq('id',c.id);if(e)setError(e.message);else loadAdminCentre();}}>Approve case study</button><button className="btn secondary" type="button" onClick={async()=>{const {error:e}=await supabase.from('professional_portfolio').update({review_status:'rejected',reviewed_by:session.user.id,reviewed_at:new Date().toISOString()}).eq('id',c.id);if(e)setError(e.message);else loadAdminCentre();}}>Reject</button></div></article>)}{adminCases.map(c=><article className="admin-account-row" key={c.id}><div><strong>{c.case_type} · {c.status}</strong><p>{c.description}</p><small>Case {c.id.slice(0,8)} · {new Date(c.created_at).toLocaleString()}</small></div><div className="admin-account-actions"><button className="btn secondary" type="button" onClick={async()=>{const {error:e}=await supabase.from('moderation_cases').update({status:'investigating',assigned_to:session.user.id,updated_at:new Date().toISOString()}).eq('id',c.id);if(e)setError(e.message);else loadAdminCentre();}}>Investigate</button><button className="btn primary" type="button" onClick={async()=>{const {error:e}=await supabase.from('moderation_cases').update({status:'actioned',assigned_to:session.user.id,updated_at:new Date().toISOString()}).eq('id',c.id);if(e)setError(e.message);else loadAdminCentre();}}>Mark actioned</button><button className="btn secondary" type="button" onClick={async()=>{const {error:e}=await supabase.from('moderation_cases').update({status:'dismissed',assigned_to:session.user.id,updated_at:new Date().toISOString()}).eq('id',c.id);if(e)setError(e.message);else loadAdminCentre();}}>Dismiss</button></div></article>)}</>}</div>}
         {adminTab==='support'&&<div className="admin-support-layout"><div className="admin-panel"><h3>Customer support queue</h3>{adminTickets.length===0?<p className="market-empty">No customer support tickets yet.</p>:adminTickets.map(ticket=><button type="button" className={'admin-ticket '+(selectedTicket?.id===ticket.id?'active':'')} key={ticket.id} onClick={()=>openSupportTicket(ticket)}><strong>{ticket.subject}</strong><span>{ticket.priority} · {ticket.status}</span><small>{new Date(ticket.updated_at).toLocaleString()}</small></button>)}</div><div className="admin-panel admin-ticket-detail">{selectedTicket?<><h3>{selectedTicket.subject}</h3><p>{selectedTicket.category} · {selectedTicket.priority} · {selectedTicket.status}</p><div className="admin-ticket-messages">{ticketMessages.map(m=><div key={m.id} className={m.sender_id===session.user.id?'staff-own':''}><p>{m.body}</p><small>{new Date(m.created_at).toLocaleString()}</small></div>)}</div><form onSubmit={replySupportTicket}><textarea required rows="3" value={ticketReply} onChange={e=>setTicketReply(e.target.value)} placeholder="Reply to customer…"/><button className="btn primary" type="submit">Send reply</button></form><div className="admin-account-actions">{['in_progress','waiting_customer','resolved','closed'].map(status=><button className="btn secondary" type="button" key={status} onClick={()=>updateSupportStatus(selectedTicket,status)}>{status.replace('_',' ')}</button>)}</div></>:<p className="market-empty">Select a support ticket to view the conversation.</p>}</div></div>}
         {adminTab==='ratings'&&<div className="admin-panel"><h3>Professional skill ratings</h3><p>Skill stars are customer feedback tied to completed work—not ratings that staff can manually inflate.</p>{adminRatings.length===0?<p className="market-empty">No skill ratings have been submitted yet.</p>:adminRatings.map(r=><div className="admin-rating-row" key={r.id}><strong>{r.skill_name}</strong><span>{'★'.repeat(r.rating)}{'☆'.repeat(5-r.rating)}</span><small>Professional ID: {r.professional_id.slice(0,8)} · {new Date(r.created_at).toLocaleDateString()}</small>{r.comment&&<p>{r.comment}</p>}</div>)}</div>}
@@ -791,7 +838,7 @@ function App() {
         <div className="section-label">NUSQRA · MARKETPLACE</div><h2>{t.marketplace}</h2>
         {error && <p className="auth-error" role="alert">{error}</p>}
         <div className="marketplace-layout">
-          {roles.includes('customer') && <div className="marketplace-panel">
+          {isCustomer && <div className="marketplace-panel">
             <h3>{t.postJob}</h3>
             <form className="market-form" onSubmit={publishJob}>
               <label>{t.jobTitle}<input required minLength="5" maxLength="160" value={jobForm.title} onChange={e=>setJobForm(v=>({...v,title:e.target.value}))}/></label>
@@ -808,9 +855,9 @@ function App() {
           </div>}
           <div className="marketplace-panel">
             <h3>{!session?(isAr?'فرص العمل المتاحة':'Available opportunities'):isProfessional?t.myJobsAndOpenJobs:t.myJobs}</h3>
-            {jobs.filter(j=>(!session&&j.status==='open')||(session&&isProfessional&&j.customer_id!==session.user.id&&(j.status==='open'||myProposals[j.id]))||(session&&roles.includes('customer')&&j.customer_id===session.user.id)).length===0
+            {jobs.filter(j=>(!session&&j.status==='open')||(session&&isProfessional&&j.customer_id!==session.user.id&&(j.status==='open'||myProposals[j.id]))||(session&&isCustomer&&j.customer_id===session.user.id)).length===0
               ? <p className="market-empty">{!session?(isAr?'لا توجد فرص منشورة حالياً.':'No opportunities have been posted yet.'):isProfessional?t.noJobs:t.noOwnJobs}</p>
-              : <div className="job-list">{jobs.filter(j=>(!session&&j.status==='open')||(session&&isProfessional&&j.customer_id!==session.user.id&&(j.status==='open'||myProposals[j.id]))||(session&&roles.includes('customer')&&j.customer_id===session.user.id)).map(job=>{
+              : <div className="job-list">{jobs.filter(j=>(!session&&j.status==='open')||(session&&isProfessional&&j.customer_id!==session.user.id&&(j.status==='open'||myProposals[j.id]))||(session&&isCustomer&&j.customer_id===session.user.id)).map(job=>{
                 const category=categories.find(c=>c.id===job.category_id);
                 const v=proposalForms[job.id]||{cover_letter:'',proposed_price:'',delivery_days:''};
                 return <article className="job-card" key={job.id}>
@@ -851,7 +898,8 @@ function App() {
         <div className="section-label">NUSQRA · {t.dashboard.toUpperCase()}</div><h2>{t.dashboard}</h2>
         <div className="account-card">
           <div className="account-heading"><div><h3>{profileForm.full_name || session.user.email}</h3><p>{session.user.email}</p></div><div className="settings-actions"><button className="btn secondary" type="button" onClick={()=>navigatePage('home')}>{isAr?"العودة للرئيسية":"Back to home"}</button><button className="btn secondary" onClick={signOut}><LogOut size={16}/>{t.logout}</button></div></div>
-          <div className="role-list"><strong>{t.roles}:</strong>{roles.map(role=><span className="role-chip" key={role}>{role==='customer'?t.customer:role==='admin'?'Admin':t.professional}</span>)}{isStaff&&<button className="btn primary" type="button" onClick={()=>navigatePage('admin')}>{isAr?'مركز الإدارة':'Administration Centre'}</button>}<button className="btn secondary" type="button" onClick={()=>navigatePage('support')}>Customer support</button></div>
+          <div className="language-preference"><label htmlFor="nusqra-language-setting">{isAr?'لغة المنصة':'Website language'}</label><select id="nusqra-language-setting" value={lang} onChange={e=>setLang(e.target.value)}><option value="ar">العربية</option><option value="en">English</option></select></div>
+          <div className="role-list"><strong>{t.roles}:</strong>{roles.filter(role=>role!=='admin').map(role=><span className="role-chip" key={role}>{role==='customer'?t.customer:t.professional}</span>)}<button className="btn secondary" type="button" onClick={()=>navigatePage('support')}>{isAr?'دعم العملاء':'Customer support'}</button></div>
           {!isProfessional && <button className="btn secondary enable-pro" disabled={busy} onClick={enableProfessional}><BriefcaseBusiness size={16}/>{t.enablePro}</button>}
           <form className="profile-form profile-studio" onSubmit={saveProfile}>
             <div className="profile-studio-heading"><div><span className="profile-studio-kicker">{isAr?'استوديو الهوية الشخصية':'NUSQRA · PROFILE DESIGN STUDIO'}</span><h3>{isAr?'صمّم حضورك المهني':'Build a profile that stands out'}</h3><p>{isAr?'خصص صورتك ومعلوماتك ومظهرك، ثم راجع النتيجة قبل النشر.':'Personalize your identity, details and visual style, then preview before saving.'}</p></div><button className="btn secondary preview-open" type="button" onClick={()=>setPreviewOpen(true)}>{isAr?'معاينة الملف':'Live preview'}</button></div>
