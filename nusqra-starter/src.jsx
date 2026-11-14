@@ -718,7 +718,7 @@ function App() {
             <div><Users size={17}/><span>{isAr?'عروض من محترفين مستقلين':'Proposals from independent professionals'}</span></div>
           </div>
         </section>}
-        <section className="entry-auth-wrap">
+        <section className={"entry-auth-wrap "+(entryStep==='role'?"entry-experience-section":"")}>
           <div className="entry-auth-card">
 
             <div className="entry-auth-eyebrow">{entryStep==='role'?(isAr?'اختر تجربة نسقرا المناسبة لك':'Choose your NUSQRA experience'):(isAr?'تسجيل الدخول الآمن':'SECURE ACCOUNT ACCESS')}</div>
