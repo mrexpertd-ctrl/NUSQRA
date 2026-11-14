@@ -1,15 +1,17 @@
-name: NUSQRA frontend build
+name: NUSQRA build and deploy
 
 on:
   push:
     branches: [main]
     paths:
       - "nusqra-starter/**"
+      - "wrangler.jsonc"
       - ".github/workflows/frontend-build.yml"
   pull_request:
     branches: [main]
     paths:
       - "nusqra-starter/**"
+      - "wrangler.jsonc"
       - ".github/workflows/frontend-build.yml"
   workflow_dispatch:
 
@@ -17,14 +19,11 @@ permissions:
   contents: read
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
     env:
       VITE_SUPABASE_URL: https://oybodlncqgerucwwkqvp.supabase.co
       VITE_SUPABASE_PUBLISHABLE_KEY: sb_publishable_MHBtLOwXxBQmfK6uNzZtww_uIW33AQa
-    defaults:
-      run:
-        working-directory: nusqra-starter
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -33,6 +32,15 @@ jobs:
         with:
           node-version: 22
       - name: Install dependencies
+        working-directory: nusqra-starter
         run: npm install --no-audit --no-fund
       - name: Build production website
+        working-directory: nusqra-starter
         run: npm run build
+      - name: Deploy NUSQRA to Cloudflare Workers
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: "7d871be22dc8c73b109a1075ee5a911a"
+          command: deploy --config wrangler.jsonc
+          workingDirectory: .
