@@ -2,7 +2,7 @@ name: NUSQRA frontend build
 
 on:
   push:
-    branches: [main]
+    branches: [main, purple-redesign]
     paths:
       - "nusqra-starter/**"
       - "worker.js"
