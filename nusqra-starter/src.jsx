@@ -64,6 +64,24 @@ const dictionary = {
     countries: {SA:'السعودية',AE:'الإمارات',BH:'البحرين',KW:'الكويت',OM:'عُمان',QA:'قطر'}
   }
 };
+const homeCategoryImages = {
+  'web-technology':'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=900&q=82',
+  'design-creative':'https://images.unsplash.com/photo-1541701494587-cb58502866ab?auto=format&fit=crop&w=900&q=82',
+  'marketing-sales':'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=900&q=82',
+  'business-services':'https://images.unsplash.com/photo-1521737711867-e3b97375e902?auto=format&fit=crop&w=900&q=82',
+  'automotive-services':'https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?auto=format&fit=crop&w=900&q=82',
+  'education-training':'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=900&q=82',
+  'home-maintenance':'https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=900&q=82',
+  'writing-translation':'https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=900&q=82',
+  'construction-engineering':'https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=900&q=82',
+  'transport-logistics':'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=900&q=82',
+  'finance-administration':'https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=900&q=82',
+  'hr-recruitment':'https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=900&q=82',
+  'healthcare-wellness':'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=900&q=82',
+  'hospitality-events':'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=900&q=82',
+  'industrial-manufacturing':'https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&w=900&q=82',
+  'investors-opportunities':'https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?auto=format&fit=crop&w=900&q=82'
+};
 const countryCodes = ['SA','AE','BH','KW','OM','QA'];
 
 function App() {
@@ -856,35 +874,71 @@ function App() {
         <section className="entry-category-strip" id="entry-categories">
           <div className="entry-section-heading"><span>{isAr?'استكشف السوق':'EXPLORE THE MARKETPLACE'}</span><h2>{isAr?'مجالات وخبرات متنوعة':'Explore services and opportunities'}</h2></div>
           <div className="entry-category-track">
-            {[
-              ['Technology & IT','التقنية وتقنية المعلومات','web-technology','photo-1498050108023-c5249f4df085'],
-              ['Design & Creative','التصميم والإبداع','design-creative','photo-1561070791-2526d30994b5'],
-              ['Marketing & Sales','التسويق والمبيعات','marketing-sales','photo-1460925895917-afdab827c52f'],
-              ['Business & Consulting','الأعمال والاستشارات','business-services','photo-1454165804606-c3d57bc86b40'],
-              ['Automotive & Machinery','السيارات والآلات','automotive-services','photo-1486262715619-67b85e0b08d3'],
-              ['Education & Training','التعليم والتدريب','education-training','photo-1509062522246-3755977927d7'],
-              ['Home & Personal Services','الخدمات المنزلية والشخصية','home-maintenance','photo-1581578731548-c64695cc6952'],
-              ['Writing & Translation','الكتابة والترجمة','writing-translation','photo-1455390582262-044c83d1b8d9'],
-              ['Construction & Engineering','الإنشاءات والهندسة','construction-engineering','photo-1503387762-592deb58ef4e'],
-              ['Transport & Logistics','النقل والخدمات اللوجستية','transport-logistics','photo-1494412519320-aa613dfb7738'],
-              ['Finance & Administration','المالية والإدارة','finance-administration','photo-1554224155-6726b3ff858f'],
-              ['HR & Recruitment','الموارد البشرية والتوظيف','hr-recruitment','photo-1521737711867-e3b97375f902'],
-              ['Healthcare & Wellness','الرعاية الصحية والعافية','healthcare-wellness','photo-1576091160399-112ba8d25d1d'],
-              ['Hospitality & Events','الضيافة والفعاليات','hospitality-events','photo-1511795409834-ef04bbd61622'],
-              ['Industrial & Manufacturing','الصناعة والتصنيع','industrial-manufacturing','photo-1581091226825-a6a2a5aee158'],
-              ['Investors & Opportunities','المستثمرون والفرص','investors-opportunities','photo-1559526324-4b87b5e36e44']
-            ].map(([nameEn,nameAr,slug,imageId])=><button type="button" className="entry-category-tile" key={slug} onClick={()=>openEntryCategory(slug)} aria-label={isAr?nameAr:nameEn}><img src={`https://images.unsplash.com/${imageId}?auto=format&fit=crop&w=640&q=76`} alt="" loading="lazy"/><span>{isAr?nameAr:nameEn}</span></button>)}
+            {categories.map(c=><button type="button" className="entry-category-tile" key={c.id} onClick={()=>openEntryCategory(c.slug)} aria-label={isAr?c.name_ar:c.name_en}>
+              <img src={homeCategoryImages[c.slug]||homeCategoryImages['business-services']} alt="" loading="lazy"/>
+              <span>{isAr?c.name_ar:c.name_en}</span>
+            </button>)}
           </div>
         </section>
-        <section className="entry-how-section" id="entry-how-it-works">
-          <div className="entry-section-heading"><span>{isAr?'بكل بساطة':'HOW IT WORKS'}</span><h2>{isAr?'من احتياجك إلى إنجازك في ثلاث خطوات':'A simple path from need to opportunity'}</h2></div>
+
+        <section className="entry-content-section" id="entry-how-it-works">
+          <div className="entry-section-heading"><span>{isAr?'خطوات بسيطة':'HOW IT WORKS'}</span><h2>{isAr?'كيف تعمل نسقرا':'How NUSQRA works'}</h2></div>
           <div className="entry-how-grid">
-            <article><b>01</b><h3>{isAr?'انشر طلبك':'Post a request'}</h3><p>{isAr?'وضّح ما تحتاجه والخبرة المطلوبة.':'Describe what you need and the skills required.'}</p></article>
-            <article><b>02</b><h3>{isAr?'استقبل العروض':'Receive proposals'}</h3><p>{isAr?'راجع عروض المحترفين وتفاصيلها.':'Review proposals from interested professionals.'}</p></article>
-            <article><b>03</b><h3>{isAr?'اختر واتفق':'Choose and agree'}</h3><p>{isAr?'اختر العرض المناسب وابدأ العمل.':'Choose the right proposal and get started.'}</p></article>
+            <article><b className="entry-step-number">1</b><h3>{isAr?'انشر طلباً':'Post a request'}</h3><p>{isAr?'صف الخدمة التي تحتاجها، بالعربية أو الإنجليزية.':'Describe the service you need, in Arabic or English.'}</p></article>
+            <article><b className="entry-step-number">2</b><h3>{isAr?'استقبل العروض':'Receive proposals'}</h3><p>{isAr?'يرسل المحترفون المستقلون طريقتهم والسعر المقترح.':'Independent professionals send their approach and price.'}</p></article>
+            <article><b className="entry-step-number">3</b><h3>{isAr?'قارن واختر':'Compare and choose'}</h3><p>{isAr?'اختر المحترف الذي تفضله واتفقا مباشرة على الشروط.':'Pick the professional you prefer and agree terms directly.'}</p></article>
           </div>
         </section>
-        <section className="entry-closing-cta"><div><span>{isAr?'فرصتك تبدأ هنا':'YOUR NEXT STEP STARTS HERE'}</span><h2>{isAr?'ابدأ رحلتك مع نسقرا':'Make your next move with NUSQRA'}</h2></div><button type="button" onClick={()=>{setSelectedRole('customer');setActiveRole('customer');setForm(x=>({...x,account_type:'customer'}));window.localStorage.setItem('nusqra-active-role','customer');window.localStorage.setItem('nusqra-pending-role','customer');window.history.pushState({...window.history.state,nusqraEntryStep:'auth'},'','#login');setEntryStep('auth');setAuthMode('register');}}>{isAr?'أنشئ حسابك':'Create your account'} <ArrowRight size={18}/></button></section>
+
+        <section className="entry-content-section" id="entry-browse-categories">
+          <div className="entry-section-heading"><span>{isAr?'اكتشف المجالات':'EXPLORE THE DIRECTORY'}</span><h2>{isAr?'تصفح حسب التصنيف':'Browse by category'}</h2></div>
+          <div className="entry-browse-grid">
+            {categories.map(c=><button type="button" className="entry-browse-card" key={c.id} onClick={()=>openEntryCategory(c.slug)}>
+              <img src={homeCategoryImages[c.slug]||homeCategoryImages['business-services']} alt="" loading="lazy"/>
+              <span>{isAr?c.name_ar:c.name_en}</span><ArrowRight size={17} aria-hidden="true"/>
+            </button>)}
+          </div>
+          <button type="button" className="entry-view-all" onClick={()=>navigatePage('categories')}>{isAr?'عرض جميع التصنيفات':'View all categories'} <ArrowRight size={17}/></button>
+        </section>
+
+        <section className="entry-content-section" id="entry-for-whom">
+          <div className="entry-section-heading"><span>{isAr?'لمن صُممت نسقرا':'WHO IT IS FOR'}</span><h2>{isAr?'لمن نسقرا؟':'For whom'}</h2></div>
+          <div className="entry-audience-grid">
+            <article><h3>{isAr?'للشركات والأفراد':'For businesses and individuals'}</h3><p>{isAr?'اعثر على محترفين، وانشر طلباً، وقارن العروض.':'Find professionals, post a request, compare proposals.'}</p><button type="button" onClick={()=>{chooseEntryRole('customer');setAuthMode('register');}}>{isAr?'انشر طلباً':'Post a request'} <ArrowRight size={17}/></button></article>
+            <article><h3>{isAr?'للمحترفين':'For professionals'}</h3><p>{isAr?'أنشئ ملفاً مهنياً، واعثر على الطلبات، وأرسل عروضك.':'Create a profile, find requests, send proposals.'}</p><button type="button" onClick={()=>{chooseEntryRole('professional');setAuthMode('register');}}>{isAr?'انضم كمحترف':'Join as a professional'} <ArrowRight size={17}/></button></article>
+          </div>
+        </section>
+
+        <section className="entry-content-section" id="entry-why-nusqra">
+          <div className="entry-section-heading"><span>{isAr?'لماذا نسقرا':'THE NUSQRA APPROACH'}</span><h2>{isAr?'لماذا نسقرا؟':'Why NUSQRA'}</h2></div>
+          <div className="entry-why-grid">
+            <article><Globe2/><span>{isAr?'العربية والإنجليزية':'Arabic and English'}</span></article>
+            <article><Users/><span>{isAr?'عروض من محترفين مستقلين':'Proposals from independent professionals'}</span></article>
+            <article><CheckCircle2/><span>{isAr?'قارن قبل أن تختار':'Compare before you choose'}</span></article>
+            <article><MessageCircle/><span>{isAr?'اتفق على الشروط مباشرة':'Agree terms directly'}</span></article>
+          </div>
+          <p className="entry-disclaimer">{isAr?'لا توفر نسقرا في الإصدار الأول مدفوعات داخل المنصة أو خدمة ضمان مالي؛ يتم الاتفاق على الشروط مباشرة بين الطرفين.':'The first release does not provide platform payments or escrow. Customers and professionals agree terms directly.'}</p>
+        </section>
+
+        <section className="entry-content-section" id="entry-faq">
+          <div className="entry-section-heading"><span>{isAr?'إجابات سريعة':'HELP & ANSWERS'}</span><h2>{isAr?'الأسئلة الشائعة':'FAQ'}</h2></div>
+          <div className="entry-faq-list">
+            <details><summary>{isAr?'كيف أنشر طلباً؟':'How do I post a request?'}</summary><p>{isAr?'أنشئ حساباً كعميل، ثم اختر التصنيف وأضف وصف الخدمة والتفاصيل المطلوبة وانشر الطلب.':'Create an account as a customer, choose a category, add the service description and required details, then publish your request.'}</p></details>
+            <details><summary>{isAr?'كيف ينضم المحترفون؟':'How do professionals join?'}</summary><p>{isAr?'أنشئ حساباً واختر دور المحترف، ثم أكمل ملفك المهني واختر تخصصك.':'Create an account, choose the professional role, then complete your professional profile and select your category.'}</p></details>
+            <details><summary>{isAr?'ما اللغات المدعومة؟':'Which languages are supported?'}</summary><p>{isAr?'واجهة نسقرا متاحة بالعربية والإنجليزية.':'The NUSQRA interface is available in Arabic and English.'}</p></details>
+            <details><summary>{isAr?'ما الدول التي تخدمها نسقرا؟':'Which countries does NUSQRA serve?'}</summary><p>{isAr?'تتضمن خيارات الدولة الحالية السعودية والإمارات والبحرين والكويت وعُمان وقطر. يرجى التأكد من توفر الخدمة في منطقتك قبل الاعتماد عليها.':'The current country options are Saudi Arabia, the UAE, Bahrain, Kuwait, Oman and Qatar. Please confirm local availability before relying on service in a specific area.'}</p></details>
+            <details><summary>{isAr?'كيف أتواصل مع الدعم؟':'How do I contact support?'}</summary><p>{isAr?'إذا كان خيار الدعم متاحاً داخل حسابك، فاستخدمه. لم يتم تأكيد قناة دعم عامة بعد؛ يرجى الرجوع إلى القنوات الرسمية لنسقرا.':'If a support option is available in your account, use it. A public support contact channel has not yet been confirmed; please refer to NUSQRA’s official channels.'}</p></details>
+          </div>
+          {/* TODO: owner to confirm exact service-country coverage and publish the official support contact channel before launch. */}
+        </section>
+
+        <section className="entry-closing-cta">
+          <div><span>{isAr?'خطوتك التالية تبدأ هنا':'YOUR NEXT STEP'}</span><h2>{isAr?'هل أنت مستعد للبدء؟':'Ready to get started?'}</h2></div>
+          <div className="entry-cta-actions">
+            <button type="button" onClick={()=>{chooseEntryRole('customer');setAuthMode('register');}}>{isAr?'أنشئ حسابك':'Create your account'} <ArrowRight size={18}/></button>
+            <button type="button" className="entry-cta-secondary" onClick={()=>{chooseEntryRole('customer');setAuthMode('login');}}>{isAr?'تسجيل الدخول':'Sign in'}</button>
+          </div>
+        </section>
       </div>}
       <footer className="entry-footer"><img src={nusqraSymbol} alt="" aria-hidden="true"/><span>NUSQRA · نُسقرا</span><nav aria-label={isAr?'روابط التذييل':'Footer links'}><a href="#entry-categories" onClick={e=>{e.preventDefault();document.getElementById('entry-categories')?.scrollIntoView({behavior:'smooth'});}}>{isAr?'التصنيفات':'Categories'}</a><a href="#entry-how-it-works" onClick={e=>{e.preventDefault();document.getElementById('entry-how-it-works')?.scrollIntoView({behavior:'smooth'});}}>{isAr?'كيف تعمل':'How it works'}</a><button type="button" onClick={()=>chooseEntryRole('customer')}>{isAr?'إنشاء حساب':'Create account'}</button></nav><small>© {new Date().getFullYear()} NUSQRA · {isAr?'سوق الخدمات والفرص':'The marketplace for services & opportunities'}</small></footer>
     </div>;
