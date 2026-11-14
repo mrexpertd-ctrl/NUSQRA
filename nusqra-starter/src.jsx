@@ -801,12 +801,12 @@ function App() {
           <div className="entry-hero-choices" role="group" aria-label={isAr?'اختر طريقة الاستخدام':'Choose how to use NUSQRA'}>
               <button type="button" className="entry-hero-choice" onClick={()=>chooseEntryRole('customer')}>
                 <span className="entry-role-icon"><Users size={22}/></span>
-                <span className="entry-hero-choice-copy"><strong>{isAr?'أريد توظيف محترف':'I'm a Client'}</strong><small>{isAr?'اعثر على محترفين وقارن العروض وانشر طلبك.':'Find the best talent and services.'}</small></span>
+                <span className="entry-hero-choice-copy"><strong>{isAr?'أريد توظيف محترف' :"I'm a Client"}</strong><small>{isAr?'اعثر على محترفين وقارن العروض وانشر طلبك.':'Find the best talent and services.'}</small></span>
                 <ArrowRight className="entry-hero-choice-arrow" size={20}/>
               </button>
               <button type="button" className="entry-hero-choice" onClick={()=>chooseEntryRole('professional')}>
                 <span className="entry-role-icon"><BriefcaseBusiness size={22}/></span>
-                <span className="entry-hero-choice-copy"><strong>{isAr?'أنا محترف':'I'm a Professional'}</strong><small>{isAr?'اكتشف الفرص وقدّم عروضك وأدر مشاريعك.':'Grow your business with NUSQRA.'}</small></span>
+                <span className="entry-hero-choice-copy"><strong>{isAr?'أنا محترف' :"I'm a Professional"}</strong><small>{isAr?'اكتشف الفرص وقدّم عروضك وأدر مشاريعك.':'Grow your business with NUSQRA.'}</small></span>
                 <ArrowRight className="entry-hero-choice-arrow" size={20}/>
               </button>
             </div>
