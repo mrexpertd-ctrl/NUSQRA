@@ -2835,3 +2835,21 @@ footer{padding:32px clamp(22px,5vw,76px)!important}
   }
   .marketplace-entry .entry-layout{background:transparent}
 }
+
+
+/* Arabic-first role selection and two distinct entry paths */
+.entry-role-picker{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0 22px;text-align:start}
+.entry-role-card{display:flex;flex-direction:column;align-items:flex-start;gap:9px;min-width:0;padding:17px;border:1px solid var(--line,#dfe5e2);border-radius:18px;background:var(--surface,#fff);color:inherit;text-align:start;cursor:pointer;transition:border-color .2s,box-shadow .2s,transform .2s}
+.entry-role-card:hover{transform:translateY(-2px);border-color:#0b8b62}
+.entry-role-card.selected{border:2px solid #0b8b62;background:rgba(11,139,98,.07);box-shadow:0 0 0 3px rgba(11,139,98,.09)}
+.entry-role-icon{display:grid;place-items:center;width:42px;height:42px;border-radius:13px;background:rgba(11,139,98,.12);color:#087a50}
+.entry-role-card strong{font-size:15px;line-height:1.45}
+.entry-role-card small{font-size:12px;line-height:1.65;color:var(--muted,#68756f)}
+.entry-email-action,.entry-login-action{width:100%;border:0;border-radius:12px;padding:13px 16px;font:inherit;font-weight:700;cursor:pointer}
+.entry-email-action{background:#087a50;color:#fff;margin-top:2px}
+.entry-login-action{background:transparent;color:var(--text,#17221d);margin-top:5px}
+.entry-email-action:disabled,.entry-login-action:disabled{opacity:.45;cursor:not-allowed}
+.language-preference{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:15px 18px;margin:14px 0;border:1px solid var(--line,#dfe5e2);border-radius:14px}
+.language-preference label{font-weight:700}
+.language-preference select{min-width:130px;padding:9px 12px;border:1px solid var(--line,#dfe5e2);border-radius:9px;background:var(--surface,#fff);color:inherit}
+@media(max-width:560px){.entry-role-picker{grid-template-columns:1fr}.entry-role-card{padding:14px}.entry-auth-card{padding-left:20px;padding-right:20px}}
