@@ -74,7 +74,8 @@ async function loadStaff(){
  }catch(e){el.textContent=e.message;}
 }
 async function manageStaff(staffId,action,role){
- try{await api('/api/staff/manage',{method:'POST',body:JSON.stringify({staffId,action,role})});await loadStaff();}catch(e){alert(e.message);}
+ const reason=prompt('Enter the reason for this staff action:');if(!reason||!reason.trim())return;
+ try{await api('/api/staff/manage',{method:'POST',body:JSON.stringify({staffId,action,role,reason:reason.trim()})});await loadStaff();}catch(e){alert(e.message);}
 }
 async function loadAudit(){const el=document.querySelector('#audit');try{const r=await api('/api/audit?limit=50');el.innerHTML=r.events.length?r.events.map(x=>`<div class="event"><b>${esc(x.action)}</b><span>${esc(x.actor_email)} · ${esc(x.actor_role)}</span><time>${new Date(x.created_at).toLocaleString()}</time>${x.reason?`<p>${esc(x.reason)}</p>`:''}</div>`).join(''):'No audit events yet.';}catch(e){el.textContent=e.message;}}
 function renderError(msg){shell(`<main class="auth-wrap"><section class="brand"><div class="mark">N</div><h1>Access <span>restricted</span></h1><p class="muted">The administration system could not authorize this session.</p></section><section class="panel"><p class="message bad">${esc(msg)}</p><button id="back" class="primary">Return to sign in</button></section></main>`);document.querySelector('#back').onclick=async()=>{await supabase?.auth.signOut();session=null;renderLogin();};}
