@@ -217,6 +217,10 @@ function App() {
     };
     window.addEventListener('appinstalled', onInstalled);
     window.addEventListener('online', sendPendingInstall);
+    const launchedAsInstalledApp = window.matchMedia?.('(display-mode: standalone)').matches || navigator.standalone === true;
+    if (launchedAsInstalledApp) {
+      try { localStorage.setItem('nusqra-install-pending', '1'); } catch {}
+    }
     sendPendingInstall();
 
     return () => {
