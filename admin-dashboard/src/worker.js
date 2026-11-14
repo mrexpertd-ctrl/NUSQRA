@@ -95,10 +95,12 @@ export default {
       if(existingUser){
         const {error:activateError}=await service.from('admin_staff_directory').update({user_id:existingUser.id,status:'active',activated_at:new Date().toISOString()}).eq('email',email);
         if(activateError) return json({error:'Existing owner account could not be activated.'},500);
+        await service.from('admin_audit_events').insert({actor_user_id:existingUser.id,actor_email:email,actor_role:'supreme_admin',action:'supreme_admin_bootstrap_authorized',target_type:'staff',target_id:email,ip_address:request.headers.get('cf-connecting-ip')||null,user_agent:request.headers.get('user-agent')||null});
         return json({success:true,message:'Existing owner account is authorized. Sign in and enable TOTP.'});
       }
       const {error:inviteError}=await service.auth.admin.inviteUserByEmail(email,{redirectTo:new URL('/',request.url).toString(),data:{nusqra_admin_invite:true}});
-      if(inviteError){await service.from('admin_staff_directory').delete().eq('email',email).eq('status','invited');return json({error:'Supreme Admin invitation email could not be sent.'},503);}
+      if(inviteError){return json({error:'Supreme Admin invitation email could not be sent. The reserved seat remains locked until the owner resolves email delivery.'},503);}
+      await service.from('admin_audit_events').insert({actor_email:email,actor_role:'supreme_admin',action:'supreme_admin_bootstrap_invited',target_type:'staff',target_id:email,ip_address:request.headers.get('cf-connecting-ip')||null,user_agent:request.headers.get('user-agent')||null});
       return json({success:true,message:'Supreme Admin setup email sent.'});
     } catch(e){return json({error:'Supreme Admin bootstrap failed.'},500);}
    }
@@ -123,6 +125,34 @@ export default {
     if(inviteError){await ctx.service.from('admin_staff_directory').delete().eq('email',email).eq('status','invited');return json({error:'Supabase could not send the invitation: '+inviteError.message},400);}
     await audit(ctx,request,'staff_invited','staff',email,'Role fixed at invitation: '+role);
     return json({success:true,message:'Invitation sent. Staff role is fixed as '+role+'.'});
+   }
+   if(url.pathname==='/api/staff'&&request.method==='GET'){
+    if(ctx.staff.staff_role!=='supreme_admin') return json({error:'Only the Supreme Admin can view staff management.'},403);
+    const {data,error}=await ctx.service.from('admin_staff_directory').select('id,email,user_id,staff_role,status,invited_at,activated_at').order('invited_at',{ascending:false});
+    if(error) return json({error:'Staff directory could not be loaded.'},500);
+    const adminSeats=(data||[]).filter(x=>x.staff_role==='admin'&&['invited','active'].includes(x.status)).length;
+    return json({staff:data||[],adminSeats,maxAdminSeats:3});
+   }
+   if(url.pathname==='/api/staff/manage'&&request.method==='POST'){
+    if(ctx.staff.staff_role!=='supreme_admin') return json({error:'Only the Supreme Admin can manage staff.'},403);
+    let body;try{body=await request.json();}catch{return json({error:'Invalid JSON.'},400);}
+    const staffId=String(body.staffId||''),action=body.action;
+    const {data:target,error:targetError}=await ctx.service.from('admin_staff_directory').select('*').eq('id',staffId).maybeSingle();
+    if(targetError||!target) return json({error:'Staff member not found.'},404);
+    if(target.staff_role==='supreme_admin') return json({error:'The Supreme Admin seat cannot be changed or removed through staff management.'},403);
+    if(action==='change_role'){
+      if(!['admin','moderator'].includes(body.role)) return json({error:'Choose Admin or Moderator.'},400);
+      const {error}=await ctx.service.from('admin_staff_directory').update({staff_role:body.role,updated_at:new Date().toISOString()}).eq('id',staffId);
+      if(error) return json({error:'Role change failed. The Admin seat limit may have been reached.'},409);
+      await audit(ctx,request,'staff_role_changed','staff',target.email,'Changed role to '+body.role);
+    }else if(action==='suspend'||action==='remove'){
+      const status=action==='suspend'?'suspended':'removed';
+      const {error}=await ctx.service.from('admin_staff_directory').update({status,updated_at:new Date().toISOString()}).eq('id',staffId);
+      if(error) return json({error:'Staff status change failed.'},500);
+      if(target.user_id) await ctx.service.from('admin_sessions').update({revoked_at:new Date().toISOString()}).eq('user_id',target.user_id).is('revoked_at',null);
+      await audit(ctx,request,action==='suspend'?'staff_suspended':'staff_removed','staff',target.email);
+    }else return json({error:'Unsupported staff action.'},400);
+    return json({success:true,message:'Staff record updated.'});
    }
    if(url.pathname==='/api/audit'&&request.method==='GET'){
     if(ctx.staff.staff_role!=='supreme_admin') return json({error:'Only the Supreme Admin can view all audit events.'},403);
