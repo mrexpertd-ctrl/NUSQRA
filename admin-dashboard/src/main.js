@@ -123,7 +123,7 @@ async function loadLiveStats(){
   document.querySelector('#taskChart').innerHTML=renderAnalyticsChart(data.completed_tasks?.chart,'#19c37d');
   const feed=document.querySelector('#liveFeed');
   const events=Array.isArray(data.feed)?data.feed:[];
-  feed.innerHTML=events.length?events.slice(0,10).map(item=>`<div class="analytics-event"><b>${esc(item.type)}</b><time>${formatFeedTime(item.at)}</time></div>`).join(''):'No activity yet.';
+  feed.innerHTML=events.length?events.slice(0,10).map(item=>`<div class="analytics-event"><b>${esc(item.type)},</b><time>${formatFeedTime(item.at)}</time></div>`).join(''):'No activity yet.';
   liveStatsLastUpdated=Date.now();updateAnalyticsAge();
  }catch(e){
   const feed=document.querySelector('#liveFeed');if(feed&&feed.textContent==='Waiting for activity…')feed.textContent=e.message;
