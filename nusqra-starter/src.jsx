@@ -91,7 +91,7 @@ function App() {
   const [activeRole, setActiveRole] = useState(() => window.localStorage.getItem('nusqra-active-role') || 'customer');
   const [menu, setMenu] = useState(false);
   const [entrySearch, setEntrySearch] = useState('');
-  const [page, setPage] = useState(() => window.location.hash.replace('#','') || 'home');
+  const [page, setPage] = useState(() => { const requested = window.location.hash.replace('#','') || 'home'; return requested === 'login' ? 'home' : requested; });
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [profileTab, setProfileTab] = useState('identity');
   const [previewOpen, setPreviewOpen] = useState(false);
@@ -267,7 +267,7 @@ function App() {
   }, [menu]);
 
   useEffect(() => {
-    const syncPage = () => { const next = window.location.hash.replace('#','') || 'home'; setPage(next); setSettingsOpen(next === 'settings'); setMenu(false); window.scrollTo(0,0); };
+    const syncPage = () => { const requested = window.location.hash.replace('#','') || 'home'; const next = requested === 'login' ? 'home' : requested; setPage(next); setSettingsOpen(next === 'settings'); setMenu(false); window.scrollTo(0,0); };
     window.addEventListener('hashchange', syncPage);
     return () => window.removeEventListener('hashchange', syncPage);
   }, []);
