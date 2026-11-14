@@ -5156,3 +5156,13 @@ html,body,#root{width:100%;max-width:100%;min-width:0;overflow-x:hidden}
  .marketplace-entry .entry-home-sections{padding-inline:32px!important}
 }
 [dir="rtl"] .marketplace-entry .entry-experience-section .entry-role-card{text-align:start!important}
+
+/* Reveal effects are enhancement-only: never hide homepage content when JS does not run. */
+.marketplace-entry .entry-home-sections section,
+.marketplace-entry .entry-home-sections section *{
+ opacity:1!important;visibility:visible!important;transform:none!important;filter:none!important;
+}
+.marketplace-entry .entry-home-sections .entry-section-heading h2{
+ color:#fff!important;-webkit-text-fill-color:#fff!important;
+}
+.marketplace-entry .entry-experience-section{padding-block:40px!important}
