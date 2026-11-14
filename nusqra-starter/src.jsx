@@ -72,6 +72,7 @@ function App() {
   const [entryStep, setEntryStep] = useState('role');
   const [activeRole, setActiveRole] = useState(() => window.localStorage.getItem('nusqra-active-role') || 'customer');
   const [menu, setMenu] = useState(false);
+  const [entrySearch, setEntrySearch] = useState('');
   const [page, setPage] = useState(() => window.location.hash.replace('#','') || 'home');
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [profileTab, setProfileTab] = useState('identity');
@@ -181,6 +182,50 @@ function App() {
   }, []);
 
   const navigatePage = (next) => { setPage(next); setSettingsOpen(next === 'settings'); setMenu(false); window.location.hash = next; window.scrollTo(0,0); };
+
+  const chooseEntryRole = (role) => {
+    setSelectedRole(role);
+    setActiveRole(role);
+    setForm(x=>({...x,account_type:role}));
+    window.localStorage.setItem('nusqra-active-role',role);
+    window.localStorage.setItem('nusqra-pending-role',role);
+    setError('');
+    window.history.pushState({ ...(window.history.state || {}), nusqraEntryStep: 'auth' }, '', '#login');
+    setEntryStep('auth');
+  };
+
+  const openEntryCategory = (slug) => {
+    const match = categories.find(c => c.slug === slug);
+    if (!match) { navigatePage('categories'); return; }
+    setSelectedCategoryId(match.id);
+    setJobForm(v=>({...v,category_id:match.id}));
+    navigatePage('professionals');
+  };
+
+  const submitEntrySearch = (event) => {
+    event.preventDefault();
+    const query = entrySearch.trim().toLowerCase();
+    if (!query) { navigatePage('categories'); return; }
+    const aliases = {
+      'web-technology':['technology','it','software','website','web','app','programming','tech'],
+      'design-creative':['design','creative','logo','graphic','brand','ui','ux'],
+      'business-services':['business','consulting','consultant','management','strategy'],
+      'home-maintenance':['home','personal','plumber','electrician','cleaning','repair','maintenance'],
+      'writing-translation':['writing','translation','translator','content','copywriting','arabic','english'],
+      'transport-logistics':['transport','logistics','delivery','shipping','moving']
+    };
+    const match = categories.find(c => {
+      const text = [c.name_en,c.name_ar,c.slug,c.description_en,c.description_ar,...(aliases[c.slug]||[])].join(' ').toLowerCase();
+      return query.split(/\\s+/).some(word => word.length>1 && text.includes(word));
+    });
+    if (match) {
+      setSelectedCategoryId(match.id);
+      setJobForm(v=>({...v,category_id:match.id}));
+      navigatePage('professionals');
+    } else {
+      navigatePage('categories');
+    }
+  };
 
   useEffect(() => {
     if (!supabase) { setAuthReady(true); return undefined; }
@@ -648,26 +693,40 @@ function App() {
       </header>
       <main className={'entry-layout '+(entryStep==='auth'?'entry-layout-auth':'entry-layout-role')}>
         {entryStep==='role' && <section className="entry-hero">
-
           <div className="entry-kicker">{isAr?'سوق واحد · فرص أكثر':'ONE MARKETPLACE · MORE OPPORTUNITY'}</div>
-          <h1>{isAr?'اكتشف المحترفين، واستكشف الفرص، وابدأ الآن.':'Find Professionals, Explore Opportunities, Get Started.'}</h1>
-          <p>{isAr?'منصة حديثة تربط العملاء بالمحترفين والشركات لإنجاز الأعمال وتنمية الفرص.':'A modern marketplace connecting clients, professionals and businesses for smarter work and better opportunities.'}</p>
-          <div className="entry-hero-points">
-            <div><Users size={22}/><span>{isAr?'اعثر على المحترفين':'Find professionals'}</span></div>
-            <div><BriefcaseBusiness size={22}/><span>{isAr?'استكشف الفرص':'Explore opportunities'}</span></div>
-            <div><Globe2 size={22}/><span>{isAr?'نمُ معاً':'Grow together'}</span></div>
+          <h1>{isAr?'ما الخدمة التي تحتاجها اليوم؟':'What service do you need today?'}</h1>
+          <form className="entry-hero-search" onSubmit={submitEntrySearch} role="search">
+            <Search size={20} aria-hidden="true"/>
+            <input value={entrySearch} onChange={e=>setEntrySearch(e.target.value)} placeholder={isAr?'سباك، مصمم شعارات، مترجم...':'Plumber, logo designer, translator...'} aria-label={isAr?'ابحث عن خدمة':'Search for a service'}/>
+            <button type="submit">{isAr?'بحث':'Search'}</button>
+          </form>
+          <div className="entry-category-chips" aria-label={isAr?'التصنيفات الشائعة':'Popular categories'}>
+            <button type="button" onClick={()=>openEntryCategory('web-technology')}>{isAr?'التقنية وتكنولوجيا المعلومات':'Technology & IT'}</button>
+            <button type="button" onClick={()=>openEntryCategory('design-creative')}>{isAr?'التصميم والإبداع':'Design & Creative'}</button>
+            <button type="button" onClick={()=>openEntryCategory('business-services')}>{isAr?'الأعمال والاستشارات':'Business & Consulting'}</button>
+            <button type="button" onClick={()=>openEntryCategory('home-maintenance')}>{isAr?'الخدمات المنزلية والشخصية':'Home & Personal Services'}</button>
+            <button type="button" onClick={()=>openEntryCategory('writing-translation')}>{isAr?'الكتابة والترجمة':'Writing & Translation'}</button>
+            <button type="button" onClick={()=>openEntryCategory('transport-logistics')}>{isAr?'النقل والخدمات اللوجستية':'Transport & Logistics'}</button>
           </div>
-          <div className="entry-visual"><img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1200&q=85" alt={isAr?'مساحة عمل رقمية حديثة':'Modern digital workspace'} /><div className="entry-visual-caption"><span> NUSQRA MARKETPLACE </span><strong>{isAr?'المهارات تلتقي بالفرص':'Where skills meet opportunity'}</strong></div></div>
+          <div className="entry-hero-actions">
+            <button type="button" className="entry-hero-hire" onClick={()=>chooseEntryRole('customer')}>{isAr?'أريد توظيف محترف':'I want to hire'}</button>
+            <button type="button" className="entry-hero-pro" onClick={()=>chooseEntryRole('professional')}>{isAr?'أنا محترف':'I am a professional'}</button>
+          </div>
+          <div className="entry-trust-facts">
+            <div><Globe2 size={17}/><span>{isAr?'العربية والإنجليزية':'Arabic and English'}</span></div>
+            <div><Clock3 size={17}/><span>{isAr?'انشر طلبك في دقائق':'Post a request in minutes'}</span></div>
+            <div><Users size={17}/><span>{isAr?'عروض من محترفين مستقلين':'Proposals from independent professionals'}</span></div>
+          </div>
         </section>}
         <section className="entry-auth-wrap">
           <div className="entry-auth-card">
 
-            <div className="entry-auth-eyebrow">{entryStep==='role'?(isAr?'اختر طريقة استخدام المنصة':'CHOOSE YOUR NUSQRA EXPERIENCE'):(isAr?'تسجيل الدخول الآمن':'SECURE ACCOUNT ACCESS')}</div>
+            <div className="entry-auth-eyebrow">{entryStep==='role'?(isAr?'اختر طريقة استخدام المنصة':'{isAr?'اختر تجربة نسقرا المناسبة لك':'Choose your NUSQRA experience'}'):(isAr?'تسجيل الدخول الآمن':'SECURE ACCOUNT ACCESS')}</div>
             {entryStep==='role' && <div className="entry-role-picker" role="group" aria-label={isAr?'اختر نوع الحساب':'Choose account type'}>
-              <button type="button" className={'entry-role-card '+(selectedRole==='customer'?'selected':'')} onClick={()=>{setSelectedRole('customer');setActiveRole('customer');setForm(x=>({...x,account_type:'customer'}));window.localStorage.setItem('nusqra-active-role','customer');window.localStorage.setItem('nusqra-pending-role','customer');setError('');window.history.pushState({ ...(window.history.state || {}), nusqraEntryStep: 'auth' }, '', '#login');setEntryStep('auth');}}>
+              <button type="button" className={'entry-role-card '+(selectedRole==='customer'?'selected':'')} onClick={()=>chooseEntryRole('customer')}>
                 <span className="entry-role-icon"><Users size={24}/></span><strong>{isAr?'أبحث عن محترف':'I want to hire'}</strong><small>{isAr?'تصفح الملفات المهنية والتوفر، وقارن الخبرات، وانشر طلبك.':'Browse professional profiles and availability, compare skills and post a job.'}</small><span className="entry-role-arrow" aria-hidden="true">{isAr?<ArrowLeft size={18}/>:<ArrowRight size={18}/>}</span>
               </button>
-              <button type="button" className={'entry-role-card '+(selectedRole==='professional'?'selected':'')} onClick={()=>{setSelectedRole('professional');setActiveRole('professional');setForm(x=>({...x,account_type:'professional'}));window.localStorage.setItem('nusqra-active-role','professional');window.localStorage.setItem('nusqra-pending-role','professional');setError('');window.history.pushState({ ...(window.history.state || {}), nusqraEntryStep: 'auth' }, '', '#login');setEntryStep('auth');}}>
+              <button type="button" className={'entry-role-card '+(selectedRole==='professional'?'selected':'')} onClick={()=>chooseEntryRole('professional')}>
                 <span className="entry-role-icon"><BriefcaseBusiness size={24}/></span><strong>{isAr?'أنا محترف وأبحث عن عمل':'I am a professional'}</strong><small>{isAr?'اكتشف فرص العمل، وقدّم العروض، وأدر مشاريعك وعملاءك.':'Find jobs, submit proposals and manage your projects and clients.'}</small><span className="entry-role-arrow" aria-hidden="true">{isAr?<ArrowLeft size={18}/>:<ArrowRight size={18}/>}</span>
               </button>
             </div>}
