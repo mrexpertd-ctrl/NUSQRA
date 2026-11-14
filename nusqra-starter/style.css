@@ -211,10 +211,10 @@
 }@media(max-width:370px){.home-category-grid,.category-grid{grid-template-columns:1fr}.home-category-card{height:178px}.category-image{height:150px}.header>.brand{font-size:12px}
 }[dir=rtl] .hero h1,[dir=rtl] .section h2{letter-spacing:0}[dir=rtl] .hero-visual-caption{left:auto;right:26px}[dir=rtl] .category-image .category-symbol{left:auto;right:15px}[dir=rtl] .home-category-card{text-align:right}@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }:root{
-  --nusqra-violet:#087a50;
-  --nusqra-violet-deep:#073d2b;
-  --nusqra-violet-soft:#eaf6ee;
-  --nusqra-violet-line:#cfe5d6;
+  --nusqra-green:#087a50;
+  --nusqra-green-deep:#073d2b;
+  --nusqra-green-soft:#eaf6ee;
+  --nusqra-green-line:#cfe5d6;
   --nusqra-gold-rich:#b38a3e;
   --nusqra-gold-soft:#fbf5e8;
 }.brand{gap:12px;letter-spacing:1.7px}.brand>span:last-child{line-height:1.08}.brand small{margin-top:4px;font-size:10px;letter-spacing:.04em}.mark{
