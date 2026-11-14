@@ -864,7 +864,7 @@ function App() {
         <section className="entry-content-section" id="entry-categories">
           <div className="entry-section-heading"><h2>{isAr?'تصفح حسب التصنيف':'Browse by Category'}</h2></div>
           <div className="entry-browse-grid">
-            {[...categories].sort((a,b)=>{const ai=entryCategoryOrder.indexOf(a.slug);const bi=entryCategoryOrder.indexOf(b.slug);return (ai<0?999:ai)-(bi<0?999:bi);}).slice(0,showAllEntryCategories?categories.length:6).map(c=><button type="button" className="entry-browse-card" key={c.id} onClick={()=>openEntryCategory(c.slug)}>
+            {[...categories].sort((a,b)=>{const ai=entryCategoryOrder.indexOf(String(a.slug||a.name_en||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''));const bi=entryCategoryOrder.indexOf(String(b.slug||b.name_en||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''));return (ai<0?999:ai)-(bi<0?999:bi);}).slice(0,showAllEntryCategories?categories.length:6).map(c=><button type="button" className="entry-browse-card" key={c.id} onClick={()=>openEntryCategory(c.slug)}>
               <img src={homeCategoryImages[c.slug]||homeCategoryImages['business-services']} alt="" loading="lazy"/>
               <span className="entry-category-icon" aria-hidden="true">✦</span><strong>{isAr?c.name_ar:c.name_en}</strong>
             </button>)}
@@ -874,9 +874,9 @@ function App() {
         <section className="entry-content-section" id="entry-how-it-works">
           <div className="entry-section-heading"><h2>{isAr?'كيف تعمل نسقرا':'How NUSQRA Works'}</h2></div>
           <div className="entry-how-grid">
-            <article><b className="entry-step-number">1</b><div className="entry-step-symbol">⌕</div><h3>{isAr?'ابحث واكتشف':'Search and Discover'}</h3><p>{isAr?'اعثر على الخدمة أو المحترف المناسب.':'Find the right service or professional.'}</p></article>
-            <article><b className="entry-step-number">2</b><div className="entry-step-symbol">⇄</div><h3>{isAr?'تواصل وتعاون':'Connect and Collaborate'}</h3><p>{isAr?'ناقش التفاصيل واتفق مباشرة.':'Chat, discuss and agree on the details.'}</p></article>
-            <article><b className="entry-step-number">3</b><div className="entry-step-symbol">✓</div><h3>{isAr?'أنجز العمل':'Get It Done'}</h3><p>{isAr?'ابدأ العمل وفق ما اتفقتما عليه.':'Get started based on your agreement.'}</p></article>
+            <article><b className="entry-step-number" style={{background:"linear-gradient(135deg,#8b35ff,#5b21d6)",color:"#fff",border:"1px solid #a78bfa"}}>1</b><div className="entry-step-symbol">⌕</div><h3>{isAr?'ابحث واكتشف':'Search and Discover'}</h3><p>{isAr?'اعثر على الخدمة أو المحترف المناسب.':'Find the right service or professional.'}</p></article>
+            <article><b className="entry-step-number" style={{background:"linear-gradient(135deg,#8b35ff,#5b21d6)",color:"#fff",border:"1px solid #a78bfa"}}>2</b><div className="entry-step-symbol">⇄</div><h3>{isAr?'تواصل وتعاون':'Connect and Collaborate'}</h3><p>{isAr?'ناقش التفاصيل واتفق مباشرة.':'Chat, discuss and agree on the details.'}</p></article>
+            <article><b className="entry-step-number" style={{background:"linear-gradient(135deg,#8b35ff,#5b21d6)",color:"#fff",border:"1px solid #a78bfa"}}>3</b><div className="entry-step-symbol">✓</div><h3>{isAr?'أنجز العمل':'Get It Done'}</h3><p>{isAr?'ابدأ العمل وفق ما اتفقتما عليه.':'Get started based on your agreement.'}</p></article>
           </div>
         </section>
         <section className="entry-content-section" id="entry-features">
