@@ -1,9 +1,24 @@
 {
   "name": "nusqra",
-  "compatibility_date": "2026-11-01",
+  "main": "./worker.js",
+  "compatibility_date": "2026-11-14",
   "assets": {
     "directory": "./nusqra-starter/dist",
+    "binding": "ASSETS",
     "not_found_handling": "single-page-application"
   },
-  "previews": {}
+  "ratelimits": [
+    {
+      "name": "INSTALL_RATE_LIMIT",
+      "namespace_id": "1411142026",
+      "simple": {
+        "limit": 10,
+        "period": 60
+      }
+    }
+  ],
+  "vars": {
+    "SUPABASE_URL": "https://oybodlncqgerucwwkqvp.supabase.co",
+    "SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im95Ym9kbG5jcWdlcnVjd3drcXZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ1NjEzOTksImV4cCI6MjExMDEzNzM5OX0.2kefEQGP4waDjwH4WUONjODltM0EnAXIJC4R3lFsBMQ"
+  }
 }
