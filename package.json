@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "npm run dev --prefix nusqra-starter",
-    "build": "npm run build --prefix nusqra-starter",
+    "build": "npm install --prefix nusqra-starter && npm run build --prefix nusqra-starter",
     "preview": "npm run preview --prefix nusqra-starter",
     "deploy": "npm run build && wrangler deploy",
     "install:app": "npm install --prefix nusqra-starter"
