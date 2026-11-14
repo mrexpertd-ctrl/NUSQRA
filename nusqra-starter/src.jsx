@@ -83,6 +83,7 @@ const homeCategoryImages = {
   'industrial-manufacturing':'https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&w=900&q=82',
   'investors-opportunities':'https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=900&q=82'
 };
+const entryCategoryOrder = ['web-technology','design-creative','business-services','marketing-sales','automotive-services','education-training'];
 const countryCodes = ['SA','AE','BH','KW','OM','QA'];
 
 function App() {
@@ -863,7 +864,7 @@ function App() {
         <section className="entry-content-section" id="entry-categories">
           <div className="entry-section-heading"><h2>{isAr?'تصفح حسب التصنيف':'Browse by Category'}</h2></div>
           <div className="entry-browse-grid">
-            {categories.slice(0,showAllEntryCategories?categories.length:6).map(c=><button type="button" className="entry-browse-card" key={c.id} onClick={()=>openEntryCategory(c.slug)}>
+            {[...categories].sort((a,b)=>{const ai=entryCategoryOrder.indexOf(a.slug);const bi=entryCategoryOrder.indexOf(b.slug);return (ai<0?999:ai)-(bi<0?999:bi);}).slice(0,showAllEntryCategories?categories.length:6).map(c=><button type="button" className="entry-browse-card" key={c.id} onClick={()=>openEntryCategory(c.slug)}>
               <img src={homeCategoryImages[c.slug]||homeCategoryImages['business-services']} alt="" loading="lazy"/>
               <span className="entry-category-icon" aria-hidden="true">✦</span><strong>{isAr?c.name_ar:c.name_en}</strong>
             </button>)}
@@ -902,12 +903,12 @@ function App() {
           </div>
         </section>
       </div>}
-      <footer className="entry-footer" id="entry-footer"><img src={nusqraSymbol} alt="" aria-hidden="true"/><span>NUSQRA · نُسقرا</span><nav aria-label={isAr?'روابط التذييل':'Footer links'}><a href="#entry-categories">{isAr?'التصنيفات':'Categories'}</a><a href="#entry-how-it-works">{isAr?'كيف تعمل':'How It Works'}</a><a href="#entry-faq">{isAr?'الأسئلة الشائعة':'FAQ'}</a><a href="#entry-contact">{isAr?'اتصل بنا':'Contact'}</a></nav><small>© 2026 NUSQRA. All rights reserved.</small></footer>
+      <footer className="entry-footer" id="entry-contact"><img src={nusqraSymbol} alt="" aria-hidden="true"/><span>NUSQRA · نُسقرا</span><nav aria-label={isAr?'روابط التذييل':'Footer links'}><a href="#entry-categories">{isAr?'التصنيفات':'Categories'}</a><a href="#entry-how-it-works">{isAr?'كيف تعمل':'How It Works'}</a><a href="#entry-faq">{isAr?'الأسئلة الشائعة':'FAQ'}</a><a href="#entry-contact">{isAr?'اتصل بنا':'Contact'}</a></nav><small>© 2026 NUSQRA. All rights reserved.</small></footer>
       {entryStep==='role' && <nav className="entry-bottom-tabs" aria-label="Mobile navigation">
         <a href="#home" className="active"><span>⌂</span>{isAr?'الرئيسية':'Home'}</a>
         <a href="#entry-categories"><span>▦</span>{isAr?'التصنيفات':'Categories'}</a>
         <button type="button" onClick={()=>chooseEntryRole('customer')}><span>♙</span>{isAr?'الحساب':'Account'}</button>
-        <a href="#entry-footer"><span>•••</span>{isAr?'المزيد':'More'}</a>
+        <a href="#entry-contact"><span>•••</span>{isAr?'المزيد':'More'}</a>
       </nav>}
     </div>;
   }
