@@ -115,10 +115,10 @@ export default {
     if(!['admin','moderator'].includes(role)) return json({error:'Only Admin or Moderator invitations are available.'},400);
     const {data:existing}=await ctx.service.from('admin_staff_directory').select('id,status').eq('email',email).maybeSingle();
     if(existing && !['removed','suspended'].includes(existing.status)) return json({error:'This email already has a staff invitation or account.'},409);
-    const {error:inviteError}=await ctx.service.auth.admin.inviteUserByEmail(email,{data:{nusqra_admin_invite:true}});
-    if(inviteError) return json({error:'Supabase could not send the invitation: '+inviteError.message},400);
     const {error:insertError}=await ctx.service.from('admin_staff_directory').upsert({email,staff_role:role,status:'invited',invited_by:ctx.user.id,user_id:null,invited_at:new Date().toISOString(),activated_at:null},{onConflict:'email'});
-    if(insertError) return json({error:'Invitation sent but staff record failed. Contact the platform owner.'},500);
+    if(insertError) return json({error:'Staff seat could not be reserved. The three-seat limit may have been reached.'},409);
+    const {error:inviteError}=await ctx.service.auth.admin.inviteUserByEmail(email,{redirectTo:new URL('/',request.url).toString(),data:{nusqra_admin_invite:true}});
+    if(inviteError){await ctx.service.from('admin_staff_directory').delete().eq('email',email).eq('status','invited');return json({error:'Supabase could not send the invitation: '+inviteError.message},400);}
     await audit(ctx,request,'staff_invited','staff',email,'Role fixed at invitation: '+role);
     return json({success:true,message:'Invitation sent. Staff role is fixed as '+role+'.'});
    }
