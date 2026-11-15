@@ -1,34 +1,66 @@
 import React, {useEffect, useRef} from 'react';
-import {BadgeCheck, BriefcaseBusiness, MapPin, Star, UserRound, X} from 'lucide-react';
+import {BadgeCheck, MapPin, Star, Trophy, UserRound, X} from 'lucide-react';
 import './member-profile.css';
+import {frameMilestones, maxProfileLevel, profileProgress, starMilestones} from './profile-progression.mjs';
+import bronzeFrame from './assets/profile-frames/bronze.webp';
+import silverFrame from './assets/profile-frames/silver.webp';
+import goldFrame from './assets/profile-frames/gold.webp';
+import diamondFrame from './assets/profile-frames/diamond.webp';
+import emeraldFrame from './assets/profile-frames/emerald.webp';
 
-const tierNames = {
-  gold: ['Gold', 'ذهبي'], emerald: ['Emerald', 'زمردي'], diamond: ['Diamond', 'ماسي'],
+const frameImages = {
+  bronze: bronzeFrame, silver: silverFrame, gold: goldFrame,
+  diamond: diamondFrame, emerald: emeraldFrame,
 };
 
-function tierFor(reputation, customer, years = 0) {
-  const count = Number(customer ? reputation?.confirmed_paid_projects : reputation?.completed_projects) || 0;
-  if (count >= 15 && (customer || years >= 7)) return 'diamond';
-  if (count >= 5 && (customer || years >= 3)) return 'emerald';
-  if (count >= 1) return 'gold';
-  return null;
-}
-
-export function ReputationBadge({reputation, isAr, customer = false, years}) {
-  const tier = tierFor(reputation, customer, years);
-  if (!tier) return null;
-  const title = tierNames[tier][Number(isAr)];
-  return <span className={`member-badge member-${tier}${customer ? ' member-patron' : ''}`}>
-    {customer && <BriefcaseBusiness size={14} aria-hidden="true"/>}
-    {customer ? (isAr ? `عميل ${title}` : `${title} client`) : (isAr ? `محترف ${title}` : `${title} professional`)}
+export function ReputationBadge({reputation, isAr}) {
+  const progress = profileProgress(reputation?.completed_tasks);
+  if (!progress?.frame) return null;
+  const {frame, level} = progress;
+  return <span className={`member-badge member-${frame.tier}`}>
+    {isAr ? `المستوى ${level}` : `Level ${level}`} · {frame.names[Number(isAr)]}
   </span>;
 }
 
-export function MemberAvatar({url, reputation, customer, years, staffTier}) {
-  const tier = staffTier || tierFor(reputation, customer, years);
-  return <span className={`member-avatar${tier ? ` member-${tier}` : ''}${tier && customer ? ' member-patron' : ''}`}>
-    {url ? <img src={url} alt=""/> : <UserRound aria-hidden="true"/>}
+export function MemberAvatar({url, reputation, staffTier}) {
+  const tier = profileProgress(reputation?.completed_tasks)?.frame?.tier || staffTier;
+  const frame = frameImages[tier];
+  return <span className={`member-avatar${frame ? ' member-avatar-framed' : ''}`}>
+    {url ? <img className="member-avatar-photo" src={url} alt=""/> : <UserRound className="member-avatar-photo" aria-hidden="true"/>}
+    {frame && <img className="member-avatar-frame" src={frame} alt=""/>}
   </span>;
+}
+
+function ProfileProgress({progress, isAr, onEdit}) {
+  return <section className="member-card member-section member-progress">
+    <h2>{isAr ? 'تقدم الملف الشخصي' : 'Profile progress'}</h2>
+    <p>{progress.level
+      ? (isAr ? `المستوى ${progress.level} من ${maxProfileLevel}` : `Level ${progress.level} of ${maxProfileLevel}`)
+      : (isAr ? 'أكمل أول مهمة للوصول إلى المستوى 1.' : 'Complete your first task to reach Level 1.')}</p>
+    <progress value={progress.level} max={maxProfileLevel} aria-label={isAr ? 'تقدم المستوى' : 'Level progress'}/>
+    <p>{isAr ? `المهام المكتملة: ${progress.tasks}` : `Completed tasks: ${progress.tasks}`}</p>
+    {progress.stars > 0 && <div className="member-stars">
+      <span className="member-star-icons" aria-hidden="true">
+        {Array.from({length: progress.stars}, (_, index) => <Star key={index} size={16} fill="currentColor"/>)}
+      </span>
+      <span>{isAr ? `نجوم الإنجاز: ${progress.stars} من 7` : `Task stars: ${progress.stars} of 7`}</span>
+    </div>}
+    {progress.trusted && <p className="member-progress-award">
+      <Trophy size={17} aria-hidden="true"/>
+      <strong>{isAr ? 'جائزة إكمال 50 مهمة' : '50-task achievement award'}</strong>
+    </p>}
+    {onEdit && <details className="member-tier-guide">
+      <summary>{isAr ? 'مستويات الإطارات والنجوم' : 'Frame and star milestones'}</summary>
+      <p>{isAr ? 'تُحسب كل مهمة مكتملة مرة واحدة لكل من العميل والمحترف.' : 'Each completed task counts once for the client and once for the professional.'}</p>
+      <ul>
+        {frameMilestones.map((frame, index) => {
+          const last = (frameMilestones[index + 1]?.level ?? maxProfileLevel + 1) - 1;
+          return <li key={frame.tier}>{frame.names[Number(isAr)]} · {isAr ? 'المستويات' : 'Levels'} {frame.level}–{last}</li>;
+        })}
+      </ul>
+      <p>{isAr ? 'عتبات النجوم من 1 إلى 7 حسب المهام المكتملة' : 'Stars 1 through 7 unlock at these completed-task totals'} · {starMilestones.join(' / ')}</p>
+    </details>}
+  </section>;
 }
 
 export function VerifiedBadge({isAr}) {
@@ -50,14 +82,14 @@ function SkillStars({reputation, isAr}) {
 export function MemberProfile({person, reputation, isAr, country, professional, customer, portfolio = [], skills = [], onEdit}) {
   const distinctions = person.profile_distinctions;
   const years = professional?.years_experience;
-  const professionalTier = tierFor(reputation, false, years);
-  const useClientFrame = Boolean(customer && tierFor(reputation, true));
+  const progress = profileProgress(reputation?.completed_tasks);
+  const staffFrame = frameMilestones.find(frame => frame.tier === distinctions?.tier);
   return <article className="member-profile">
     <section className="member-card">
       <div className="member-cover">{person.cover_url && <img src={person.cover_url} alt=""/>}</div>
       <div className="member-identity">
         <div className="member-identity-actions">
-          <MemberAvatar url={person.avatar_url} reputation={reputation} customer={useClientFrame} years={years} staffTier={distinctions?.tier}/>
+          <MemberAvatar url={person.avatar_url} reputation={reputation} staffTier={distinctions?.tier}/>
           {onEdit && <button type="button" className="saudi-outline" onClick={onEdit}>{isAr?'تعديل الملف':'Edit profile'}</button>}
         </div>
         <h1>{person.display_name || person.full_name || (isAr ? 'عضو نسقرا' : 'NUSQRA member')}</h1>
@@ -65,9 +97,9 @@ export function MemberProfile({person, reputation, isAr, country, professional, 
         {(professional?.city || country) && <p className="member-location"><MapPin size={15} aria-hidden="true"/>{[professional?.city, country].filter(Boolean).join(' · ')}</p>}
         <div className="member-badges">
           {distinctions?.verified && <VerifiedBadge isAr={isAr}/>}
-          {distinctions?.tier && <span className={`member-badge member-${distinctions.tier}`}>{isAr?'إطار نسقرا':'NUSQRA frame'} · {tierNames[distinctions.tier][Number(isAr)]}</span>}
-          {professionalTier && <ReputationBadge reputation={reputation} years={years} isAr={isAr}/>}
-          {customer && <ReputationBadge reputation={reputation} customer isAr={isAr}/>}
+          {progress?.trusted && <span className="member-verified"><BadgeCheck size={17} aria-hidden="true"/>{isAr?'عضو موثوق · 50 مهمة مكتملة':'Trusted member · 50 tasks completed'}</span>}
+          {staffFrame && <span className={`member-badge member-${staffFrame.tier}`}>{isAr?'إطار من فريق نسقرا':'Staff-awarded frame'} · {staffFrame.names[Number(isAr)]}</span>}
+          <ReputationBadge reputation={reputation} isAr={isAr}/>
         </div>
         {distinctions?.stars && <div className="member-stars" aria-label={isAr?`نجوم نسقرا ${distinctions.stars} من 5`:`NUSQRA staff award, ${distinctions.stars} out of 5 stars`}>
           <span className="member-star-icons" aria-hidden="true">{[1,2,3,4,5].map(value => <Star key={value} size={16} fill={value<=distinctions.stars?'currentColor':'none'}/>)}</span>
@@ -76,6 +108,7 @@ export function MemberProfile({person, reputation, isAr, country, professional, 
         {professional && <SkillStars reputation={reputation} isAr={isAr}/>}
       </div>
     </section>
+    {progress && (onEdit || progress.level > 0) && <ProfileProgress progress={progress} isAr={isAr} onEdit={onEdit}/>}
     {(professional?.about || person.bio) && <section className="member-card member-section">
       <h2>{isAr?'نبذة':'About'}</h2><p>{professional?.about || person.bio}</p>
     </section>}
@@ -86,11 +119,6 @@ export function MemberProfile({person, reputation, isAr, country, professional, 
         {professional && <div><dt>{isAr?'مشاريع مكتملة':'Completed projects'}</dt><dd>{reputation?.completed_projects ?? '–'}</dd></div>}
         {customer && <div><dt>{isAr?'مشاريع مدفوعة أكدها الطرفان':'Paid projects confirmed by both parties'}</dt><dd>{reputation?.confirmed_paid_projects ?? '–'}</dd></div>}
       </dl>
-      {onEdit && <details className="member-tier-guide">
-        <summary>{isAr?'كيف تُكتسب الإطارات؟':'How frames are earned'}</summary>
-        {professional && <p>{isAr?'ذهبي بعد مشروع مكتمل واحد. زمردي بعد 5 مشاريع و3 سنوات خبرة معلنة. ماسي بعد 15 مشروعاً و7 سنوات خبرة معلنة.':'Gold after 1 completed project. Emerald after 5 completed projects and 3 years of reported experience. Diamond after 15 completed projects and 7 years of reported experience.'}</p>}
-        {customer && <p>{isAr?'إطارات العملاء الذهبية والزمردية والماسية عند تأكيد الطرفين دفع 1 و5 و15 مشروعاً على التوالي.':'Client frames reach Gold, Emerald and Diamond after 1, 5 and 15 projects with payment confirmed by both parties.'}</p>}
-      </details>}
     </section>}
     {portfolio.length > 0 && <section className="member-card member-section">
       <h2>{isAr?'أبرز المشاريع':'Featured projects'}</h2>
@@ -110,7 +138,7 @@ export function MemberProfile({person, reputation, isAr, country, professional, 
 export function PaymentConfirmations({projects, pending, error, isAr, onConfirm}) {
   return <section className="member-card member-section">
     <h2>{isAr?'تأكيد دفع المشاريع':'Project payment confirmations'}</h2>
-    <p>{isAr?'بعد اكتمال المشروع، يؤكد العميل الدفع ويؤكد المحترف الاستلام. يُحتسب المشروع بعد تأكيد الطرفين.':'After a project is complete, the client confirms payment and the professional confirms receipt. Both confirmations count toward the client’s frame.'}</p>
+    <p>{isAr?'بعد اكتمال المشروع، يؤكد العميل الدفع ويؤكد المحترف الاستلام. يُحدّث سجل الدفع بعد تأكيد الطرفين.':'After a project is complete, the client confirms payment and the professional confirms receipt. The payment record updates once both parties confirm.'}</p>
     {error && <p className="member-error" role="alert">{error}</p>}
     {projects === null ? <p>{isAr?'جارٍ تحميل المشاريع…':'Loading projects…'}</p> :
       projects.length === 0 ? <p>{isAr?'لا توجد مشاريع مكتملة للتأكيد.':'No completed projects to confirm yet.'}</p> :
