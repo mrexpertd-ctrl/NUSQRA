@@ -162,16 +162,16 @@
 .saudi-banner p { margin-top: 5px; }
 .saudi-banner .saudi-outline { border-color: #d6b46c; color: #ffe3a4; flex: none; }
 .saudi-banner .saudi-outline:hover { background: #ffffff18; }
-.saudi-footer {
+html body .saudi-footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 15px;
   padding: 16px var(--saudi-gutter);
-  border-top: 1px solid var(--saudi-line);
-  background: var(--saudi-paper);
-  color: var(--saudi-forest);
+  border-top: 1px solid var(--saudi-line) !important;
+  background: var(--saudi-paper) !important;
+  color: var(--saudi-forest) !important;
 }
 .saudi-footer nav { display: flex; flex-wrap: wrap; gap: 18px; }
 .saudi-info .entry-faq-list details { background: #fffdfa; color: var(--saudi-ink); border-color: var(--saudi-line); }
