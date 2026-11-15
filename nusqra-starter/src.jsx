@@ -906,22 +906,22 @@ function App() {
     </div>;
   }
 
-  return <div dir={isAr ? 'rtl' : 'ltr'}>
-    <header className="header">
-      <a className="brand brand-lockup" href="#home" aria-label="NUSQRA home" onClick={()=>{setSettingsOpen(false);setPage('home');setMenu(false);}}><Wordmark/></a>
-      <nav className={menu ? 'nav open' : 'nav'} aria-label={isAr?'التنقل الرئيسي':'Main navigation'}>
-        <button type="button" className="navlink" onClick={()=>navigatePage('explore')}>{t.nav[0]}</button>
-        <button type="button" className="navlink" onClick={()=>navigatePage('categories')}>{t.nav[1]}</button>
-        <button type="button" className="navlink" onClick={()=>navigatePage('how-it-works')}>{t.nav[2]}</button>
-        <button type="button" className="navlink" onClick={()=>{setActiveRole('professional');window.localStorage.setItem('nusqra-active-role','professional');navigatePage('categories');}}>{t.nav[3]}</button>
-        {session && <><button type="button" className="navlink" onClick={()=>navigatePage('marketplace')}>{isAr?'السوق':'Marketplace'}</button><button type="button" className="navlink" onClick={()=>navigatePage('messages')}>{t.messages}</button></>}
+  return <div className="saudi-public saudi-account-site" dir={isAr ? 'rtl' : 'ltr'}>
+    <header className="saudi-header">
+      <a href="#home" aria-label="NUSQRA home" onClick={()=>{setSettingsOpen(false);setPage('home');setMenu(false);}}><Wordmark/></a>
+      <nav className={menu ? 'saudi-nav open' : 'saudi-nav'} aria-label={isAr?'التنقل الرئيسي':'Main navigation'}>
+        <button type="button" onClick={()=>navigatePage('explore')}>{t.nav[0]}</button>
+        <button type="button" onClick={()=>navigatePage('categories')}>{t.nav[1]}</button>
+        <button type="button" onClick={()=>navigatePage('how-it-works')}>{t.nav[2]}</button>
+        <button type="button" onClick={()=>{setActiveRole('professional');window.localStorage.setItem('nusqra-active-role','professional');navigatePage('categories');}}>{t.nav[3]}</button>
+        {session && <><button type="button" onClick={()=>navigatePage('marketplace')}>{isAr?'السوق':'Marketplace'}</button><button type="button" onClick={()=>navigatePage('messages')}>{t.messages}</button></>}
       </nav>
-      <div className="actions">
-        {session ? <button className={'navlink '+(settingsOpen?'active':'')} aria-expanded={settingsOpen} onClick={()=>setSettingsOpen(v=>!v)}><UserRound size={15}/>{t.account}</button> :
+      <div className="saudi-header-actions">
+        {session ? <button className="saudi-outline" aria-expanded={settingsOpen} onClick={()=>setSettingsOpen(v=>!v)}><UserRound size={15}/>{t.account}</button> :
           <><button className="navlink" onClick={()=>{setAuthMode('login');setError('');setNotice('')}}>{t.login}</button><button className="btn primary" onClick={()=>{setAuthMode('register');setError('');setNotice('')}}>{t.signup}</button></>}
-        <button className="lang" onClick={()=>setLang(isAr?'en':'ar')}><Globe2 size={17}/>{isAr?'English':'العربية'}</button>
-        {session && <button className="navlink" onClick={signOut} aria-label={t.logout}><LogOut size={16}/></button>}
-        <button className="menu" aria-label={isAr?'القائمة':'Menu'} aria-expanded={menu} onClick={()=>setMenu(!menu)}>{menu?<X/>:<Menu/>}</button>
+        <button className="saudi-language" onClick={()=>setLang(isAr?'en':'ar')}><Globe2 size={17}/>{isAr?'English':'العربية'}</button>
+        {session && <button className="saudi-menu-action" onClick={signOut} aria-label={t.logout}><LogOut size={16}/></button>}
+        <button className="saudi-menu" aria-label={isAr?'القائمة':'Menu'} aria-expanded={menu} onClick={()=>setMenu(!menu)}>{menu?<X/>:<Menu/>}</button>
       </div>
     </header>
     <main>
@@ -932,17 +932,17 @@ function App() {
       {page === 'categories' && <section className="section category-section" id="categories">
         <div className="section-label">NUSQRA · SERVICES DIRECTORY</div>
         <h2>{isProfessional?(isAr?'اختر تخصصاتك المهنية':'Choose your professional categories'):t.categoriesTitle}</h2>
-        <p className="section-intro category-intro">{isProfessional?(isAr?'حدد الخدمات التي تستطيع تقديمها، ثم أكمل بياناتك المهنية للظهور للعملاء المناسبين.':'Choose the services you can provide, then complete your professional details so customers can find you.'):t.categoriesIntro}</p>
-        <div className="category-flow-note">{isProfessional?(isAr?'اختر تخصصاتك المهنية، ثم أكمل بيانات خبرتك وموقعك ووسيلة التواصل.':'Select your service categories, then complete your professional details.'):(isAr?'اختر الخدمة لعرض المحترفين المسجلين في التصنيف نفسه.':'Choose a service category to see professionals who offer that exact service.')}</div>
-        {!isProfessional&&<div className="audience-tabs" role="group" aria-label="Browse categories by audience">
+        <p className="saudi-category-intro">{isProfessional?(isAr?'حدد الخدمات التي تستطيع تقديمها، ثم أكمل بياناتك المهنية للظهور للعملاء المناسبين.':'Choose the services you can provide, then complete your professional details so customers can find you.'):t.categoriesIntro}</p>
+        <div className="saudi-category-note">{isProfessional?(isAr?'اختر تخصصاتك المهنية، ثم أكمل بيانات خبرتك وموقعك ووسيلة التواصل.':'Select your service categories, then complete your professional details.'):(isAr?'اختر الخدمة لعرض المحترفين المسجلين في التصنيف نفسه.':'Choose a service category to see professionals who offer that exact service.')}</div>
+        {!isProfessional&&<div className="saudi-category-tabs" role="group" aria-label="Browse categories by audience">
           <button type="button" className={categoryAudience==='all'?'active':''} onClick={()=>setCategoryAudience('all')}>{t.audienceAll}</button>
           <button type="button" className={categoryAudience==='individuals'?'active':''} onClick={()=>setCategoryAudience('individuals')}>{t.audienceIndividuals}</button>
           <button type="button" className={categoryAudience==='companies'?'active':''} onClick={()=>setCategoryAudience('companies')}>{t.audienceCompanies}</button>
           <button type="button" className={categoryAudience==='investors'?'active':''} onClick={()=>setCategoryAudience('investors')}>{t.audienceInvestors}</button>
         </div>}
-        {categories.length>0 && <div className="category-grid">
+        {categories.length>0 && <div className="saudi-category-grid">
           {categories.filter(c=>{if(isProfessional&&c.slug==='investors-opportunities')return false;const individualSlugs=['automotive-services','design-creative','education-training','healthcare-wellness','home-maintenance','hospitality-events','transport-logistics','web-technology','writing-translation'];const companySlugs=['business-services','construction-engineering','design-creative','finance-administration','hr-recruitment','industrial-manufacturing','marketing-sales','transport-logistics','web-technology'];if(categoryAudience==='all')return true;if(categoryAudience==='investors')return c.slug==='investors-opportunities';if(categoryAudience==='individuals')return individualSlugs.includes(c.slug);return companySlugs.includes(c.slug);}).map(c=>{
-            return <button type="button" className={'category-card category-select-card '+(isProfessional&&professionalCategoryIds.includes(c.id)?'is-selected':'')} key={c.id} onClick={()=>{
+            return <button type="button" className={'saudi-category-card '+(isProfessional&&professionalCategoryIds.includes(c.id)?'is-selected':'')} key={c.id} onClick={()=>{
               setSelectedCategoryId(c.id);
               if(isProfessional){
                 setSignupCategoryId(c.id);
@@ -954,10 +954,10 @@ function App() {
             }}>
               <span className="saudi-category-icon"><ServiceIcon slug={c.slug}/></span>
               <h3>{isAr?c.name_ar:c.name_en}</h3>
-              <p className="category-description">{isAr?(c.description_ar||''): (c.description_en||'')}</p>
-              <span className="category-audience">{c.slug==='investors-opportunities'?t.audienceInvestors:(isProfessional?(isAr?'اختر هذا التخصص لإضافته إلى ملفك':'Choose this category for your profile'):(isAr?'عرض المحترفين في هذا التصنيف':'View professionals in this category'))}</span>
-              {isProfessional&&professionalCategoryIds.includes(c.id)&&<span className="category-selected-mark">{isAr?'تم الاختيار':'Selected'}</span>}
-              {c.slug==='investors-opportunities'&&<small className="investor-disclaimer">{t.investorDisclaimer}</small>}
+              <p className="saudi-category-description">{isAr?(c.description_ar||''): (c.description_en||'')}</p>
+              <span className="saudi-category-action">{c.slug==='investors-opportunities'?t.audienceInvestors:(isProfessional?(isAr?'اختر هذا التخصص لإضافته إلى ملفك':'Choose this category for your profile'):(isAr?'عرض المحترفين في هذا التصنيف':'View professionals in this category'))}</span>
+              {isProfessional&&professionalCategoryIds.includes(c.id)&&<span className="saudi-category-selected">{isAr?'تم الاختيار':'Selected'}</span>}
+              {c.slug==='investors-opportunities'&&<small className="saudi-category-disclaimer">{t.investorDisclaimer}</small>}
             </button>;
           })}
         </div>}
@@ -1122,7 +1122,7 @@ function App() {
         </div>
       </section>}
     </main>
-    <footer><div className="brand brand-lockup"><img className="nusqra-lockup" src={nusqraLogo} alt="NUSQRA نسقرا" /></div><p>{t.footer}</p><span>© {new Date().getFullYear()} NUSQRA · {t.join}</span></footer>
+    <footer className="saudi-footer"><Wordmark/><small>© {new Date().getFullYear()} NUSQRA</small></footer>
     {authMode && <div className="auth-backdrop" role="presentation" onMouseDown={e=>{if(e.target===e.currentTarget){setAuthMode(null);setError('')}}}>
       <section className="auth-dialog" role="dialog" aria-modal="true" aria-label={authMode==='register'?t.create:t.welcome}>
         <button className="auth-close" aria-label="Close" onClick={()=>setAuthMode(null)}><X size={22}/></button>

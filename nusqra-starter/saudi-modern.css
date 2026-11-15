@@ -260,18 +260,80 @@ html body .saudi-password-toggle {
 .saudi-auth-link { min-height: 44px; border: 0; background: transparent; color: var(--saudi-forest); text-decoration: underline; }
 .saudi-password-hint, .saudi-auth-note { font-size: 14px; }
 .saudi-auth-note { margin-top: 12px; text-align: center; color: var(--saudi-muted); }
-html body .category-grid > .category-select-card {
-  display: flex !important;
-  align-items: flex-start !important;
-  flex-direction: column !important;
-  text-align: start;
-  padding: 20px !important;
-  background: #fffdf8 !important;
+html body .saudi-account-site {
+  background: var(--saudi-paper);
+  color: var(--saudi-ink);
 }
-html body .category-select-card::before, html body .category-select-card::after { display: none !important; }
-.saudi-category-icon { display: inline-flex; padding: 9px; background: var(--saudi-cream); border-radius: 9px; }
-html body .category-select-card .category-audience { margin-top: auto; }
-html body .category-select-card.is-selected { border-color: #947129 !important; }
+.saudi-account-site .saudi-header .saudi-outline,
+.saudi-menu-action { display: inline-flex; align-items: center; gap: 6px; }
+.saudi-menu-action {
+  padding: 9px;
+  min-height: 42px;
+  border: 1px solid var(--saudi-line);
+  border-radius: 7px;
+  background: transparent;
+  color: var(--saudi-forest);
+  cursor: pointer;
+}
+html body .saudi-benefits strong,
+html body .saudi-wordmark :is(strong, small) {
+  color: var(--saudi-forest) !important;
+  -webkit-text-fill-color: currentColor !important;
+}
+html body .saudi-wordmark .saudi-monogram {
+  color: #946d22 !important;
+  -webkit-text-fill-color: currentColor !important;
+}
+html body .saudi-account-site .saudi-services h2,
+html body .saudi-account-site .saudi-footer small {
+  color: var(--saudi-forest) !important;
+  -webkit-text-fill-color: currentColor !important;
+}
+html body .saudi-category-intro,
+html body .saudi-category-note {
+  max-width: 72ch;
+  color: var(--saudi-muted) !important;
+  -webkit-text-fill-color: currentColor !important;
+}
+.saudi-category-note { margin-block: 14px 20px; padding: 12px 15px; background: var(--saudi-cream); border-inline-start: 2px solid var(--saudi-gold); }
+.saudi-category-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-block: 20px; }
+.saudi-category-tabs button {
+  padding: 8px 13px;
+  min-height: 44px;
+  cursor: pointer;
+  border: 1px solid var(--saudi-line);
+  border-radius: 9px;
+  background: #fffdf8;
+  color: var(--saudi-forest);
+}
+.saudi-category-tabs button.active { background: var(--saudi-forest); color: #fff; }
+.saudi-category-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 245px), 1fr)); gap: 14px; }
+.saudi-category-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 18px;
+  text-align: start;
+  border: 1px solid var(--saudi-line);
+  border-radius: 12px;
+  background: #fffdf8;
+  color: var(--saudi-ink);
+  cursor: pointer;
+}
+html body .saudi-category-card :is(h3, p, small, span) { color: var(--saudi-forest) !important; -webkit-text-fill-color: currentColor !important; }
+.saudi-category-card h3 { margin: 0; font-size: 18px; }
+.saudi-category-card p { margin: 0; }
+.saudi-category-card:hover, .saudi-category-card.is-selected { border-color: var(--saudi-gold); }
+.saudi-category-icon { display: inline-flex; padding: 8px; background: var(--saudi-cream); border-radius: 8px; }
+.saudi-category-action { margin-top: auto; padding-top: 8px; text-decoration: underline; }
+.saudi-category-selected { font-weight: 750; }
+.saudi-category-disclaimer { line-height: 1.5; }
+@media (max-width: 1250px) {
+  .saudi-account-site .saudi-nav { display: none; }
+  .saudi-account-site .saudi-menu { display: inline-flex; }
+  .saudi-account-site .saudi-nav.open { display: grid; position: absolute; inset: 100% 0 auto; padding: 10px var(--saudi-gutter); gap: 0; background: var(--saudi-paper); border-bottom: 1px solid var(--saudi-line); }
+}
 @media (max-width: 1120px), (hover: none) and (pointer: coarse) {
   .saudi-nav { display: none; }
   .saudi-menu { display: inline-flex; }
