@@ -94,6 +94,7 @@ function App() {
   const [session, setSession] = useState(null);
   const [authReady, setAuthReady] = useState(false);
   const [profile, setProfile] = useState(null);
+  const [profileLoadedFor, setProfileLoadedFor] = useState(null);
   const [roles, setRoles] = useState([]);
   const [professional, setProfessional] = useState(null);
   const [form, setForm] = useState({full_name:'',email:'',password:'',account_type:'customer',country_code:'SA'});
@@ -145,6 +146,11 @@ function App() {
   const [messageDraft,setMessageDraft] = useState('');
   const t = dictionary[lang];
   const isAr = lang === 'ar';
+  const avatarCooldownMs = profile?.avatar_changed_at
+    ? Math.max(0, Date.parse(profile.avatar_changed_at) + 7 * 24 * 60 * 60 * 1000 - Date.now())
+    : 0;
+  const avatarChangeLocked = Boolean(profile?.avatar_url && avatarCooldownMs > 0);
+  const avatarCooldownDays = Math.ceil(avatarCooldownMs / (24 * 60 * 60 * 1000));
 
   useEffect(() => {
     if (!session) {
@@ -399,12 +405,13 @@ function App() {
   useEffect(() => {
     if (!session || !supabase) {
       setProfile(null); setRoles([]); setProfessional(null);
+      setProfileLoadedFor(null);
       return;
     }
     let alive = true;
     (async () => {
       const [p,r,pp] = await Promise.all([
-        supabase.from('profiles').select('id,full_name,display_name,country_code,preferred_language,bio,avatar_url,cover_url,profile_style,profile_template,phone_number,profile_distinctions(verified,stars,tier)').eq('id',session.user.id).maybeSingle(),
+        supabase.from('profiles').select('id,full_name,display_name,country_code,preferred_language,bio,avatar_url,avatar_changed_at,cover_url,profile_style,profile_template,phone_number,profile_distinctions(verified,stars,tier)').eq('id',session.user.id).maybeSingle(),
         supabase.from('user_roles').select('role').eq('user_id',session.user.id),
         supabase.from('professional_profiles').select('headline,about,years_experience,city,country_code,profile_level,identity_name_confirmed,verification_status,age,can_travel_to_jobs').eq('user_id',session.user.id).maybeSingle()
       ]);
@@ -426,6 +433,7 @@ function App() {
         headline:pp.data?.headline || '', about:pp.data?.about || '',
         years_experience:pp.data?.years_experience ?? '', city:pp.data?.city || '', age:pp.data?.age ?? '', can_travel_to_jobs:pp.data?.can_travel_to_jobs===true?'true':pp.data?.can_travel_to_jobs===false?'false':'', profile_level:pp.data?.profile_level || 'entry', availability_status:pp.data?.availability_status || 'unavailable', identity_name_confirmed:pp.data?.identity_name_confirmed || false, verification_status:pp.data?.verification_status || 'pending_review'
       });
+      setProfileLoadedFor(session.user.id);
     })();
     return () => { alive = false; };
   }, [session, t.authError]);
@@ -594,6 +602,11 @@ function App() {
     event.preventDefault(); if (!supabase || !session) return;
     setBusy(true); setError(''); setNotice('');
     try {
+      if (photoFiles.avatar && avatarChangeLocked) {
+        throw new Error(isAr
+          ? `يمكن تغيير الصورة الشخصية مرة كل 7 أيام. حاول بعد ${avatarCooldownDays} يوم.`
+          : `Profile photos can be changed once every 7 days. Try again in ${avatarCooldownDays} day${avatarCooldownDays === 1 ? '' : 's'}.`);
+      }
       const upload = async (file,kind) => {
         if(!file) return profileForm[kind==='avatar'?'avatar_url':'cover_url'] || null;
         if(!['image/jpeg','image/png','image/webp'].includes(file.type) || file.size>5*1024*1024) throw new Error(isAr?'استخدم صورة JPG أو PNG أو WEBP بحجم أقل من 5 ميجابايت.':'Use JPG, PNG or WEBP images up to 5 MB.');
@@ -605,12 +618,12 @@ function App() {
       };
       const avatarUrl=await upload(photoFiles.avatar,'avatar');
       const coverUrl=await upload(photoFiles.cover,'cover');
-      const {error:pError} = await supabase.from('profiles').update({
+      const {data:updatedProfile,error:pError} = await supabase.from('profiles').update({
         full_name:profileForm.full_name.trim(), bio:profileForm.bio.trim() || null,
         country_code:profileForm.country_code, avatar_url:avatarUrl, cover_url:coverUrl,
         profile_style:profileForm.profile_style, profile_template:profileForm.profile_template, phone_number:profileForm.phone_number || null,
         updated_at:new Date().toISOString()
-      }).eq('id',session.user.id);
+      }).eq('id',session.user.id).select('avatar_changed_at').single();
       if (pError) throw pError;
       if (isProfessional) {
         const {error:ppError} = await supabase.from('professional_profiles').update({
@@ -624,7 +637,7 @@ function App() {
         if(professionalCategoryIds.length){const {error:insertCategoriesError}=await supabase.from('professional_categories').insert(professionalCategoryIds.map(category_id=>({professional_user_id:session.user.id,category_id})));if(insertCategoriesError)throw insertCategoriesError;}
       }
       setPhotoFiles({avatar:null,cover:null});
-      setProfile({...profile,full_name:profileForm.full_name,bio:profileForm.bio,country_code:profileForm.country_code,avatar_url:avatarUrl,cover_url:coverUrl,profile_style:profileForm.profile_style,profile_template:profileForm.profile_template});
+      setProfile({...profile,full_name:profileForm.full_name,bio:profileForm.bio,country_code:profileForm.country_code,avatar_url:avatarUrl,avatar_changed_at:updatedProfile?.avatar_changed_at ?? profile?.avatar_changed_at,cover_url:coverUrl,profile_style:profileForm.profile_style,profile_template:profileForm.profile_template});
       setProfileForm(v=>({...v,avatar_url:avatarUrl||'',cover_url:coverUrl||''}));
       if (isProfessional) setProfessional({...professional,...profileForm});
       setNotice(t.saved);
@@ -1214,12 +1227,12 @@ function App() {
         <section className="member-editor" id="account">
         <h2>{t.dashboard}</h2>
         <div className="account-card">
-          <div className="account-heading"><div><h3>{profileForm.full_name || session.user.email}</h3><p>{session.user.email}</p></div><div className="settings-actions"><button className="btn secondary" type="button" onClick={()=>setSettingsOpen(false)}>{isAr?"إغلاق":"Close"}</button><button className="btn secondary" onClick={signOut}><LogOut size={16}/>{t.logout}</button></div></div>
+          <div className="account-heading"><div><h3>{profileLoadedFor===session.user.id ? (profileForm.full_name || session.user.email) : session.user.email}</h3><p>{isAr?'مسجل الدخول باسم':'Signed in as'} {session.user.email}</p></div><div className="settings-actions"><button className="btn secondary" type="button" onClick={()=>setSettingsOpen(false)}>{isAr?"إغلاق":"Close"}</button><button className="btn secondary" onClick={signOut}><LogOut size={16}/>{t.logout}</button></div></div>
           <div className="language-preference"><label htmlFor="nusqra-language-setting">{isAr?'لغة المنصة':'Website language'}</label><select id="nusqra-language-setting" value={lang} onChange={e=>setLang(e.target.value)}><option value="ar">العربية</option><option value="en">English</option></select></div>
           {roles.length>1 && <div className="language-preference"><label htmlFor="nusqra-role-setting">{isAr?'طريقة استخدام نسقرا':'NUSQRA experience'}</label><select id="nusqra-role-setting" value={activeRole} onChange={e=>{const next=e.target.value;setActiveRole(next);window.localStorage.setItem('nusqra-active-role',next);navigatePage(next==='professional'?'marketplace':'professionals');}}>{roles.includes('customer')&&<option value="customer">{isAr?'أبحث عن محترف':'Hire a professional'}</option>}{roles.includes('professional')&&<option value="professional">{isAr?'أنا محترف':'Find work as a professional'}</option>}</select></div>}
           <div className="role-list"><strong>{t.roles}:</strong>{roles.map(role=><span className={"role-chip"+(role===activeRole?" selected":"")} key={role}>{role==='customer'?t.customer:t.professional}</span>)}<button className="btn secondary" type="button" onClick={()=>navigatePage('support')}>{isAr?'دعم العملاء':'Customer support'}</button></div>
           {!roles.includes('professional') && <button className="btn secondary enable-pro" disabled={busy} onClick={enableProfessional}><BriefcaseBusiness size={16}/>{t.enablePro}</button>}
-          <form className="profile-form profile-studio" onSubmit={saveProfile}>
+          {profileLoadedFor!==session.user.id ? <p className="profile-load-status" role="status">{isAr?'جارٍ تحميل بيانات ملفك المحفوظة…':'Loading your saved profile…'}</p> : <form className="profile-form profile-studio" onSubmit={saveProfile}>
             <div className="profile-studio-heading"><div><span className="profile-studio-kicker">{isAr?'استوديو الهوية الشخصية':'NUSQRA · PROFILE DESIGN STUDIO'}</span><h3>{isAr?'صمّم حضورك المهني':'Build a profile that stands out'}</h3><p>{isAr?'خصص صورتك ومعلوماتك ومظهرك، ثم راجع النتيجة قبل النشر.':'Personalize your identity, details and visual style, then preview before saving.'}</p></div><button className="btn secondary preview-open" type="button" onClick={()=>setPreviewOpen(true)}>{isAr?'معاينة الملف':'Live preview'}</button></div>
             <div className="profile-editor-tabs" role="tablist" aria-label="Profile editor sections">
               <button type="button" role="tab" aria-selected={profileTab==='identity'} className={profileTab==='identity'?'active':''} onClick={()=>setProfileTab('identity')}>{isAr?'الهوية':'Profile'}</button>
@@ -1228,7 +1241,9 @@ function App() {
             </div>
             {(profileTab==='identity' || (profileTab==='professional' && !isProfessional)) && <div className="profile-tab-panel">
               <div className="profile-upload-grid">
-                <label className="profile-upload-card"><span className="upload-icon">◎</span><strong>{isAr?'الصورة الشخصية':'Profile photo'}</strong><small>{isAr?'صورة واضحة للوجه في منتصف الإطار · JPG/PNG/WEBP حتى 5MB':'Clear face, centered in frame · JPG/PNG/WEBP up to 5MB'}</small><input type="file" accept="image/jpeg,image/png,image/webp" onChange={e=>setPhotoFiles(v=>({...v,avatar:e.target.files?.[0]||null}))}/></label>
+                <label className={'profile-upload-card'+(avatarChangeLocked?' avatar-upload-locked':'')}><span className="upload-icon">◎</span><strong>{isAr?'الصورة الشخصية':'Profile photo'}</strong><small>{avatarChangeLocked
+                  ? (isAr?`يمكن تغيير الصورة بعد ${avatarCooldownDays} يوم.`:`You can change your profile photo in ${avatarCooldownDays} day${avatarCooldownDays===1?'':'s'}.`)
+                  : (isAr?'صورة واضحة للوجه في منتصف الإطار · JPG/PNG/WEBP حتى 5MB':'Clear face, centered in frame · JPG/PNG/WEBP up to 5MB')}</small><input type="file" accept="image/jpeg,image/png,image/webp" disabled={avatarChangeLocked} onChange={e=>setPhotoFiles(v=>({...v,avatar:e.target.files?.[0]||null}))}/></label>
                 <label className="profile-upload-card"><span className="upload-icon">▱</span><strong>{isAr?'صورة الغلاف':'Cover image'}</strong><small>{isAr?'صورة عريضة اختيارية':'Optional wide banner image'}</small><input type="file" accept="image/jpeg,image/png,image/webp" onChange={e=>setPhotoFiles(v=>({...v,cover:e.target.files?.[0]||null}))}/></label>
               </div>
               <label>{t.fullName}<input required maxLength="100" value={profileForm.full_name} onChange={e=>setProfileField('full_name',e.target.value)} /></label>{isProfessional&&<p className="profile-guidance">{isAr?'يجب استخدام الاسم الحقيقي المطابق لوثائقك. ستتم مراجعته قبل التوصية بملفك.':'Use your real legal name as shown on your identity documents. It will be reviewed before your profile can be recommended.'}</p>}
@@ -1266,7 +1281,7 @@ function App() {
             </div>}
             {error && <p className="auth-error" role="alert">{error}</p>}
             <div className="profile-save-row"><span>{isAr?'التغييرات لا تُنشر إلا بعد الحفظ.':'Your changes are applied after you save.'}</span><button className="btn primary" type="submit" disabled={busy}>{busy?<LoaderCircle className="spin" size={17}/>:<CheckCircle2 size={17}/>} {t.save}</button></div>
-          </form>
+          </form>}
           {previewOpen && <div className="profile-preview-backdrop" role="presentation" onMouseDown={e=>{if(e.target===e.currentTarget)setPreviewOpen(false);}}>
             <section className="profile-preview-dialog" role="dialog" aria-modal="true" aria-label="Profile preview">
               <div className="profile-preview-dialog-head"><div><strong>{isAr?'معاينة الملف الشخصي':'Profile preview'}</strong><span>{isAr?'هذا مثال لكيفية ظهور ملفك':'A preview of how your profile may appear'}</span></div><button type="button" aria-label="Close preview" onClick={()=>setPreviewOpen(false)}><X size={20}/></button></div>
