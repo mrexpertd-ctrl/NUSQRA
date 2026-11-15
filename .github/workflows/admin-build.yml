@@ -26,5 +26,6 @@ jobs:
           cache-dependency-path: admin-dashboard/package.json
       - run: npm install
       - run: npm run build
+      - run: node --test
       - name: Validate Worker bundle syntax
         run: npx esbuild src/worker.js --bundle --platform=browser --format=esm --external:@supabase/supabase-js --outfile=/tmp/nusqra-admin-worker-check.js

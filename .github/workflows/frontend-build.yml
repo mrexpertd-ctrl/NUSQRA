@@ -40,7 +40,7 @@ jobs:
       - name: Build production website
         run: npm run build
       - name: Deploy NUSQRA Worker to Cloudflare
-        if: env.CLOUDFLARE_API_TOKEN != ''
+        if: github.event_name != 'pull_request' && env.CLOUDFLARE_API_TOKEN != ''
         uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ env.CLOUDFLARE_API_TOKEN }}
@@ -49,5 +49,5 @@ jobs:
           command: deploy --config ../wrangler.jsonc
           workingDirectory: nusqra-starter
       - name: Deployment skipped until Cloudflare token is configured
-        if: env.CLOUDFLARE_API_TOKEN == ''
+        if: github.event_name != 'pull_request' && env.CLOUDFLARE_API_TOKEN == ''
         run: echo "Build passed. Add CLOUDFLARE_API_TOKEN in repository Actions secrets to enable deployment."
