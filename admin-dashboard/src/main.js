@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import {accountsMarkup, setupAccounts} from './accounts.js';
 import {moderationMarkup, setupModeration} from './moderation.js';
 import './style.css';
 
@@ -81,7 +82,7 @@ function renderDashboard(info){
  const pages = [
   ...(canClose ? [['overview','Overview']] : []),
   ['moderation','Moderation'],
-  ...(supreme ? [['staff','Staff access'],['audit-log','Audit log']] : []),
+  ...(supreme ? [['accounts','Accounts & visits'],['staff','Staff access'],['audit-log','Audit log']] : []),
  ];
  shell(`<main class="app-shell">
   <header class="top"><div class="brandline"><div class="mark small" aria-hidden="true">N</div><div><b>NUSQRA</b><span>STAFF WORKSPACE</span></div></div>
@@ -103,6 +104,7 @@ function renderDashboard(info){
  <div class="analytics-feed"><div class="row"><h3>Live activity</h3><span class="muted">Latest events · no personal data</span></div><div id="liveFeed" class="audit muted">Waiting for activity…</div></div>
 </section>` : ''}
     ${moderationMarkup}
+    ${supreme ? accountsMarkup : ''}
     ${supreme ? `<section id="staff" data-workspace-panel hidden aria-labelledby="staffTitle">
      <section class="panel section"><div class="workspace-section-head"><div><h2 id="staffTitle">Staff access</h2><p class="muted">Invite an Admin or Moderator.</p></div></div>
       <form id="invite"><label>Staff email<input name="email" type="email" required placeholder="colleague@example.com"></label>
@@ -118,6 +120,7 @@ function renderDashboard(info){
  </main>`);
  document.querySelector('#signout').onclick=async()=>{await supabase.auth.signOut({scope:'local'});session=null;renderLogin();};
  const loadModeration = setupModeration(document.querySelector('#moderation'), {api,esc,canClose});
+ const loadAccounts = supreme ? setupAccounts(document.querySelector('#accounts'), {api,esc}) : null;
  if(supreme){
   document.querySelector('#invite').onsubmit=async event=>{
    event.preventDefault();
@@ -151,6 +154,7 @@ function renderDashboard(info){
   });
   if(current==='moderation')loadModeration();
   if(current==='overview')startLiveStats();
+  if(current==='accounts')loadAccounts();
   if(current==='staff')loadStaff();
   if(current==='audit-log')loadAudit();
  }

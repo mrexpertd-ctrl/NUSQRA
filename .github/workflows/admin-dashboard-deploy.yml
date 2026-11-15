@@ -15,9 +15,8 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     env:
+      CLOUDFLARE_ACCOUNT_ID: 7d871be22dc8c73b109a1075ee5a911a
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-      SUPREME_ADMIN_EMAIL: ${{ secrets.SUPREME_ADMIN_EMAIL }}
     defaults:
       run:
         working-directory: admin-dashboard
@@ -28,18 +27,16 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Verify deployment secrets
-        run: |
-          test -n "$CLOUDFLARE_API_TOKEN" || (echo "Missing CLOUDFLARE_API_TOKEN Actions secret." && exit 1)
-          test -n "$SUPABASE_SERVICE_ROLE_KEY" || (echo "Missing SUPABASE_SERVICE_ROLE_KEY Actions secret." && exit 1)
-          test -n "$SUPREME_ADMIN_EMAIL" || (echo "Missing SUPREME_ADMIN_EMAIL Actions secret." && exit 1)
       - name: Install dependencies
         run: npm install --no-audit --no-fund
-      - name: Build admin dashboard
-        run: npm run build
-      - name: Set server-only Worker secrets
+      - name: Build and test admin dashboard
         run: |
-          printf '%s' "$SUPABASE_SERVICE_ROLE_KEY" | npx wrangler secret put SUPABASE_SERVICE_ROLE_KEY --config wrangler.jsonc
-          printf '%s' "$SUPREME_ADMIN_EMAIL" | npx wrangler secret put SUPREME_ADMIN_EMAIL --config wrangler.jsonc
+          npm run build
+          node --test
       - name: Deploy private admin Worker
+        if: env.CLOUDFLARE_API_TOKEN != ''
+        # Wrangler inherits the two existing Worker secrets.
         run: npx wrangler deploy --config wrangler.jsonc
+      - name: Deployment skipped until Cloudflare token is configured
+        if: env.CLOUDFLARE_API_TOKEN == ''
+        run: echo "Build passed. Add CLOUDFLARE_API_TOKEN in repository Actions secrets to enable deployment."

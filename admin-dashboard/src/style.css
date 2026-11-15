@@ -162,3 +162,19 @@ button:disabled { opacity: .58; cursor: default; }
   .workspace-nav a:only-child { grid-column: 1 / -1; }
   #moderation .workspace-section-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; }
 }
+
+.account-filters, .account-pagination { display: flex; gap: .75rem; flex-wrap: wrap; align-items: end; }
+.account-filters label { flex: 1 1 10rem; margin: 0; }
+.account-results { display: grid; gap: 1rem; padding: .5rem 0; }
+.account-card { border: 1px solid var(--line, #33323e); border-radius: .8rem; padding: 1rem; min-width: 0; overflow-wrap: anywhere; }
+.account-card h3, .account-card p { margin: 0 0 .4rem; }
+.account-card p, .account-card dt { color: #b9bac6; }
+.account-card dl { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%,10rem),1fr)); gap: .5rem; }
+.account-card dd { margin: .2rem 0 0; }
+.account-card details { border-top: 1px solid var(--line, #33323e); padding: .65rem 0; }
+.account-card summary { cursor: pointer; font-weight: 600; }
+.account-card form { margin-top: .65rem; }
+.account-card .account-check { display: flex; align-items: center; gap: .45rem; }
+.account-card .account-check input { width: auto; }
+.account-blue-tick { color: #80bcff; }
+.account-delete { color: #ffb2b6; }

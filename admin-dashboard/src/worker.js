@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import {handleAccounts} from './accounts-api.js';
 
 const JSON_HEADERS = { 'content-type':'application/json; charset=utf-8', 'cache-control':'no-store, private', 'x-robots-tag':'noindex, nofollow, noarchive' };
 const SECURITY_HEADERS = {
@@ -140,6 +141,7 @@ export default {
    let ctx;
    try{ctx=await authenticate(request,env,{touch:url.pathname!=='/api/overview/stats'});}catch(e){return json({error:e.message},401);}
    if(url.pathname==='/api/me'&&request.method==='GET') return json({user:{email:ctx.user.email},role:ctx.staff.staff_role,sessionExpiresInMinutes:30});
+   if(url.pathname==='/api/accounts') return handleAccounts(request,url,ctx,json);
    if(url.pathname==='/api/moderation/cases') return moderate(request,url,ctx);
    if(url.pathname==='/api/overview/stats'&&request.method==='GET'){
     if(!['supreme_admin','admin'].includes(ctx.staff.staff_role)) return json({error:'Live analytics are available to Admins and the Supreme Admin only.'},403);
