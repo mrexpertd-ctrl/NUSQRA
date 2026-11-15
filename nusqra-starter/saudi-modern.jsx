@@ -31,9 +31,9 @@ export function ServiceIcon({ slug, size = 25 }) {
 }
 
 export function Wordmark() {
-  return <span className="saudi-wordmark" dir="ltr">
-    <span><strong>NUSQRA</strong><small lang="ar" dir="rtl">نُسقرا</small></span>
-    <span className="saudi-monogram" aria-hidden="true">U</span>
+  return <span className="saudi-wordmark">
+    <strong lang="ar" dir="rtl">نُسقرا</strong>
+    <small lang="en" dir="ltr">NUSQRA</small>
   </span>;
 }
 

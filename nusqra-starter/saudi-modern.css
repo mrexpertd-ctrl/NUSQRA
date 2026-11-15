@@ -30,11 +30,29 @@
   border-bottom: 1px solid var(--saudi-line);
 }
 .saudi-header > a { text-decoration: none; flex: none; }
-.saudi-wordmark { display: inline-flex; gap: 8px; align-items: center; color: var(--saudi-forest); }
-.saudi-wordmark > span:first-child { display: grid; text-align: center; line-height: 1.1; }
-.saudi-wordmark strong { font: 800 20px Georgia, serif; }
-.saudi-wordmark small { font-size: 16px; font-weight: 800; }
-.saudi-monogram { font: 700 46px/.95 Georgia, serif; color: #b38a36; }
+.saudi-wordmark {
+  display: inline-grid;
+  justify-items: center;
+  gap: 3px;
+  color: var(--saudi-forest);
+  white-space: nowrap;
+}
+.saudi-wordmark strong {
+  font: 800 33px/1.15 Cairo, "Noto Sans Arabic", Tahoma, sans-serif !important;
+}
+.saudi-wordmark strong::after {
+  content: "";
+  display: block;
+  width: 56%;
+  height: 3px;
+  margin: 1px auto 0;
+  background: #ad8335;
+  transform: skewX(-35deg);
+}
+.saudi-wordmark small {
+  font: 800 11px/1.2 Inter, system-ui, sans-serif !important;
+  letter-spacing: .12em;
+}
 .saudi-nav, .saudi-header-actions, .saudi-hero-actions { display: flex; align-items: center; gap: 10px; }
 .saudi-nav { gap: clamp(14px, 2.6vw, 38px); }
 .saudi-nav button, .saudi-language, .saudi-menu, .saudi-footer button {
@@ -280,10 +298,6 @@ html body .saudi-wordmark :is(strong, small) {
   color: var(--saudi-forest) !important;
   -webkit-text-fill-color: currentColor !important;
 }
-html body .saudi-wordmark .saudi-monogram {
-  color: #946d22 !important;
-  -webkit-text-fill-color: currentColor !important;
-}
 html body .saudi-account-site .saudi-services h2,
 html body .saudi-account-site .saudi-footer small {
   color: var(--saudi-forest) !important;
@@ -351,9 +365,7 @@ html body .saudi-category-card :is(h3, p, small, span) { color: var(--saudi-fore
 }
 @media (max-width: 640px) {
   .saudi-header { min-height: 64px; gap: 6px; padding-inline: 12px; }
-  .saudi-wordmark strong { font-size: 15px; }
-  .saudi-wordmark small { font-size: 13px; }
-  .saudi-monogram { font-size: 35px; }
+  .saudi-wordmark strong { font-size: 27px !important; }
   .saudi-header-actions { gap: 5px; flex-wrap: wrap; justify-content: flex-end; }
   .saudi-header-actions :is(.saudi-primary,.saudi-outline) { font-size: 12px; padding: 5px 7px; }
   .saudi-language { font-size: 11px; }
