@@ -56,8 +56,10 @@ export function MemberProfile({person, reputation, isAr, country, professional, 
     <section className="member-card">
       <div className="member-cover">{person.cover_url && <img src={person.cover_url} alt=""/>}</div>
       <div className="member-identity">
-        <MemberAvatar url={person.avatar_url} reputation={reputation} customer={useClientFrame} years={years} staffTier={distinctions?.tier}/>
-        {onEdit && <button type="button" className="saudi-outline" onClick={onEdit}>{isAr?'تعديل الملف':'Edit profile'}</button>}
+        <div className="member-identity-actions">
+          <MemberAvatar url={person.avatar_url} reputation={reputation} customer={useClientFrame} years={years} staffTier={distinctions?.tier}/>
+          {onEdit && <button type="button" className="saudi-outline" onClick={onEdit}>{isAr?'تعديل الملف':'Edit profile'}</button>}
+        </div>
         <h1>{person.display_name || person.full_name || (isAr ? 'عضو نسقرا' : 'NUSQRA member')}</h1>
         {professional?.headline && <p className="member-headline">{professional.headline}</p>}
         {(professional?.city || country) && <p className="member-location"><MapPin size={15} aria-hidden="true"/>{[professional?.city, country].filter(Boolean).join(' · ')}</p>}
