@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>NUSQRA recovery</title>
+<style>
+html,body{margin:0;background:#fcfaf5!important;color:#103e31!important;font:17px system-ui;min-height:100%}
+main{max-width:420px;margin:50px auto;padding:28px}
+h1{font:700 32px Georgia}p{line-height:1.6}
+button,a{display:block;padding:15px;border-radius:8px;background:#103e31;color:white;border:0;font:inherit;text-align:center;text-decoration:none;margin:18px 0}
+</style>
+<main><h1>NUSQRA</h1><h2>Restore the website</h2>
+<p lang="ar" dir="rtl">اضغط الزر لتحديث ملفات الموقع وإعادة فتح نسقرا.</p>
+<p>This refreshes the website files. Your account and saved password are kept.</p>
+<button id="restore">Refresh and open NUSQRA</button>
+<p id="status" role="status"></p>
+<a href="/?fresh=20261115">Open homepage</a></main>
+<script>
+document.getElementById('restore').onclick=async function(){
+ this.disabled=true;
+ const status=document.getElementById('status');
+ status.textContent='Refreshing website files…';
+ try{
+  if('serviceWorker' in navigator){
+   const registrations=await navigator.serviceWorker.getRegistrations();
+   await Promise.all(registrations.filter(r=>new URL(r.scope).origin===location.origin).map(r=>r.unregister()));
+  }
+  if('caches' in window){
+   const keys=await caches.keys();
+   await Promise.all(keys.filter(k=>k.startsWith('nusqra-')).map(k=>caches.delete(k)));
+  }
+  location.replace('/?fresh='+Date.now());
+ }catch(e){status.textContent='Please tap Open homepage below.';this.disabled=false;}
+};
+</script>
+</html>

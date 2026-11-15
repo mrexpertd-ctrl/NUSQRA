@@ -1160,4 +1160,16 @@ function App() {
     {notice && !authMode && <div className="site-notice" role="status">{notice}</div>}
   </div>;
 }
-createRoot(document.getElementById('root')).render(<App/>);
+class AppRecovery extends React.Component {
+  state = { failed: false };
+  static getDerivedStateFromError() { return { failed: true }; }
+  render() {
+    if (this.state.failed) return <main style={{minHeight:'100vh',background:'#fcfaf5',color:'#103e31',padding:28,fontFamily:'system-ui'}}>
+      <h1>NUSQRA</h1><p>The page could not finish loading.</p>
+      <p lang="ar" dir="rtl">تعذّر تحميل الصفحة. يرجى تحديث ملفات الموقع.</p>
+      <a href="/recover.html" style={{display:'inline-block',background:'#103e31',color:'#fff',padding:16,borderRadius:8}}>Restore website / استعادة الموقع</a>
+    </main>;
+    return this.props.children;
+  }
+}
+createRoot(document.getElementById('root')).render(<AppRecovery><App/></AppRecovery>);
