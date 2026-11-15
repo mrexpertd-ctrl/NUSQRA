@@ -91,6 +91,7 @@ function App() {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [authMode, setAuthMode] = useState(null);
   const [session, setSession] = useState(null);
+  const memberId = session?.user?.id;
   const [authReady, setAuthReady] = useState(false);
   const [profile, setProfile] = useState(null);
   const [roles, setRoles] = useState([]);
@@ -331,19 +332,19 @@ function App() {
   },[session]);
 
   useEffect(() => {
-    if (!session || !supabase) {
+    if (!memberId || !supabase) {
       setProfile(null); setRoles([]); setProfessional(null);
       return;
     }
     let alive = true;
     (async () => {
       const [p,r,pp] = await Promise.all([
-        supabase.from('profiles').select('id,full_name,display_name,country_code,preferred_language,bio,avatar_url,cover_url,profile_style,profile_template,phone_number').eq('id',session.user.id).maybeSingle(),
-        supabase.from('user_roles').select('role').eq('user_id',session.user.id),
-        supabase.from('professional_profiles').select('headline,about,years_experience,city,country_code,profile_level,identity_name_confirmed,verification_status,age,can_travel_to_jobs').eq('user_id',session.user.id).maybeSingle()
+        supabase.from('profiles').select('id,full_name,display_name,country_code,preferred_language,bio,avatar_url,cover_url,profile_style,profile_template,phone_number').eq('id',memberId).maybeSingle(),
+        supabase.from('user_roles').select('role').eq('user_id',memberId),
+        supabase.from('professional_profiles').select('headline,about,years_experience,city,country_code,profile_level,identity_name_confirmed,verification_status,age,can_travel_to_jobs').eq('user_id',memberId).maybeSingle()
       ]);
       if (!alive) return;
-      if (p.error || r.error) { setError(p.error?.message || r.error?.message || t.authError); return; }
+      if (p.error || r.error) { setError((p.error || r.error).message); return; }
       setProfile(p.data || {});
       const availableRoles = (r.data || []).map(x => x.role);
       setRoles(availableRoles);
@@ -362,7 +363,7 @@ function App() {
       });
     })();
     return () => { alive = false; };
-  }, [session, t.authError]);
+  }, [memberId]);
 
   useEffect(() => {
     if (!session || !supabase || profile === null) return;
@@ -593,7 +594,6 @@ function App() {
     return () => { alive = false; };
   }, []);
 
-  const memberId = session?.user?.id;
   useEffect(() => {
     if (page !== 'profile' || !memberId || !supabase) return;
     let active = true;
@@ -1184,6 +1184,7 @@ function App() {
               </div>
             </div>}
             {error && <p className="auth-error" role="alert">{error}</p>}
+            {notice && <p className="auth-success" role="status">{notice}</p>}
             <div className="profile-save-row"><span>{isAr?'التغييرات لا تُنشر إلا بعد الحفظ.':'Your changes are applied after you save.'}</span><button className="btn primary" type="submit" disabled={busy}>{busy?<LoaderCircle className="spin" size={17}/>:<CheckCircle2 size={17}/>} {t.save}</button></div>
           </form>
           {previewOpen && <div className="profile-preview-backdrop" role="presentation" onMouseDown={e=>{if(e.target===e.currentTarget)setPreviewOpen(false);}}>
@@ -1237,7 +1238,7 @@ function App() {
         <button className="auth-switch" onClick={()=>{setAuthMode(authMode==='login'?'register':'login');setError('');setNotice('')}}>{authMode==='login'?t.signUpPrompt:t.signInPrompt}</button>
       </section>
     </div>}
-    {notice && !authMode && <div className="site-notice" role="status">{notice}</div>}
+    {notice && !authMode && !settingsOpen && <div className="site-notice" role="status">{notice}</div>}
   </div>;
 }
 class AppRecovery extends React.Component {
