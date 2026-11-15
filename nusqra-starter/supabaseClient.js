@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import { isNativeApp } from './mobile/auth.mjs';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabasePublishableKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
@@ -10,7 +11,8 @@ export const supabase = isSupabaseConfigured
       auth: {
         autoRefreshToken: true,
         persistSession: true,
-        detectSessionInUrl: true,
+        detectSessionInUrl: !isNativeApp,
+        flowType: isNativeApp ? 'pkce' : 'implicit',
       },
     })
   : null;
