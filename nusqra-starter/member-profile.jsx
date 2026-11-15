@@ -161,8 +161,17 @@ export function PaymentConfirmations({projects, pending, error, isAr, onConfirm}
 export function MemberProfileDialog({onClose, isAr, children, accountEditor = false}) {
   const dialog = useRef(null);
   useEffect(() => { dialog.current.showModal(); }, []);
-  return <dialog ref={dialog} className={`member-profile-dialog${accountEditor ? " member-editor-dialog" : ""}`} aria-label={accountEditor ? (isAr ? "إعدادات الحساب" : "Account settings") : (isAr ? "الملف المهني" : "Professional profile")} onClose={onClose}>
-    <button type="button" className="member-close saudi-outline" onClick={() => dialog.current.close()} aria-label={isAr?'إغلاق':'Close'}><X size={20}/></button>
+  return <dialog ref={dialog} className={`member-profile-dialog${accountEditor ? " member-editor-dialog" : ""}`} aria-label={accountEditor ? (isAr ? "إعدادات الحساب" : "Account settings") : (isAr ? "الملف الشخصي" : "Member profile")} onClose={onClose}>
+    <ProfileCloseButton isAr={isAr} onClose={() => dialog.current.close()}/>
     {children}
   </dialog>;
+}
+
+export function ProfileCloseButton({isAr, onClose}) {
+  const label = isAr ? 'إغلاق والعودة' : 'Close and go back';
+  return <div className="member-close-bar">
+    <button type="button" className="member-close saudi-outline" onClick={onClose} aria-label={label} title={label}>
+      <X size={22} aria-hidden="true"/>
+    </button>
+  </div>;
 }

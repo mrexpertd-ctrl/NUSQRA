@@ -49,7 +49,19 @@
 }
 .member-profile-dialog { width: min(calc(100% - 24px), 760px); max-height: 92dvh; overflow: auto; background: #fcfaf5; border: 1px solid #e7dfcf; border-radius: 16px; padding: 12px; }
 .member-profile-dialog::backdrop { background: #09291fc2; }
-.member-close { display: flex; margin-inline-start: auto; margin-block-end: 8px; }
+.member-close-bar {
+  position: sticky; inset-block-start: 0; z-index: 2; display: flex; justify-content: flex-end;
+  padding-block: 4px; margin-block-end: 8px; background: #fcfaf5;
+}
+.member-close-bar .member-close {
+  display: grid; place-items: center; width: 44px; height: 44px; padding: 0;
+  background: #fffdf8; color: #103e31;
+}
+.member-profile-link {
+  display: inline-block; padding: 0; border: 0; background: none; color: inherit;
+  text-align: start; text-decoration: underline; text-underline-offset: .18em;
+}
+.member-profile-link:focus-visible { outline: 2px solid #14634a; outline-offset: 4px; }
 .member-directory-card .member-avatar { width: 64px; height: 64px; }
 .member-directory-card .saudi-outline { margin-block-start: 8px; }
 html body .member-card :is(h1,h2,h3,p,dt,dd,small,strong,li,a),

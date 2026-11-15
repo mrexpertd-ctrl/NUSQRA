@@ -11,7 +11,7 @@ import './style.css';
 import './emerald-city.css';
 import './saudi-modern.css';
 import { ProfessionalBanner, SaudiHero, ServiceIcon, ServicesGrid, Wordmark } from './saudi-modern';
-import {MemberAvatar, MemberProfile, MemberProfileDialog, PaymentConfirmations, ReputationBadge, VerifiedBadge} from './member-profile';
+import {MemberAvatar, MemberProfile, MemberProfileDialog, PaymentConfirmations, ProfileCloseButton, ReputationBadge, VerifiedBadge} from './member-profile';
 import { isSupabaseConfigured, supabase } from './supabaseClient';
 
 const dictionary = {
@@ -110,7 +110,9 @@ function App() {
   const [categoryAudience,setCategoryAudience] = useState('all');
   const [jobs,setJobs] = useState([]);
   const [professionalDirectory,setProfessionalDirectory] = useState([]);
-  const [viewedProfessional, setViewedProfessional] = useState(null);
+  const [viewedMember, setViewedMember] = useState(null);
+  const viewedMemberId = viewedMember?.id;
+  const needsMemberDetails = viewedMember?.status === 'loading';
   const [myReputation, setMyReputation] = useState(null);
   const [clientReputation, setClientReputation] = useState({});
   const [reputationProjects, setReputationProjects] = useState(null);
@@ -267,12 +269,63 @@ function App() {
   }, [menu]);
 
   useEffect(() => {
-    const syncPage = () => { const requested = window.location.hash.replace('#','') || 'home'; const next = requested === 'login' ? 'home' : requested; setPage(next); setSettingsOpen(next === 'settings'); setMenu(false); window.scrollTo(0,0); };
+    const syncPage = () => { const requested = window.location.hash.replace('#','') || 'home'; const next = requested === 'login' ? 'home' : requested; setPage(next); setSettingsOpen(next === 'settings'); setViewedMember(null); setMenu(false); window.scrollTo(0,0); };
     window.addEventListener('hashchange', syncPage);
     return () => window.removeEventListener('hashchange', syncPage);
   }, []);
 
   const navigatePage = (next) => { setPage(next); setSettingsOpen(next === 'settings'); setMenu(false); window.location.hash = next; window.scrollTo(0,0); };
+
+  function openOwnProfile() {
+    if (page === 'profile') return;
+    window.history.pushState({nusqraProfileEntry:true}, '', '#profile');
+    navigatePage('profile');
+  }
+
+  function closeOwnProfile() {
+    if (window.history.state?.nusqraProfileEntry) window.history.back();
+    else navigatePage('home');
+  }
+
+  function openMember(memberId, directoryEntry) {
+    if (memberId === session?.user?.id) {
+      openOwnProfile();
+      return;
+    }
+    if (memberId) setViewedMember(directoryEntry
+      ? {...directoryEntry, id:memberId, professional:directoryEntry, status:'ready'}
+      : {id:memberId, status:'loading'});
+  }
+
+  useEffect(() => {
+    if (!session || !supabase || !needsMemberDetails) return;
+    let active = true;
+    async function load() {
+      try {
+        const {data:profile, error} = await supabase.from('profiles')
+          .select('id,full_name,display_name,country_code,bio,avatar_url,cover_url,profile_distinctions(verified,stars,tier)')
+          .eq('id', viewedMemberId).maybeSingle();
+        if (error) throw error;
+        if (!active) return;
+        if (!profile) {
+          setViewedMember({id:viewedMemberId, status:'unavailable'});
+          return;
+        }
+        const [professional, reputation, portfolio] = await Promise.all([
+          supabase.from('professional_profiles').select('headline,about,years_experience,city,country_code').eq('user_id', viewedMemberId).maybeSingle(),
+          supabase.rpc('profile_reputation_with_progress', {profile_ids:[viewedMemberId]}),
+          supabase.from('professional_portfolio').select('id,title,description,media_url,project_url').eq('professional_user_id', viewedMemberId).eq('review_status','approved'),
+        ]);
+        if (!active) return;
+        setViewedMember({id:viewedMemberId, status:'ready', profile, professional:professional.data,
+          reputation:reputation.data?.[0], portfolio:portfolio.data ?? []});
+      } catch {
+        if (active) setViewedMember({id:viewedMemberId, status:'error'});
+      }
+    }
+    void load();
+    return () => { active = false; };
+  }, [session, viewedMemberId, needsMemberDetails]);
 
   const chooseEntryRole = (role) => {
     setSelectedRole(role);
@@ -308,6 +361,7 @@ function App() {
     }).catch(() => { if (alive) setAuthReady(true); });
     const {data:{subscription}} = supabase.auth.onAuthStateChange((_event, nextSession) => {
       setSession(nextSession);
+      if (!nextSession) setViewedMember(null);
       setAuthReady(true);
     });
     return () => { alive = false; subscription.unsubscribe(); };
@@ -989,7 +1043,7 @@ function App() {
         {session && <><button type="button" onClick={()=>navigatePage('marketplace')}>{isAr?'السوق':'Marketplace'}</button><button type="button" onClick={()=>navigatePage('messages')}>{t.messages}</button></>}
       </nav>
       <div className="saudi-header-actions">
-        {session && <button type="button" className="saudi-language" onClick={()=>navigatePage('profile')}><UserRound size={16}/>{isAr?'ملفي الشخصي':'My profile'}</button>}
+        {session && <button type="button" className="saudi-language" onClick={openOwnProfile}><UserRound size={16}/>{isAr?'ملفي الشخصي':'My profile'}</button>}
         {session ? <button className="saudi-outline" aria-expanded={settingsOpen} onClick={()=>setSettingsOpen(v=>!v)}><UserRound size={15}/>{t.account}</button> :
           <><button className="navlink" onClick={()=>{setAuthMode('login');setError('');setNotice('')}}>{t.login}</button><button className="btn primary" onClick={()=>{setAuthMode('register');setError('');setNotice('')}}>{t.signup}</button></>}
         <button className="saudi-language" onClick={()=>setLang(isAr?'en':'ar')}><Globe2 size={17}/>{isAr?'English':'العربية'}</button>
@@ -1057,7 +1111,7 @@ function App() {
         <div className="support-layout"><div className="support-panel"><h3>Open a support request</h3><form className="market-form" onSubmit={createSupportTicket}><label>Subject<input required maxLength="160" value={supportSubject} onChange={e=>setSupportSubject(e.target.value)}/></label><label>How can we help?<textarea required rows="5" maxLength="5000" value={supportBody} onChange={e=>setSupportBody(e.target.value)}/></label><button className="btn primary" type="submit" disabled={busy}>Send to support</button></form><h3>Your requests</h3>{mySupportTickets.length===0?<p className="market-empty">You have no support requests yet.</p>:mySupportTickets.map(ticket=><button type="button" className={'support-ticket '+(mySelectedTicket?.id===ticket.id?'active':'')} key={ticket.id} onClick={()=>openMySupportTicket(ticket)}><strong>{ticket.subject}</strong><span>{ticket.status}</span><small>{new Date(ticket.updated_at).toLocaleString()}</small></button>)}</div><div className="support-panel support-ticket-detail">{mySelectedTicket?<><h3>{mySelectedTicket.subject}</h3><p>{mySelectedTicket.status}</p><div className="support-messages">{mySupportMessages.map(m=><div key={m.id} className={m.sender_id===session.user.id?'support-own':''}><p>{m.body}</p><small>{new Date(m.created_at).toLocaleString()}</small></div>)}</div>{!['resolved','closed'].includes(mySelectedTicket.status)&&<form onSubmit={replyMySupportTicket}><textarea rows="3" required value={mySupportReply} onChange={e=>setMySupportReply(e.target.value)} placeholder="Write a reply…"/><button className="btn primary" type="submit">Send reply</button></form>}</>:<p className="market-empty">Select one of your support requests to see replies.</p>}</div></div>
       </section>}
 
-      {page === 'professionals' && <section className="section professional-directory"><div className="section-label">NUSQRA · PROFESSIONAL DIRECTORY</div><h2>{isAr?'المحترفون حسب التصنيف':'Professionals by category'}</h2><p className="section-intro">{selectedCategoryId?(isAr?'المحترفون الذين يقدمون الخدمة في التصنيف المحدد.':'Professionals who offer services in your selected category.'):(isAr?'اختر تصنيفاً أولاً لعرض المحترفين المناسبين.':'Choose a service category first to see matching professionals.')}</p><div className="professional-directory-toolbar">{selectedCategoryId&&<strong>{(()=>{const c=categories.find(x=>x.id===selectedCategoryId);return c?(isAr?c.name_ar:c.name_en):'';})()}</strong>}<button className="btn secondary" type="button" onClick={()=>navigatePage('categories')}>{isAr?'تغيير التصنيف':'Change category'}</button>{selectedCategoryId&&<button className="btn primary" type="button" onClick={()=>{setJobForm(v=>({...v,category_id:selectedCategoryId}));navigatePage('marketplace');}}>{isAr?'انشر طلباً بهذا التصنيف':'Post a job in this category'}</button>}</div>{error&&<p className="auth-error" role="alert">{error}</p>}{professionalDirectory.length===0?<p className="market-empty">{selectedCategoryId?(isAr?'لا يوجد محترفون مسجلون في هذا التصنيف بعد.':'No professionals have selected this category yet.'):(isAr?'اختر تصنيفاً لعرض المحترفين.':'Select a category to view professionals.')}</p>:<div className="professional-directory-grid">{professionalDirectory.map(p=><article className="professional-directory-card member-directory-card" key={p.user_id}><MemberAvatar url={p.profile.avatar_url} reputation={p.reputation} staffTier={p.profile.profile_distinctions?.tier}/><div className="professional-directory-copy"><h3>{p.profile.display_name||p.profile.full_name||t.professional}</h3><strong>{p.headline|| (isAr?'محترف في نسقرا':'NUSQRA professional')}</strong><span className="professional-level-badge">{p.profile_level==='expert'?(isAr?'خبير':'Expert'):p.profile_level==='experienced'?(isAr?'ذو خبرة':'Experienced'):(isAr?'مبتدئ':'Entry level')} · {isAr?'مستوى معلن':'Self-declared level'}</span>{p.can_travel_to_jobs&&<span className="travel-ready-badge">{isAr?'يستطيع الانتقال إلى مواقع العمل':'Can travel to job locations'}</span>}<span className={'availability-badge availability-'+(p.availability_status||'unavailable')}>{p.availability_status==='available'?(isAr?'متاح للعمل':'Available for work'):p.availability_status==='busy'?(isAr?'مشغول حالياً':'Currently busy'):(isAr?'غير متاح حالياً':'Not currently available')}</span><ReputationBadge reputation={p.reputation} isAr={isAr}/>{p.profile.profile_distinctions?.verified&&<VerifiedBadge isAr={isAr}/>}{p.skillScores?.length>0&&<div className="professional-skill-scores"><strong>{isAr?'تقييمات المهارات':'Skill ratings'}</strong>{p.skillScores.map(score=><span key={score.skill}><b>{score.skill}</b><em>{'★'.repeat(Math.round(score.average))}{'☆'.repeat(5-Math.round(score.average))}</em><small>{score.average.toFixed(1)} ({score.count})</small></span>)}</div>}<p>{p.about||p.profile.bio||''}</p><small>{[p.city,p.country_code||p.profile.country_code].filter(Boolean).join(' · ')}{p.years_experience?` · ${p.years_experience} ${isAr?'سنوات خبرة':'years experience'}`:''}</small><div className="professional-category-tags">{(p.categoryIds||[]).map(id=>{const c=categories.find(x=>x.id===id);return c?<span key={id}>{isAr?c.name_ar:c.name_en}</span>:null;})}</div><button type="button" className="saudi-outline" onClick={()=>setViewedProfessional(p)}>{isAr?'عرض الملف المهني':'View professional profile'}</button></div></article>)}</div>}<div className="buttons"><button className="btn secondary" onClick={()=>navigatePage('marketplace')}>{isAr?'استكشف فرص العمل':'Explore opportunities'}</button></div></section>}
+      {page === 'professionals' && <section className="section professional-directory"><div className="section-label">NUSQRA · PROFESSIONAL DIRECTORY</div><h2>{isAr?'المحترفون حسب التصنيف':'Professionals by category'}</h2><p className="section-intro">{selectedCategoryId?(isAr?'المحترفون الذين يقدمون الخدمة في التصنيف المحدد.':'Professionals who offer services in your selected category.'):(isAr?'اختر تصنيفاً أولاً لعرض المحترفين المناسبين.':'Choose a service category first to see matching professionals.')}</p><div className="professional-directory-toolbar">{selectedCategoryId&&<strong>{(()=>{const c=categories.find(x=>x.id===selectedCategoryId);return c?(isAr?c.name_ar:c.name_en):'';})()}</strong>}<button className="btn secondary" type="button" onClick={()=>navigatePage('categories')}>{isAr?'تغيير التصنيف':'Change category'}</button>{selectedCategoryId&&<button className="btn primary" type="button" onClick={()=>{setJobForm(v=>({...v,category_id:selectedCategoryId}));navigatePage('marketplace');}}>{isAr?'انشر طلباً بهذا التصنيف':'Post a job in this category'}</button>}</div>{error&&<p className="auth-error" role="alert">{error}</p>}{professionalDirectory.length===0?<p className="market-empty">{selectedCategoryId?(isAr?'لا يوجد محترفون مسجلون في هذا التصنيف بعد.':'No professionals have selected this category yet.'):(isAr?'اختر تصنيفاً لعرض المحترفين.':'Select a category to view professionals.')}</p>:<div className="professional-directory-grid">{professionalDirectory.map(p=><article className="professional-directory-card member-directory-card" key={p.user_id}><MemberAvatar url={p.profile.avatar_url} reputation={p.reputation} staffTier={p.profile.profile_distinctions?.tier}/><div className="professional-directory-copy"><h3><button type="button" className="member-profile-link" onClick={()=>openMember(p.user_id,p)}>{p.profile.display_name||p.profile.full_name||t.professional}</button></h3><strong>{p.headline|| (isAr?'محترف في نسقرا':'NUSQRA professional')}</strong><span className="professional-level-badge">{p.profile_level==='expert'?(isAr?'خبير':'Expert'):p.profile_level==='experienced'?(isAr?'ذو خبرة':'Experienced'):(isAr?'مبتدئ':'Entry level')} · {isAr?'مستوى معلن':'Self-declared level'}</span>{p.can_travel_to_jobs&&<span className="travel-ready-badge">{isAr?'يستطيع الانتقال إلى مواقع العمل':'Can travel to job locations'}</span>}<span className={'availability-badge availability-'+(p.availability_status||'unavailable')}>{p.availability_status==='available'?(isAr?'متاح للعمل':'Available for work'):p.availability_status==='busy'?(isAr?'مشغول حالياً':'Currently busy'):(isAr?'غير متاح حالياً':'Not currently available')}</span><ReputationBadge reputation={p.reputation} isAr={isAr}/>{p.profile.profile_distinctions?.verified&&<VerifiedBadge isAr={isAr}/>}{p.skillScores?.length>0&&<div className="professional-skill-scores"><strong>{isAr?'تقييمات المهارات':'Skill ratings'}</strong>{p.skillScores.map(score=><span key={score.skill}><b>{score.skill}</b><em>{'★'.repeat(Math.round(score.average))}{'☆'.repeat(5-Math.round(score.average))}</em><small>{score.average.toFixed(1)} ({score.count})</small></span>)}</div>}<p>{p.about||p.profile.bio||''}</p><small>{[p.city,p.country_code||p.profile.country_code].filter(Boolean).join(' · ')}{p.years_experience?` · ${p.years_experience} ${isAr?'سنوات خبرة':'years experience'}`:''}</small><div className="professional-category-tags">{(p.categoryIds||[]).map(id=>{const c=categories.find(x=>x.id===id);return c?<span key={id}>{isAr?c.name_ar:c.name_en}</span>:null;})}</div><button type="button" className="saudi-outline" onClick={()=>openMember(p.user_id,p)}>{isAr?'عرض الملف المهني':'View professional profile'}</button></div></article>)}</div>}<div className="buttons"><button className="btn secondary" onClick={()=>navigatePage('marketplace')}>{isAr?'استكشف فرص العمل':'Explore opportunities'}</button></div></section>}
       {page === 'explore' && <section className="section" id="explore"><div className="section-label">NUSQRA PLATFORM</div><h2>{t.trust}</h2><div className="feature-grid">
         {[ShieldCheck,Users,Crown,Globe2].map((Icon,i)=><article className="feature" key={i}><span className="iconbox"><Icon size={24}/></span><h3>{t.features[i]}</h3><p>{t.featureText[i]}</p></article>)}
       </div></section>}
@@ -1092,7 +1146,7 @@ function App() {
                 const v=proposalForms[job.id]||{cover_letter:'',proposed_price:'',delivery_days:''};
                 return <article className="job-card" key={job.id}>
                   <div className="job-card-top"><span className="job-status">{job.status}</span><span className="job-date">{new Date(job.created_at).toLocaleDateString(lang==='ar'?'ar-SA':'en-US')}</span></div>
-                  <h4>{job.title}</h4><ReputationBadge reputation={clientReputation[job.customer_id]} isAr={isAr}/><p className="job-category">{category?(isAr?category.name_ar:category.name_en):t.marketplace} · {job.city||job.country_code}</p>
+                  <h4>{job.title}</h4>{session && job.customer_id!==session.user.id && <button type="button" className="member-profile-link" onClick={()=>openMember(job.customer_id)}>{isAr?'عرض ملف العميل':'View client profile'}</button>}<ReputationBadge reputation={clientReputation[job.customer_id]} isAr={isAr}/><p className="job-category">{category?(isAr?category.name_ar:category.name_en):t.marketplace} · {job.city||job.country_code}</p>
                   <p className="job-description">{job.description}</p>
                   <div className="job-meta"><strong>{t.budget}: {job.budget_min??'—'} – {job.budget_max??'—'} {job.currency}</strong></div>
                   {!session&&job.status==='open'&&<button className="btn primary" type="button" onClick={()=>{setForm(x=>({...x,account_type:'professional'}));setAuthMode('login');}}>{isAr?'سجّل الدخول لتقديم عرض':'Log in to submit a proposal'}</button>}
@@ -1106,13 +1160,13 @@ function App() {
                     </div>
                     <button className="btn primary" type="submit" disabled={busy||!canSubmitProposals}>{t.sendProposal}</button>
                   </form>}
-                  {job.customer_id===session.user.id&&<div className="job-management">{job.status==='open'&&<><button className="btn secondary" type="button" disabled={busy} onClick={()=>updateJobStatus(job,'closed')}>{t.closeJob}</button><button className="btn secondary" type="button" disabled={busy} onClick={()=>updateJobStatus(job,'cancelled')}>{t.cancelJob}</button></>}{job.status==='closed'&&<><button className="btn secondary" type="button" disabled={busy} onClick={()=>updateJobStatus(job,'open')}>{t.reopenJob}</button><button className="btn secondary" type="button" disabled={busy} onClick={()=>updateJobStatus(job,'cancelled')}>{t.cancelJob}</button></>}{job.status==='in_progress'&&<button className="btn primary" type="button" disabled={busy} onClick={()=>updateJobStatus(job,'completed')}>{t.completeJob}</button>}</div>}
+                  {session && job.customer_id===session.user.id&&<div className="job-management">{job.status==='open'&&<><button className="btn secondary" type="button" disabled={busy} onClick={()=>updateJobStatus(job,'closed')}>{t.closeJob}</button><button className="btn secondary" type="button" disabled={busy} onClick={()=>updateJobStatus(job,'cancelled')}>{t.cancelJob}</button></>}{job.status==='closed'&&<><button className="btn secondary" type="button" disabled={busy} onClick={()=>updateJobStatus(job,'open')}>{t.reopenJob}</button><button className="btn secondary" type="button" disabled={busy} onClick={()=>updateJobStatus(job,'cancelled')}>{t.cancelJob}</button></>}{job.status==='in_progress'&&<button className="btn primary" type="button" disabled={busy} onClick={()=>updateJobStatus(job,'completed')}>{t.completeJob}</button>}</div>}
                   {isProfessional&&myProposals[job.id]&&<p className="my-proposal-status">{t.proposalSubmitted}: <strong>{myProposals[job.id].status==='accepted'?t.proposalAccepted:myProposals[job.id].status==='rejected'?t.proposalRejected:myProposals[job.id].status}</strong></p>}
-                  {job.customer_id===session.user.id&&<div className="proposal-review">
+                  {session && job.customer_id===session.user.id&&<div className="proposal-review">
                     <button className="btn secondary" type="button" onClick={()=>toggleProposals(job)}>{t.viewProposals}</button>
                     {expandedJob===job.id&&<div className="proposal-list">
                       {(jobProposals[job.id]||[]).length===0?<p className="market-empty">{t.noProposals}</p>:(jobProposals[job.id]||[]).map(p=><div className="proposal-card" key={p.id}>
-                        <strong>{p.professional?.full_name||t.professional}</strong><p>{p.cover_letter}</p>
+                        <strong><button type="button" className="member-profile-link" onClick={()=>openMember(p.professional_id)}>{p.professional?.full_name||t.professional}</button></strong><p>{p.cover_letter}</p>
                         <small>{p.proposed_price??'—'} {p.currency} · {p.delivery_days??'—'} {t.deliveryDays} · {p.status}</small>
                         <div className="proposal-actions">{p.status==='submitted'&&job.status==='open'&&<><button className="btn primary" type="button" disabled={busy} onClick={()=>decideProposal(p,'accepted')}>{t.accept}</button><button className="btn secondary" type="button" disabled={busy} onClick={()=>decideProposal(p,'rejected')}>{t.reject}</button></>}{(p.status==='submitted'||p.status==='accepted')&&<button className="btn secondary" type="button" disabled={busy||!canMessage} onClick={()=>openConversation(job,p.professional_id)}><MessageCircle size={15}/>{t.messageProfessional}</button>}</div>{job.status==='completed'&&p.status==='accepted'&&<form className="skill-rating-form" onSubmit={e=>submitSkillRating(e,job,p)}><strong>Rate professional skills</strong>{skillRatingForms[p.id]?.submitted?<span>Rating submitted ✓</span>:<><input required maxLength="80" placeholder="Skill (e.g. diagnostic accuracy)" value={skillRatingForms[p.id]?.skill_name||''} onChange={e=>setSkillRatingForms(old=>({...old,[p.id]:{...(old[p.id]||{rating:5}),skill_name:e.target.value}}))}/><div className="skill-star-picker">{[1,2,3,4,5].map(n=><button type="button" key={n} aria-label={n+' stars'} className={(skillRatingForms[p.id]?.rating||5)>=n?'selected':''} onClick={()=>setSkillRatingForms(old=>({...old,[p.id]:{...(old[p.id]||{skill_name:''}),rating:n}}))}>★</button>)}</div><textarea rows="2" placeholder="Optional feedback" value={skillRatingForms[p.id]?.comment||''} onChange={e=>setSkillRatingForms(old=>({...old,[p.id]:{...(old[p.id]||{rating:5}),comment:e.target.value}}))}/><button className="btn secondary" type="submit">Submit skill rating</button></>}</form>}
                       </div>)}
@@ -1125,6 +1179,7 @@ function App() {
       </section>}
       {page === 'messages' && session && <section className="section marketplace-section messaging-section" id="messages"><div className="section-label">NUSQRA · PRIVATE</div><h2>{t.messages}</h2><div className="messaging-layout"><aside className="conversation-list">{conversations.length===0?<p className="market-empty">{t.noConversations}</p>:conversations.map(c=><button type="button" className={'conversation-item'+(selectedConversation?.id===c.id?' active':'')} key={c.id} onClick={()=>setSelectedConversation(c)}><strong>{c.job?.title||t.marketplace}</strong><span>{session.user.id===c.customer_id?(c.professional?.full_name||t.professional):(c.customer?.full_name||t.customer)}</span></button>)}</aside><div className="chat-panel">{selectedConversation?<><div className="chat-heading"><strong>{selectedConversation.job?.title||conversations.find(c=>c.id===selectedConversation.id)?.job?.title||t.marketplace}</strong><span>{session.user.id===selectedConversation.customer_id?(conversations.find(c=>c.id===selectedConversation.id)?.professional?.full_name||t.professional):(conversations.find(c=>c.id===selectedConversation.id)?.customer?.full_name||t.customer)}</span></div><div className="message-list">{messages.map(m=><div key={m.id} className={'message-bubble'+(m.sender_id===session.user.id?' mine':'')}><p>{m.body}</p><time>{new Date(m.created_at).toLocaleString(lang==='ar'?'ar-SA':'en-US')}</time></div>)}</div><form className="message-compose" onSubmit={sendMessage}><textarea rows="2" maxLength="4000" required placeholder={t.messagePlaceholder} value={messageDraft} onChange={e=>setMessageDraft(e.target.value)}/><button className="btn primary" type="submit" disabled={busy||!messageDraft.trim()||!canMessage}><Send size={16}/>{t.sendMessage}</button></form></>:<p className="market-empty">{t.noConversations}</p>}</div></div></section>}
       {page === 'profile' && session && <div className="member-page">
+        <ProfileCloseButton isAr={isAr} onClose={closeOwnProfile}/>
         <MemberProfile person={profile || {}} professional={professional} customer={roles.includes('customer') || Boolean(myReputation?.confirmed_paid_projects)}
           country={t.countries[profile?.country_code]} isAr={isAr} reputation={myReputation}
           portfolio={professionalPortfolio.filter(item => item.review_status === 'approved')}
@@ -1132,12 +1187,20 @@ function App() {
           onEdit={() => setSettingsOpen(true)}/>
         <PaymentConfirmations projects={reputationProjects} pending={paymentPending} error={paymentError} isAr={isAr} onConfirm={confirmProjectPayment}/>
       </div>}
-      {viewedProfessional && <MemberProfileDialog onClose={()=>setViewedProfessional(null)} isAr={isAr}>
-        <MemberProfile person={viewedProfessional.profile} professional={viewedProfessional} isAr={isAr}
-          reputation={viewedProfessional.reputation} customer={Boolean(viewedProfessional.reputation?.confirmed_paid_projects)}
-          country={t.countries[viewedProfessional.country_code || viewedProfessional.profile.country_code]}
-          portfolio={viewedProfessional.portfolio}
-          skills={[...new Set([...viewedProfessional.skillScores.map(score => score.skill), ...categories.filter(category => viewedProfessional.categoryIds.includes(category.id)).map(category => isAr ? category.name_ar : category.name_en)])]}/>
+      {viewedMember && session && <MemberProfileDialog onClose={()=>setViewedMember(null)} isAr={isAr}>
+        {viewedMember.profile ? <MemberProfile person={viewedMember.profile} professional={viewedMember.professional} isAr={isAr}
+          reputation={viewedMember.reputation} customer={Boolean(viewedMember.reputation?.confirmed_paid_projects)}
+          country={t.countries[viewedMember.professional?.country_code || viewedMember.profile.country_code]}
+          portfolio={viewedMember.portfolio}
+          skills={[...new Set([
+            ...(viewedMember.skillScores ?? []).map(score => score.skill),
+            ...categories.filter(category => viewedMember.categoryIds?.includes(category.id)).map(category => isAr ? category.name_ar : category.name_en),
+          ])]}/>
+          : <p className="member-section" role="status">
+            {viewedMember.status === 'unavailable' ? (isAr ? 'هذا الملف الشخصي غير متاح.' : 'This profile is unavailable.')
+              : viewedMember.status === 'error' ? (isAr ? 'تعذر تحميل الملف الشخصي. حاول مرة أخرى.' : 'Could not load this profile. Try again.')
+              : (isAr ? 'جارٍ تحميل الملف الشخصي…' : 'Loading profile…')}
+          </p>}
       </MemberProfileDialog>}
       {settingsOpen && session && <MemberProfileDialog accountEditor isAr={isAr} onClose={()=>{setPreviewOpen(false);setSettingsOpen(false);}}>
         <section className="member-editor" id="account">
