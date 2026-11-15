@@ -66,7 +66,7 @@ export function SaudiHero({ isAr, onBrowse, onJoin }) {
   </>;
 }
 
-export function ServicesGrid({ isAr, categories, directory, query, setQuery, onBrowse, onSelect }) {
+export function ServicesGrid({ isAr, categories, directory, query = '', setQuery, onBrowse, onSelect }) {
   const search = query.trim().toLowerCase();
   const entries = directory
     ? (categories.length ? categories.map(c => [c.slug, c.name_en, c.name_ar, c.description_en, c.description_ar]) : services.map(([slug, en, ar]) => [slug, en, ar]))
