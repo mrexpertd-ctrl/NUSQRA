@@ -387,3 +387,28 @@ html body .saudi-category-card :is(h3, p, small, span) { color: var(--saudi-fore
   .saudi-header { flex-wrap: wrap; }
   .saudi-service-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
 }
+
+/* Keep the home feature copy readable on the light cards used by the Saudi layout. */
+.feature-grid .feature {
+  background: #fffdf8 !important;
+  color: #173f30 !important;
+}
+.feature-grid .feature h3 {
+  color: #173f30 !important;
+  -webkit-text-fill-color: #173f30 !important;
+}
+.feature-grid .feature p {
+  color: #42584b !important;
+  -webkit-text-fill-color: #42584b !important;
+}
+.profile-load-status {
+  margin: 14px 0;
+  padding: 16px;
+  border: 1px solid #dce8df;
+  border-radius: 12px;
+  background: #f6faf6;
+  color: #315b46;
+}
+.avatar-upload-locked {
+  opacity: .72;
+}
