@@ -1,42 +1,55 @@
-const CACHE_NAME = "nusqra-shell-v2";
-const SHELL = ["/", "/site.webmanifest", "/favicon.svg"];
+const CACHE_NAME = 'nusqra-assets-v3';
 
-self.addEventListener("install", event => {
-  event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(SHELL)).then(() => self.skipWaiting()));
+self.addEventListener('install', event => {
+  event.waitUntil(self.skipWaiting());
 });
 
-self.addEventListener("activate", event => {
-  event.waitUntil(
-    caches.keys().then(keys => Promise.all(keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))))
-      .then(() => self.clients.claim())
-  );
+self.addEventListener('activate', event => {
+  event.waitUntil((async () => {
+    const keys = await caches.keys();
+    await Promise.all(keys
+      .filter(key => key.startsWith('nusqra-') && key !== CACHE_NAME)
+      .map(key => caches.delete(key)));
+    await self.clients.claim();
+  })());
 });
 
-self.addEventListener("fetch", event => {
-  const request = event.request;
+function offlinePage() {
+  return new Response(`<!doctype html><html lang="en"><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>NUSQRA</title>
+    <body style="background:#fcfaf5;color:#103e31;font:16px system-ui;padding:24px">
+    <h1>NUSQRA</h1><p>Reconnect to the internet and try again.</p>
+    <p lang="ar" dir="rtl">أعد الاتصال بالإنترنت وحاول مرة أخرى.</p>
+    <a href="/">Try again / حاول مرة أخرى</a></body></html>`, {
+    status: 503,
+    headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' }
+  });
+}
+
+self.addEventListener('fetch', event => {
+  const { request } = event;
   const url = new URL(request.url);
-  if (request.method !== "GET" || url.origin !== self.location.origin || url.pathname.startsWith("/api/")) return;
+  if (request.method !== 'GET' || url.origin !== self.location.origin) return;
 
-  if (request.mode === "navigate") {
-    event.respondWith(
-      fetch(request).then(response => {
-        if (response.ok) {
-          const copy = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put("/", copy));
-        }
-        return response;
-      }).catch(async () => (await caches.match(request)) || (await caches.match("/")))
-    );
+  if (request.mode === 'navigate') {
+    // A cached document may reference bundles removed by a newer deployment.
+    event.respondWith(fetch(request, { cache: 'no-cache' }).catch(offlinePage));
     return;
   }
 
-  event.respondWith(
-    caches.match(request).then(cached => cached || fetch(request).then(response => {
-      if (response.ok) {
-        const copy = response.clone();
-        caches.open(CACHE_NAME).then(cache => cache.put(request, copy));
-      }
-      return response;
-    }))
-  );
+  if (!url.pathname.startsWith('/assets/') ||
+      !['script', 'style', 'image', 'font'].includes(request.destination)) return;
+
+  event.respondWith((async () => {
+    const cache = await caches.open(CACHE_NAME).catch(() => null);
+    const cached = await cache?.match(request).catch(() => undefined);
+    if (cached) return cached;
+    const response = await fetch(request);
+    const type = response.headers.get('Content-Type') || '';
+    if (cache && response.ok && !type.includes('text/html')) {
+      await cache.put(request, response.clone()).catch(() => {});
+    }
+    return response;
+  })());
 });

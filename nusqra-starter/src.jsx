@@ -69,11 +69,19 @@ const dictionary = {
 };
 const countryCodes = ['SA','AE','BH','KW','OM','QA'];
 
+function readPreference(key) {
+  try {
+    return window.localStorage.getItem(key);
+  } catch {
+    return null;
+  }
+}
+
 function App() {
-  const [lang, setLang] = useState(() => window.localStorage.getItem('nusqra-language') || 'ar');
+  const [lang, setLang] = useState(() => readPreference('nusqra-language') === 'en' ? 'en' : 'ar');
   const [selectedRole, setSelectedRole] = useState(null);
   const [entryStep, setEntryStep] = useState('role');
-  const [activeRole, setActiveRole] = useState(() => window.localStorage.getItem('nusqra-active-role') || 'customer');
+  const [activeRole, setActiveRole] = useState(() => readPreference('nusqra-active-role') === 'professional' ? 'professional' : 'customer');
   const [menu, setMenu] = useState(false);
   const [entrySearch, setEntrySearch] = useState('');
   const [page, setPage] = useState(() => { const requested = window.location.hash.replace('#','') || 'home'; return requested === 'login' ? 'home' : requested; });
@@ -156,7 +164,7 @@ function App() {
   useEffect(() => {
     document.documentElement.lang = lang;
     document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
-    window.localStorage.setItem('nusqra-language', lang);
+    try { window.localStorage.setItem('nusqra-language', lang); } catch {}
   }, [lang]);
 
   useEffect(() => {
