@@ -20,19 +20,39 @@ const api=async(path,options={})=>{
  return data;
 };
 async function boot(){
+ const controller=new AbortController();
+ const timeout=setTimeout(()=>controller.abort(),12000);
+ let initialSession;
  try{
-  const cfg=await api('/api/config');
+  const cfg=await api('/api/config',{signal:controller.signal});
   supabase=createClient(cfg.supabaseUrl,cfg.anonKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+  const {data,error}=await Promise.race([
+   supabase.auth.getSession(),
+   new Promise((_,reject)=>controller.signal.addEventListener('abort',()=>reject(new Error('Staff sign-in timed out.')),{once:true}))
+  ]);
+  if(error)throw error;
+  initialSession=data.session;
+ }catch(e){
+  renderStartupError(controller.signal.aborted?'Staff sign-in timed out. Check your connection and try again.':e.message);
+  return;
+ }finally{
+  clearTimeout(timeout);
+ }
+ try{
+  session=initialSession;
   supabase.auth.onAuthStateChange((event,nextSession)=>{
    if(nextSession) session=nextSession;
    else if(event==='SIGNED_OUT'&&session){stopLiveStats();session=null;renderLogin();}
   });
-  const {data}=await supabase.auth.getSession(); session=data.session;
   if(session){
    if(session.user?.user_metadata?.nusqra_admin_invite && session.user?.user_metadata?.admin_password_initialized!==true){renderSetPassword();return;}
    await continueAuth();
   }else renderLogin();
  }catch(e){renderError(e.message);}
+}
+function renderStartupError(message){
+ shell(`<main class="auth-wrap"><section class="panel"><h1>Staff sign-in unavailable</h1><p class="message bad" role="alert">${esc(message)}</p><button id="retryStartup" class="primary">Reload sign-in</button></section></main>`);
+ document.querySelector('#retryStartup').onclick=()=>location.reload();
 }
 function renderLogin(){
  deactivateWorkspace();
