@@ -79,39 +79,25 @@
   color: var(--saudi-ink);
   overflow: hidden;
 }
-.saudi-hero-inner { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); min-height: 390px; }
+.saudi-hero-inner { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); min-height: 365px; }
 .saudi-hero-copy { align-self: center; padding: 42px var(--saudi-gutter); }
-.saudi-hero-copy h1 { margin: 0; font-size: clamp(32px, 4.1vw, 61px); font-weight: 800; }
+.saudi-hero-copy h1 { margin: 0; font-size: clamp(31px, 3.55vw, 55px); font-weight: 800; }
 .saudi-hero-copy p { margin: 16px 0 23px; max-width: 36rem; color: #3b4b42; font-size: clamp(16px, 1.6vw, 21px); }
 .saudi-hero-actions { gap: 12px; flex-wrap: wrap; }
 .saudi-hero-actions button { min-height: 48px; padding-inline: 20px; }
-.saudi-city {
-  position: relative;
-  overflow: hidden;
-  min-height: 100%;
-  isolation: isolate;
-  background: var(--saudi-forest);
-  clip-path: polygon(12% 0, 100% 0, 100% 100%, 0 100%, 6% 84%, 13% 65%, 20% 45%, 23% 29%, 21% 14%);
-}
-.saudi-city::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: #cbab62;
-  clip-path: polygon(25% 0,100% 0,100% 100%,0 100%,8% 78%,19% 56%,28% 37%,30% 20%);
-}
+/* The skyline artwork includes the gold and forest-green curve from the reference. */
+.saudi-city { position: relative; overflow: hidden; min-height: 100%; }
 .saudi-city img {
   display: block;
   position: absolute;
   inset: 0;
-  height: 100%;
   width: 100%;
-  object-fit: cover;
-  object-position: center 60%;
-  clip-path: polygon(27% 0,100% 0,100% 100%,2% 100%,10% 78%,21% 56%,30% 37%,32% 20%);
+  height: 100%;
+  object-fit: fill;
+  transform: scaleX(-1);
+  mask-image: linear-gradient(to right, #000 85%, transparent);
 }
-[dir="rtl"] .saudi-city { transform: scaleX(-1); }
-[dir="rtl"] .saudi-city img { transform: scaleX(-1); clip-path: polygon(73% 0,0 0,0 100%,98% 100%,90% 78%,79% 56%,70% 37%,68% 20%); }
+[dir="rtl"] .saudi-city img { transform: none; }
 .saudi-benefits {
   display: grid;
   grid-template-columns: repeat(4,minmax(0,1fr));
@@ -233,9 +219,7 @@ html body .category-select-card.is-selected { border-color: #947129 !important; 
   .saudi-hero-inner { grid-template-columns: 1fr; min-height: 0; }
   .saudi-hero-copy { padding-block: 30px 24px; }
   .saudi-hero-copy h1 { font-size: clamp(28px, 7vw, 42px); }
-  .saudi-city { min-height: clamp(135px, 42vw, 245px); clip-path: none; border-block-start: 3px solid #c7a358; }
-  .saudi-city::before { display: none; }
-  .saudi-city img, [dir="rtl"] .saudi-city img { clip-path: none; object-position: center 47%; }
+  .saudi-city { min-height: clamp(145px, 44vw, 260px); }
   .saudi-benefits { grid-template-columns: repeat(2,minmax(0,1fr)); padding: 0 10px; }
   .saudi-benefits > div { padding: 14px 7px; justify-content: flex-start; gap: 7px; }
   .saudi-benefits > div:nth-child(3) { border-inline-start: 0; }

@@ -49,7 +49,7 @@ export function SaudiHero({ isAr, onBrowse, onJoin }) {
             <button className="saudi-outline" type="button" onClick={onJoin}><UserRound size={19}/>{isAr ? 'انضم كمحترف' : 'Join as a professional'}</button>
           </div>
         </div>
-        <div className="saudi-city"><img src={skyline} width="353" height="394" alt={isAr ? 'أفق مدينة الرياض وبرج المملكة' : 'Riyadh skyline and Kingdom Centre'} fetchPriority="high"/></div>
+        <div className="saudi-city"><img src={skyline} width="752" height="397" alt={isAr ? 'أفق مدينة الرياض وبرج المملكة' : 'Riyadh skyline and Kingdom Centre'} fetchPriority="high"/></div>
       </div>
     </section>
     <div className="saudi-benefits" aria-label={isAr ? 'مزايا نسقرا' : 'NUSQRA benefits'}>
