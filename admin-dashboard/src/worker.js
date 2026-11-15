@@ -9,6 +9,9 @@ const SECURITY_HEADERS = {
   'content-security-policy':"default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' https://*.supabase.co; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
 };
 const json = (data,status=200)=>new Response(JSON.stringify(data),{status,headers:{...JSON_HEADERS,...SECURITY_HEADERS}});
+const staffRoles = ['supreme_admin', 'admin', 'moderator'];
+const caseStatuses = ['open', 'investigating', 'actioned', 'dismissed'];
+const uuid = /^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i;
 const decodeJwt = token => {
   try { const raw=token.split('.')[1].replace(/-/g,'+').replace(/_/g,'/'); return JSON.parse(atob(raw)); } catch { return null; }
 };
@@ -17,7 +20,7 @@ const getClients = env => {
   const service=createClient(env.SUPABASE_URL,env.SUPABASE_SERVICE_ROLE_KEY,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});
   return {publicClient,service};
 };
-async function authenticate(request,env,required=true){
+async function authenticate(request,env,{touch=true}={}){
   const token=(request.headers.get('authorization')||'').replace(/^Bearer\s+/i,'');
   if(!token) throw new Error('Sign in is required.');
   const {publicClient,service}=getClients(env);
@@ -25,7 +28,8 @@ async function authenticate(request,env,required=true){
   if(error||!user) throw new Error('Your session is invalid or expired.');
   const {data:aalData,error:aalError}=await publicClient.auth.mfa.getAuthenticatorAssuranceLevel(token);
   if(aalError||aalData?.currentLevel!=='aal2') throw new Error('Two-factor authentication is required.');
-  const email=(user.email||'').toLowerCase();
+  if (!user.email || !user.email_confirmed_at) throw new Error('A verified staff email is required.');
+  const email=user.email.toLowerCase();
   let {data:staff,error:staffError}=await service.from('admin_staff_directory').select('*').eq('email',email).maybeSingle();
   if(staffError) throw new Error('Staff authorization could not be checked.');
   if(!staff && email===(env.SUPREME_ADMIN_EMAIL||'').toLowerCase()){
@@ -42,11 +46,12 @@ async function authenticate(request,env,required=true){
     if(linkError) throw new Error('Staff invitation could not be activated.');
     staff=linked;
   }
-  if(staff.status!=='active'||(staff.user_id && staff.user_id!==user.id)) throw new Error('Your staff access is inactive.');
+  if(staff.status!=='active'||staff.user_id!==user.id||!staffRoles.includes(staff.staff_role)) throw new Error('Your staff access is inactive.');
   const claims=decodeJwt(token);
   if(!claims?.session_id||!claims?.exp) throw new Error('Session claims are missing.');
   const now=Date.now();
-  const {data:session}=await service.from('admin_sessions').select('*').eq('session_id',claims.session_id).maybeSingle();
+  const {data:session,error:sessionLookupError}=await service.from('admin_sessions').select('*').eq('session_id',claims.session_id).maybeSingle();
+  if(sessionLookupError || (session && session.user_id!==user.id)) throw new Error('Your staff session could not be checked.');
   if(session?.revoked_at) throw new Error('This administration session has been revoked.');
   if(session && now-new Date(session.last_seen_at).getTime()>30*60*1000) {
     await service.from('admin_sessions').update({revoked_at:new Date().toISOString()}).eq('session_id',claims.session_id);
@@ -55,8 +60,9 @@ async function authenticate(request,env,required=true){
   if(!session){
     const {error:sessionError}=await service.from('admin_sessions').insert({session_id:claims.session_id,user_id:user.id,last_seen_at:new Date().toISOString()});
     if(sessionError) throw new Error('Could not establish a secure administration session.');
-  } else {
-    await service.from('admin_sessions').update({last_seen_at:new Date().toISOString()}).eq('session_id',claims.session_id);
+  } else if(touch) {
+    const {error:sessionUpdateError}=await service.from('admin_sessions').update({last_seen_at:new Date().toISOString()}).eq('session_id',claims.session_id);
+    if(sessionUpdateError) throw new Error('Your staff session could not be updated.');
   }
   return {user,staff,service,claims};
 }
@@ -72,7 +78,50 @@ async function audit(ctx,request,action,targetType=null,targetId=null,reason=nul
 function sameOrigin(request){
   const origin=request.headers.get('origin');
   if(!origin) return true;
-  return new URL(origin).host===new URL(request.url).host;
+ return origin===new URL(request.url).origin;
+}
+
+async function moderate(request, url, ctx) {
+  if (request.method === 'GET') {
+    const status = url.searchParams.get('status') || 'open';
+    const offset = Number(url.searchParams.get('offset') || 0);
+    if (!caseStatuses.includes(status) || !Number.isSafeInteger(offset) || offset < 0) return json({error:'Invalid case filter.'},400);
+    const {data,error} = await ctx.service.from('moderation_cases')
+      .select('id,case_type,description,status,created_at,updated_at,target_user_id,evidence_url,resolution_note')
+      .eq('status',status).order('created_at',{ascending:false}).order('id',{ascending:false}).range(offset,offset+20);
+    if (error) return json({error:'Moderation cases could not be loaded.'},500);
+    return json({cases:data.slice(0,20),hasMore:data.length>20});
+  }
+  if (request.method !== 'POST') return json({error:'Method not allowed.'},405);
+  const body = await request.json().catch(()=>null);
+  const action = body?.action;
+  const note = typeof body?.note === 'string' ? body.note.trim() : '';
+  if (!['create','investigating','actioned','dismissed'].includes(action) || !note || note.length>2000) {
+    return json({error:'Enter case details or a reason of up to 2,000 characters.'},400);
+  }
+  if (action === 'create') {
+    if (!['account','content','project','other'].includes(body.caseType) || (body.targetId && !uuid.test(body.targetId))) {
+      return json({error:'Choose a case type and enter a valid target account ID if provided.'},400);
+    }
+  } else if (!uuid.test(body.caseId || '') || typeof body.updatedAt !== 'string' || !Number.isFinite(Date.parse(body.updatedAt))) {
+    return json({error:'Select a valid case and refresh it before submitting.'},400);
+  }
+  if (ctx.staff.staff_role === 'moderator' && ['actioned','dismissed'].includes(action)) {
+    return json({error:'An Admin or Super Admin must close this case.'},403);
+  }
+  const {data,error} = await ctx.service.rpc('staff_write_moderation_case',{
+    actor_id:ctx.user.id, operation:action, details:note,
+    case_id:action==='create'?null:body.caseId,
+    expected_updated_at:action==='create'?null:body.updatedAt,
+    new_case_type:action==='create'?body.caseType:null,
+    new_target_id:action==='create'?(body.targetId||null):null,
+    client_ip:request.headers.get('cf-connecting-ip')||null,
+    client_agent:request.headers.get('user-agent')?.slice(0,500)||null,
+  });
+  if (error?.code === '42501' || data === 'forbidden') return json({error:'This action requires an active staff account with permission.'},403);
+  if (error) return json({error:error.code==='23503'?'The target account could not be found.':'The case could not be saved.'},error.code==='23503'?400:500);
+  if (data === 'conflict') return json({error:'This case changed. Refresh the queue and try again.'},409);
+  return json({success:true},action==='create'?201:200);
 }
 export default {
  async fetch(request,env){
@@ -80,38 +129,18 @@ export default {
   if(request.method==='OPTIONS') return new Response(null,{status:204,headers:{...SECURITY_HEADERS,'allow':'GET, POST, OPTIONS','cache-control':'no-store'}});
   if(url.pathname.startsWith('/api/')){
    if(!sameOrigin(request)) return json({error:'Cross-origin request blocked.'},403);
-   if(url.pathname==='/api/config'&&request.method==='GET') return json({supabaseUrl:env.SUPABASE_URL,anonKey:env.SUPABASE_ANON_KEY});
-   if(url.pathname==='/api/bootstrap'&&request.method==='POST'){
-    try {
-      const {service}=getClients(env);
-      const email=(env.SUPREME_ADMIN_EMAIL||'').toLowerCase();
-      if(!email) return json({error:'Supreme Admin email is not configured.'},503);
-      const {count}=await service.from('admin_staff_directory').select('*',{count:'exact',head:true}).eq('staff_role','supreme_admin').in('status',['invited','active']);
-      if(count>0) return json({success:true,message:'Supreme Admin invitation already exists.'});
-      const {error:rowError}=await service.from('admin_staff_directory').insert({email,staff_role:'supreme_admin',status:'invited'});
-      if(rowError) return json({error:'Supreme Admin seat could not be reserved.'},409);
-      const {data:userPage,error:userListError}=await service.auth.admin.listUsers({page:1,perPage:1000});
-      if(userListError) return json({error:'Owner account lookup failed.'},503);
-      const existingUser=(userPage?.users||[]).find(u=>(u.email||'').toLowerCase()===email);
-      if(existingUser){
-        const {error:activateError}=await service.from('admin_staff_directory').update({user_id:existingUser.id,status:'active',activated_at:new Date().toISOString()}).eq('email',email);
-        if(activateError) return json({error:'Existing owner account could not be activated.'},500);
-        await service.from('admin_audit_events').insert({actor_user_id:existingUser.id,actor_email:email,actor_role:'supreme_admin',action:'supreme_admin_bootstrap_authorized',target_type:'staff',target_id:email,ip_address:request.headers.get('cf-connecting-ip')||null,user_agent:request.headers.get('user-agent')||null});
-        return json({success:true,message:'Existing owner account is authorized. Sign in and enable TOTP.'});
-      }
-      const {error:inviteError}=await service.auth.admin.inviteUserByEmail(email,{redirectTo:new URL('/',request.url).toString(),data:{nusqra_admin_invite:true}});
-      if(inviteError){return json({error:'Supreme Admin invitation email could not be sent. The reserved seat remains locked until the owner resolves email delivery.'},503);}
-      await service.from('admin_audit_events').insert({actor_email:email,actor_role:'supreme_admin',action:'supreme_admin_bootstrap_invited',target_type:'staff',target_id:email,ip_address:request.headers.get('cf-connecting-ip')||null,user_agent:request.headers.get('user-agent')||null});
-      return json({success:true,message:'Supreme Admin setup email sent.'});
-    } catch(e){return json({error:'Supreme Admin bootstrap failed.'},500);}
+   if (url.pathname === '/api/config' && request.method === 'GET') {
+     if (!env.SUPABASE_SERVICE_ROLE_KEY || !env.SUPREME_ADMIN_EMAIL) return json({error:'Staff sign-in is unavailable until the Worker is configured.'},503);
+     return json({supabaseUrl:env.SUPABASE_URL,anonKey:env.SUPABASE_ANON_KEY});
    }
    if(url.pathname==='/api/session'&&request.method==='POST'){
     try { const ctx=await authenticate(request,env); await audit(ctx,request,'admin_session_authenticated'); return json({user:{email:ctx.user.email},role:ctx.staff.staff_role,sessionExpiresInMinutes:30}); }
     catch(e){return json({error:e.message},401);}
    }
    let ctx;
-   try{ctx=await authenticate(request,env);}catch(e){return json({error:e.message},401);}
+   try{ctx=await authenticate(request,env,{touch:url.pathname!=='/api/overview/stats'});}catch(e){return json({error:e.message},401);}
    if(url.pathname==='/api/me'&&request.method==='GET') return json({user:{email:ctx.user.email},role:ctx.staff.staff_role,sessionExpiresInMinutes:30});
+   if(url.pathname==='/api/moderation/cases') return moderate(request,url,ctx);
    if(url.pathname==='/api/overview/stats'&&request.method==='GET'){
     if(!['supreme_admin','admin'].includes(ctx.staff.staff_role)) return json({error:'Live analytics are available to Admins and the Supreme Admin only.'},403);
     const {data,error}=await ctx.service.rpc('admin_live_stats');

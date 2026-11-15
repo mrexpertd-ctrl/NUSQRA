@@ -13,7 +13,7 @@ Independent Cloudflare Worker application. It is not part of the public NUSQRA f
 - Append-only audit events with IP, user agent, actor, action, target and reason.
 - 30-minute inactivity timeout on Worker-authenticated requests.
 - noindex/nofollow/noarchive and security headers on every response.
-- Dark mobile-first interface.
+- Mobile-first staff workspace with separate Overview, Moderation, Staff access, and Audit log views.
 
 ## Required secrets
 The public Supabase anon key and project URL are configured as non-secret Worker variables. Keep only the service-role key and Supreme Admin email as Worker secrets. From this directory, run:
@@ -39,8 +39,8 @@ The initial Worker uses its isolated workers.dev hostname. Wrangler prints the e
 
 ## Important setup notes
 1. Enable TOTP MFA in Supabase Auth settings. The Worker enforces AAL2 for every protected API route.
-2. Set SUPREME_ADMIN_EMAIL to the owner's exact email. On first dashboard visit, the Worker reserves the unique Supreme Admin seat and sends a Supabase invitation. If the email already has an Auth user, that account is authorized instead.
-3. Open the invitation link on the separate Worker hostname. New invitees set their own password in the dashboard, then enroll and verify TOTP. The application never stores or logs passwords.
+2. Set SUPREME_ADMIN_EMAIL to the owner's exact email. The owner signs in with an existing Supabase Auth account at that address. The Worker binds the unique Super Admin seat after the owner passes two-factor authentication.
+3. Staff open their invitation link on the separate Worker hostname. New invitees set their own password in the dashboard, then enroll and verify TOTP. The application never stores or logs passwords.
 4. Invite Admins and Moderators from the Supreme Admin dashboard. Supabase sends the invite email. Their role is stored server-side and cannot be chosen by the invitee.
 5. Admin API database tables are inaccessible to anon/authenticated roles; the Worker uses the service-role secret only on the server.
 
@@ -71,3 +71,9 @@ Add a repository Actions secret named `CLOUDFLARE_API_TOKEN` (Cloudflare token w
 - Completed tasks use the existing `public.jobs.status = 'completed'` value. The migration adds `completed_at` for accurate future date buckets and a minimal `job_completion_events` table for private realtime notifications.
 - Counts are based on real rows only. App-store installs are not included.
 - The separate admin Worker requires the GitHub Actions secrets `SUPABASE_SERVICE_ROLE_KEY` and `SUPREME_ADMIN_EMAIL`, in addition to `CLOUDFLARE_API_TOKEN`. Never paste the service-role key into chat or commit it.
+
+## Moderation workspace
+
+Apply the repository migration that defines `staff_write_moderation_case` before deploying the Worker. All three staff roles can read the queue, open cases, and start investigations. Admins and the Super Admin can resolve or dismiss investigations. Resolving a case records the decision without automatically changing the marketplace account. Staff access management and the audit log are reserved for the Super Admin.
+
+The public marketplace and staff Worker have separate origins. The staff Worker checks the current staff assignment and two-factor session on every protected request. The moderation function is executable only by the Worker’s backend role, checks the actor’s current staff assignment, and records case changes and audit events in the same transaction.
