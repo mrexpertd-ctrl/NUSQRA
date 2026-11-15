@@ -13,6 +13,7 @@ import './saudi-modern.css';
 import { ProfessionalBanner, SaudiHero, ServiceIcon, ServicesGrid, Wordmark } from './saudi-modern';
 import {MemberAvatar, MemberProfile, MemberProfileDialog, PaymentConfirmations, ProfileCloseButton, ReputationBadge, VerifiedBadge} from './member-profile';
 import { isSupabaseConfigured, supabase } from './supabaseClient';
+import { isNativeApp, mobileCallback, startGoogleSignIn, watchMobileAuth } from './mobile/auth.mjs';
 
 const dictionary = {
   en: {
@@ -177,6 +178,7 @@ function App() {
   }, [lang]);
 
   useEffect(() => {
+    if (isNativeApp) return;
     if ('serviceWorker' in navigator && window.isSecureContext) {
       navigator.serviceWorker.register('/sw.js', { scope: '/', updateViaCache: 'none' }).then(registration => registration.update()).catch(() => {});
     }
@@ -326,6 +328,16 @@ function App() {
     void load();
     return () => { active = false; };
   }, [session, viewedMemberId, needsMemberDetails]);
+
+  useEffect(() => {
+    if (!supabase) return;
+    return watchMobileAuth(supabase, () => {
+      setBusy(false);
+      setError(document.documentElement.lang === 'ar'
+        ? 'تعذّر إكمال تسجيل الدخول. حاول مرة أخرى.'
+        : 'Could not complete sign-in. Please try again.');
+    });
+  }, []);
 
   const chooseEntryRole = (role) => {
     setSelectedRole(role);
@@ -478,13 +490,10 @@ function App() {
       if (!selectedRole) { setError(isAr ? 'اختر طريقة استخدام نسقرا أولاً.' : 'Choose how you want to use NUSQRA first.'); setBusy(false); return; }
       window.localStorage.setItem('nusqra-pending-role', selectedRole);
       window.localStorage.setItem('nusqra-active-role', selectedRole);
-      const {error:oauthError} = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: { redirectTo: window.location.origin }
-      });
-      if (oauthError) throw oauthError;
+      await startGoogleSignIn(supabase, window.location.origin);
     } catch (e) {
       setError(e.message || t.authError);
+    } finally {
       setBusy(false);
     }
   }
@@ -498,8 +507,7 @@ function App() {
     setBusy(true);
     try {
       if (authMethod === 'google') {
-        const {error:e}=await supabase.auth.signInWithOAuth({provider:'google',options:{redirectTo:'https://nusqra.mrexpertd.workers.dev'}});
-        if(e) throw e;
+        await startGoogleSignIn(supabase, 'https://nusqra.mrexpertd.workers.dev');
         return;
       }
       if (authMethod === 'phone') {
@@ -521,7 +529,7 @@ function App() {
       if (!form.email || (authMode==='register' && !form.full_name.trim())) { setError(t.missing); return; }
       if (authMode === 'register') {
         if (form.password.length < 8) throw new Error(isAr ? 'يجب أن تتكون كلمة المرور من 8 أحرف على الأقل.' : 'Password must be at least 8 characters.');
-        const {data,error:signUpError} = await supabase.auth.signUp({email:form.email.trim(),password:form.password,options:{data:{full_name:form.full_name.trim(),account_type:form.account_type,country_code:form.country_code,preferred_language:lang,professional_category_id:form.account_type==='professional'?signupCategoryId:null}}});
+        const {data,error:signUpError} = await supabase.auth.signUp({email:form.email.trim(),password:form.password,options:{...(isNativeApp ? {emailRedirectTo:mobileCallback} : {}),data:{full_name:form.full_name.trim(),account_type:form.account_type,country_code:form.country_code,preferred_language:lang,professional_category_id:form.account_type==='professional'?signupCategoryId:null}}});
         if (signUpError) throw signUpError;
         if (data.session) { setSession(data.session); setAuthMode(null); setNotice(t.signedIn); }
         else { setNotice(t.signedUp); setAuthMode('login'); }
@@ -1286,7 +1294,7 @@ function App() {
           <button type="button" className={authMethod==='email'?'active':''} onClick={()=>{setAuthMethod('email');setError('');}}>Email</button>
           <button type="button" className={authMethod==='phone'?'active':''} onClick={()=>{setAuthMethod('phone');setError('');}}>Phone</button>
         </div>
-        <button type="button" className="google-auth" disabled={busy||!isSupabaseConfigured} onClick={async()=>{setAuthMethod('google');setError('');setBusy(true);try{const {error:e}=await supabase.auth.signInWithOAuth({provider:'google',options:{redirectTo:'https://nusqra.mrexpertd.workers.dev'}});if(e)throw e;}catch(e){setError(e.message||t.authError);setBusy(false);}}}><span className="google-g" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path fill="#4285F4" d="M23.49 12.27c0-.79-.07-1.54-.2-2.27H12v4.3h6.44a5.5 5.5 0 0 1-2.33 3.36v2.8h3.77c2.2-2.03 3.61-5.02 3.61-8.19z"/><path fill="#34A853" d="M12 24c3.24 0 5.96-1.08 7.95-2.92l-3.77-2.8c-1.05.7-2.4 1.12-4.18 1.12-3.21 0-5.93-2.17-6.9-5.09H1.2v2.89C3.18 21.16 7.27 24 12 24z"/><path fill="#FBBC05" d="M5.1 14.31A7.2 7.2 0 0 1 4.72 12c0-.8.14-1.58.38-2.31V6.8H1.2A12 12 0 0 0 0 12c0 1.94.46 3.77 1.2 5.2l3.9-2.89z"/><path fill="#EA4335" d="M12 4.6c1.77 0 3.36.61 4.61 1.8l3.45-3.45C17.95 1.12 15.24 0 12 0 7.27 0 3.18 2.84 1.2 6.8l3.9 2.89C6.07 6.77 8.79 4.6 12 4.6z"/></svg></span> Continue with Google</button>
+        <button type="button" className="google-auth" disabled={busy||!isSupabaseConfigured} onClick={async()=>{setAuthMethod('google');setError('');setBusy(true);try{await startGoogleSignIn(supabase, 'https://nusqra.mrexpertd.workers.dev');}catch(e){setError(e.message||t.authError);}finally{setBusy(false);}}}><span className="google-g" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path fill="#4285F4" d="M23.49 12.27c0-.79-.07-1.54-.2-2.27H12v4.3h6.44a5.5 5.5 0 0 1-2.33 3.36v2.8h3.77c2.2-2.03 3.61-5.02 3.61-8.19z"/><path fill="#34A853" d="M12 24c3.24 0 5.96-1.08 7.95-2.92l-3.77-2.8c-1.05.7-2.4 1.12-4.18 1.12-3.21 0-5.93-2.17-6.9-5.09H1.2v2.89C3.18 21.16 7.27 24 12 24z"/><path fill="#FBBC05" d="M5.1 14.31A7.2 7.2 0 0 1 4.72 12c0-.8.14-1.58.38-2.31V6.8H1.2A12 12 0 0 0 0 12c0 1.94.46 3.77 1.2 5.2l3.9-2.89z"/><path fill="#EA4335" d="M12 4.6c1.77 0 3.36.61 4.61 1.8l3.45-3.45C17.95 1.12 15.24 0 12 0 7.27 0 3.18 2.84 1.2 6.8l3.9 2.89C6.07 6.77 8.79 4.6 12 4.6z"/></svg></span> Continue with Google</button>
         <div className="auth-divider"><span>or continue with</span></div>
         <form onSubmit={submitAuth}>
           {authMode==='register' && <>

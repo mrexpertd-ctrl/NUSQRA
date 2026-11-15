@@ -1,0 +1,71 @@
+name: NUSQRA mobile preview builds
+
+on:
+  pull_request:
+    paths:
+      - "nusqra-starter/**"
+      - ".github/workflows/mobile-preview.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  android:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: nusqra-starter
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: nusqra-starter/package-lock.json
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - name: Install app dependencies and prepare Android
+        run: |
+          npm ci --no-audit --no-fund
+          cp .env.example .env.production.local
+          npm run mobile:prepare -- android
+      - name: Build Android preview APK
+        working-directory: nusqra-starter/android
+        run: bash ./gradlew --no-daemon assembleDebug
+      - uses: actions/upload-artifact@v4
+        with:
+          name: NUSQRA-Android-preview
+          path: nusqra-starter/android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+
+  ios:
+    runs-on: macos-26
+    defaults:
+      run:
+        working-directory: nusqra-starter
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: nusqra-starter/package-lock.json
+      - name: Install app dependencies and prepare iOS
+        run: |
+          npm ci --no-audit --no-fund
+          cp .env.example .env.production.local
+          npm run mobile:prepare -- ios
+      - name: Build iOS simulator preview
+        run: |
+          xcodebuild -project ios/App/App.xcodeproj -scheme App -configuration Debug \
+            -destination 'generic/platform=iOS Simulator' -derivedDataPath /tmp/nusqra-ios \
+            CODE_SIGNING_ALLOWED=NO build
+          ditto -c -k --keepParent /tmp/nusqra-ios/Build/Products/Debug-iphonesimulator/App.app NUSQRA-iOS-simulator.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: NUSQRA-iOS-simulator
+          path: nusqra-starter/NUSQRA-iOS-simulator.zip
+          if-no-files-found: error
