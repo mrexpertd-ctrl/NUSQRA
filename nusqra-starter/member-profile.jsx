@@ -1,5 +1,5 @@
 import React, {useEffect, useRef} from 'react';
-import {BriefcaseBusiness, MapPin, Star, UserRound, X} from 'lucide-react';
+import {BadgeCheck, BriefcaseBusiness, MapPin, Star, UserRound, X} from 'lucide-react';
 import './member-profile.css';
 
 const tierNames = {
@@ -24,11 +24,15 @@ export function ReputationBadge({reputation, isAr, customer = false, years}) {
   </span>;
 }
 
-export function MemberAvatar({url, reputation, customer, years}) {
-  const tier = tierFor(reputation, customer, years);
+export function MemberAvatar({url, reputation, customer, years, staffTier}) {
+  const tier = staffTier || tierFor(reputation, customer, years);
   return <span className={`member-avatar${tier ? ` member-${tier}` : ''}${tier && customer ? ' member-patron' : ''}`}>
     {url ? <img src={url} alt=""/> : <UserRound aria-hidden="true"/>}
   </span>;
+}
+
+export function VerifiedBadge({isAr}) {
+  return <span className="member-verified"><BadgeCheck size={17} aria-hidden="true"/>{isAr?'موثّق من نسقرا':'Verified by NUSQRA'}</span>;
 }
 
 function SkillStars({reputation, isAr}) {
@@ -44,6 +48,7 @@ function SkillStars({reputation, isAr}) {
 }
 
 export function MemberProfile({person, reputation, isAr, country, professional, customer, portfolio = [], skills = [], onEdit}) {
+  const distinctions = person.profile_distinctions;
   const years = professional?.years_experience;
   const professionalTier = tierFor(reputation, false, years);
   const useClientFrame = Boolean(customer && tierFor(reputation, true));
@@ -51,15 +56,21 @@ export function MemberProfile({person, reputation, isAr, country, professional, 
     <section className="member-card">
       <div className="member-cover">{person.cover_url && <img src={person.cover_url} alt=""/>}</div>
       <div className="member-identity">
-        <MemberAvatar url={person.avatar_url} reputation={reputation} customer={useClientFrame} years={years}/>
+        <MemberAvatar url={person.avatar_url} reputation={reputation} customer={useClientFrame} years={years} staffTier={distinctions?.tier}/>
         {onEdit && <button type="button" className="saudi-outline" onClick={onEdit}>{isAr?'تعديل الملف':'Edit profile'}</button>}
         <h1>{person.display_name || person.full_name || (isAr ? 'عضو نسقرا' : 'NUSQRA member')}</h1>
         {professional?.headline && <p className="member-headline">{professional.headline}</p>}
         {(professional?.city || country) && <p className="member-location"><MapPin size={15} aria-hidden="true"/>{[professional?.city, country].filter(Boolean).join(' · ')}</p>}
         <div className="member-badges">
+          {distinctions?.verified && <VerifiedBadge isAr={isAr}/>}
+          {distinctions?.tier && <span className={`member-badge member-${distinctions.tier}`}>{isAr?'إطار نسقرا':'NUSQRA frame'} · {tierNames[distinctions.tier][Number(isAr)]}</span>}
           {professionalTier && <ReputationBadge reputation={reputation} years={years} isAr={isAr}/>}
           {customer && <ReputationBadge reputation={reputation} customer isAr={isAr}/>}
         </div>
+        {distinctions?.stars && <div className="member-stars" aria-label={isAr?`نجوم نسقرا ${distinctions.stars} من 5`:`NUSQRA staff award, ${distinctions.stars} out of 5 stars`}>
+          <span className="member-star-icons" aria-hidden="true">{[1,2,3,4,5].map(value => <Star key={value} size={16} fill={value<=distinctions.stars?'currentColor':'none'}/>)}</span>
+          <span>{isAr?'نجوم نسقرا':'NUSQRA staff stars'}</span>
+        </div>}
         {professional && <SkillStars reputation={reputation} isAr={isAr}/>}
       </div>
     </section>
