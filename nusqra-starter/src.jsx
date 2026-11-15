@@ -1129,8 +1129,9 @@ function App() {
           portfolio={viewedProfessional.portfolio}
           skills={[...new Set([...viewedProfessional.skillScores.map(score => score.skill), ...categories.filter(category => viewedProfessional.categoryIds.includes(category.id)).map(category => isAr ? category.name_ar : category.name_en)])]}/>
       </MemberProfileDialog>}
-      {settingsOpen && session && <section className="section account-section settings-page settings-popover-panel" id="account">
-        <div className="settings-popover-heading"><div><span>NUSQRA ACCOUNT</span><h2>{t.dashboard}</h2></div><button type="button" aria-label="Close settings" onClick={()=>setSettingsOpen(false)}><X size={19}/></button></div>
+      {settingsOpen && session && <MemberProfileDialog accountEditor isAr={isAr} onClose={()=>{setPreviewOpen(false);setSettingsOpen(false);}}>
+        <section className="member-editor" id="account">
+        <h2>{t.dashboard}</h2>
         <div className="account-card">
           <div className="account-heading"><div><h3>{profileForm.full_name || session.user.email}</h3><p>{session.user.email}</p></div><div className="settings-actions"><button className="btn secondary" type="button" onClick={()=>setSettingsOpen(false)}>{isAr?"إغلاق":"Close"}</button><button className="btn secondary" onClick={signOut}><LogOut size={16}/>{t.logout}</button></div></div>
           <div className="language-preference"><label htmlFor="nusqra-language-setting">{isAr?'لغة المنصة':'Website language'}</label><select id="nusqra-language-setting" value={lang} onChange={e=>setLang(e.target.value)}><option value="ar">العربية</option><option value="en">English</option></select></div>
@@ -1144,7 +1145,7 @@ function App() {
               {isProfessional && <button type="button" role="tab" aria-selected={profileTab==='professional'} className={profileTab==='professional'?'active':''} onClick={()=>setProfileTab('professional')}>{isAr?'المعلومات المهنية':'Professional'}</button>}
               <button type="button" role="tab" aria-selected={profileTab==='appearance'} className={profileTab==='appearance'?'active':''} onClick={()=>setProfileTab('appearance')}>{isAr?'المظهر والقوالب':'Appearance & templates'}</button>
             </div>
-            {profileTab==='identity' && <div className="profile-tab-panel">
+            {(profileTab==='identity' || (profileTab==='professional' && !isProfessional)) && <div className="profile-tab-panel">
               <div className="profile-upload-grid">
                 <label className="profile-upload-card"><span className="upload-icon">◎</span><strong>{isAr?'الصورة الشخصية':'Profile photo'}</strong><small>{isAr?'صورة واضحة للوجه في منتصف الإطار · JPG/PNG/WEBP حتى 5MB':'Clear face, centered in frame · JPG/PNG/WEBP up to 5MB'}</small><input type="file" accept="image/jpeg,image/png,image/webp" onChange={e=>setPhotoFiles(v=>({...v,avatar:e.target.files?.[0]||null}))}/></label>
                 <label className="profile-upload-card"><span className="upload-icon">▱</span><strong>{isAr?'صورة الغلاف':'Cover image'}</strong><small>{isAr?'صورة عريضة اختيارية':'Optional wide banner image'}</small><input type="file" accept="image/jpeg,image/png,image/webp" onChange={e=>setPhotoFiles(v=>({...v,cover:e.target.files?.[0]||null}))}/></label>
@@ -1198,7 +1199,8 @@ function App() {
             </section>
           </div>}
         </div>
-      </section>}
+        </section>
+      </MemberProfileDialog>}
     </main>
     <footer className="saudi-footer"><Wordmark/><small>© {new Date().getFullYear()} NUSQRA</small></footer>
     {authMode && <div className="auth-backdrop" role="presentation" onMouseDown={e=>{if(e.target===e.currentTarget){setAuthMode(null);setError('')}}}>

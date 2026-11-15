@@ -117,11 +117,11 @@ export function PaymentConfirmations({projects, pending, error, isAr, onConfirm}
   </section>;
 }
 
-export function MemberProfileDialog({onClose, isAr, children}) {
+export function MemberProfileDialog({onClose, isAr, children, accountEditor = false}) {
   const dialog = useRef(null);
   useEffect(() => { dialog.current.showModal(); }, []);
-  return <dialog ref={dialog} className="member-profile-dialog" aria-label={isAr?'الملف المهني':'Professional profile'} onClose={onClose}>
-    <button type="button" className="member-close saudi-outline" onClick={() => dialog.current.close()} aria-label={isAr?'إغلاق الملف':'Close profile'}><X size={20}/></button>
+  return <dialog ref={dialog} className={`member-profile-dialog${accountEditor ? " member-editor-dialog" : ""}`} aria-label={accountEditor ? (isAr ? "إعدادات الحساب" : "Account settings") : (isAr ? "الملف المهني" : "Professional profile")} onClose={onClose}>
+    <button type="button" className="member-close saudi-outline" onClick={() => dialog.current.close()} aria-label={isAr?'إغلاق':'Close'}><X size={20}/></button>
     {children}
   </dialog>;
 }
