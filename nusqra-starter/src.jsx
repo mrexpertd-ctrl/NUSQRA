@@ -11,6 +11,7 @@ import './style.css';
 import './emerald-city.css';
 import './saudi-modern.css';
 import { ProfessionalBanner, SaudiHero, ServiceIcon, ServicesGrid, Wordmark } from './saudi-modern';
+import {MemberAvatar, MemberProfile, MemberProfileDialog, PaymentConfirmations, ReputationBadge} from './member-profile';
 import { isSupabaseConfigured, supabase } from './supabaseClient';
 
 const dictionary = {
@@ -109,6 +110,12 @@ function App() {
   const [categoryAudience,setCategoryAudience] = useState('all');
   const [jobs,setJobs] = useState([]);
   const [professionalDirectory,setProfessionalDirectory] = useState([]);
+  const [viewedProfessional, setViewedProfessional] = useState(null);
+  const [myReputation, setMyReputation] = useState(null);
+  const [clientReputation, setClientReputation] = useState({});
+  const [reputationProjects, setReputationProjects] = useState(null);
+  const [paymentPending, setPaymentPending] = useState(false);
+  const [paymentError, setPaymentError] = useState('');
   const [selectedCategoryId,setSelectedCategoryId] = useState('');
   const [professionalCategoryIds,setProfessionalCategoryIds] = useState([]);
   const [signupCategoryId,setSignupCategoryId] = useState('');
@@ -476,7 +483,7 @@ function App() {
   useEffect(()=>{
     if(!session||!supabase||!isProfessional)return;
     let alive=true;
-    (async()=>{const [cr,po]=await Promise.all([supabase.from('professional_credentials').select('id,category_id,title,issuer,credential_number,status,review_note,created_at').eq('professional_user_id',session.user.id).order('created_at',{ascending:false}),supabase.from('professional_portfolio').select('id,category_id,title,description,media_url,project_url,created_at').eq('professional_user_id',session.user.id).order('created_at',{ascending:false})]);if(!alive)return;if(cr.error||po.error){setError(cr.error?.message||po.error?.message);return;}setProfessionalCredentials(cr.data||[]);setProfessionalPortfolio(po.data||[]);})();
+    (async()=>{const [cr,po]=await Promise.all([supabase.from('professional_credentials').select('id,category_id,title,issuer,credential_number,status,review_note,created_at').eq('professional_user_id',session.user.id).order('created_at',{ascending:false}),supabase.from('professional_portfolio').select('id,category_id,title,description,media_url,project_url,review_status,created_at').eq('professional_user_id',session.user.id).order('created_at',{ascending:false})]);if(!alive)return;if(cr.error||po.error){setError(cr.error?.message||po.error?.message);return;}setProfessionalCredentials(cr.data||[]);setProfessionalPortfolio(po.data||[]);})();
     return()=>{alive=false;};
   },[session,isProfessional]);
 
@@ -586,6 +593,58 @@ function App() {
     return () => { alive = false; };
   }, []);
 
+  const memberId = session?.user?.id;
+  useEffect(() => {
+    if (page !== 'profile' || !memberId || !supabase) return;
+    let active = true;
+    setReputationProjects(null);
+    setMyReputation(null);
+    setPaymentError('');
+    Promise.all([
+      supabase.rpc('profile_reputation', {profile_ids: [memberId]}),
+      supabase.rpc('my_reputation_projects'),
+    ]).then(([stats, projects]) => {
+      if (!active) return;
+      setMyReputation(stats.data?.[0] ?? null);
+      setReputationProjects(projects.data ?? []);
+      if (stats.error || projects.error) setPaymentError(isAr ? 'تعذر تحميل سجل المشاريع.' : 'Could not load your project record.');
+    });
+    return () => { active = false; };
+  }, [memberId, page, isAr]);
+
+  useEffect(() => {
+    if (!memberId || page !== 'marketplace' || !supabase) return;
+    const customerIds = [...new Set(jobs.map(job => job.customer_id))];
+    if (!customerIds.length) return;
+    let active = true;
+    supabase.rpc('profile_reputation', {profile_ids: customerIds}).then(({data}) => {
+      if (active) setClientReputation(Object.fromEntries((data || []).map(row => [row.profile_id, row])));
+    });
+    return () => { active = false; };
+  }, [memberId, page, jobs]);
+
+  async function confirmProjectPayment(project) {
+    setPaymentPending(true);
+    setPaymentError('');
+    try {
+      const {error: updateError} = await supabase.rpc('set_project_payment_confirmation', {
+        project_id: project.job_id, confirmed: !project.confirmed_by_me,
+      });
+      if (updateError) throw updateError;
+      const [stats, projects] = await Promise.all([
+        supabase.rpc('profile_reputation', {profile_ids: [memberId]}),
+        supabase.rpc('my_reputation_projects'),
+      ]);
+      if (stats.error || projects.error) throw stats.error || projects.error;
+      setMyReputation(stats.data?.[0] ?? null);
+      setReputationProjects(projects.data ?? []);
+    } catch {
+      setPaymentError(isAr ? 'تعذر تحديث سجل الدفع. يُرجى تحديث الصفحة والتحقق من الحالة.' : 'Could not refresh the payment record. Reload the page to check the current status.');
+    } finally {
+      setPaymentPending(false);
+    }
+  }
+
   async function loadMarketplace() {
     if (!session || !supabase) return;
     const [c,j,mp] = await Promise.all([
@@ -622,20 +681,23 @@ function App() {
       if(proError){if(alive)setError(proError.message);return;}
       const ids=(proRows||[]).map(p=>p.user_id);
       if(!ids.length){if(alive)setProfessionalDirectory([]);return;}
-      const {data:profilesRows,error:profilesError}=await supabase.from('profiles').select('id,full_name,display_name,country_code,bio,avatar_url').in('id',ids);
+      const {data:profilesRows,error:profilesError}=await supabase.from('profiles').select('id,full_name,display_name,country_code,bio,avatar_url,cover_url').in('id',ids);
       if(!alive)return;
       if(profilesError){setError(profilesError.message);return;}
-      const [portfolioResult,ratingsResult]=await Promise.all([
+      const [portfolioResult,ratingsResult,reputationResult]=await Promise.all([
         supabase.from('professional_portfolio').select('id,professional_user_id,category_id,title,description,media_url,project_url').eq('review_status','approved').in('professional_user_id',ids),
-        supabase.from('professional_skill_ratings').select('professional_id,skill_name,rating').in('professional_id',ids)
+        supabase.from('professional_skill_ratings').select('professional_id,skill_name,rating').in('professional_id',ids),
+        supabase.rpc('profile_reputation', {profile_ids: ids})
       ]);
       if(portfolioResult.error||ratingsResult.error){if(alive)setError(portfolioResult.error?.message||ratingsResult.error?.message);return;}
+      if (!alive) return;
+      const reputationById = Object.fromEntries((reputationResult.data || []).map(row => [row.profile_id, row]));
       const byId=Object.fromEntries((profilesRows||[]).map(p=>[p.id,p]));
       const portfolioByUser={};(portfolioResult.data||[]).forEach(x=>{(portfolioByUser[x.professional_user_id] ||= []).push(x);});
       const tagsByUser={};categoryRows.forEach(x=>{(tagsByUser[x.professional_user_id] ||= []).push(x.category_id);});
       const ratingsByUser={};(ratingsResult.data||[]).forEach(x=>{const rows=(ratingsByUser[x.professional_id] ||= {});(rows[x.skill_name] ||= []).push(x.rating);});
       const skillScores=Object.fromEntries(Object.entries(ratingsByUser).map(([uid,skills])=>[uid,Object.entries(skills).map(([skill,values])=>({skill,average:values.reduce((a,b)=>a+b,0)/values.length,count:values.length}))]));
-      setProfessionalDirectory((proRows||[]).map(p=>({...p,profile:byId[p.user_id],categoryIds:tagsByUser[p.user_id]||[],portfolio:portfolioByUser[p.user_id]||[],skillScores:skillScores[p.user_id]||[]})).filter(p=>p.profile));
+      setProfessionalDirectory((proRows||[]).map(p=>({...p,profile:byId[p.user_id],reputation:reputationById[p.user_id],categoryIds:tagsByUser[p.user_id]||[],portfolio:portfolioByUser[p.user_id]||[],skillScores:skillScores[p.user_id]||[]})).filter(p=>p.profile));
     })();
     return()=>{alive=false;};
   },[page,selectedCategoryId]);
@@ -917,6 +979,7 @@ function App() {
         {session && <><button type="button" onClick={()=>navigatePage('marketplace')}>{isAr?'السوق':'Marketplace'}</button><button type="button" onClick={()=>navigatePage('messages')}>{t.messages}</button></>}
       </nav>
       <div className="saudi-header-actions">
+        {session && <button type="button" className="saudi-language" onClick={()=>navigatePage('profile')}><UserRound size={16}/>{isAr?'ملفي الشخصي':'My profile'}</button>}
         {session ? <button className="saudi-outline" aria-expanded={settingsOpen} onClick={()=>setSettingsOpen(v=>!v)}><UserRound size={15}/>{t.account}</button> :
           <><button className="navlink" onClick={()=>{setAuthMode('login');setError('');setNotice('')}}>{t.login}</button><button className="btn primary" onClick={()=>{setAuthMode('register');setError('');setNotice('')}}>{t.signup}</button></>}
         <button className="saudi-language" onClick={()=>setLang(isAr?'en':'ar')}><Globe2 size={17}/>{isAr?'English':'العربية'}</button>
@@ -984,7 +1047,7 @@ function App() {
         <div className="support-layout"><div className="support-panel"><h3>Open a support request</h3><form className="market-form" onSubmit={createSupportTicket}><label>Subject<input required maxLength="160" value={supportSubject} onChange={e=>setSupportSubject(e.target.value)}/></label><label>How can we help?<textarea required rows="5" maxLength="5000" value={supportBody} onChange={e=>setSupportBody(e.target.value)}/></label><button className="btn primary" type="submit" disabled={busy}>Send to support</button></form><h3>Your requests</h3>{mySupportTickets.length===0?<p className="market-empty">You have no support requests yet.</p>:mySupportTickets.map(ticket=><button type="button" className={'support-ticket '+(mySelectedTicket?.id===ticket.id?'active':'')} key={ticket.id} onClick={()=>openMySupportTicket(ticket)}><strong>{ticket.subject}</strong><span>{ticket.status}</span><small>{new Date(ticket.updated_at).toLocaleString()}</small></button>)}</div><div className="support-panel support-ticket-detail">{mySelectedTicket?<><h3>{mySelectedTicket.subject}</h3><p>{mySelectedTicket.status}</p><div className="support-messages">{mySupportMessages.map(m=><div key={m.id} className={m.sender_id===session.user.id?'support-own':''}><p>{m.body}</p><small>{new Date(m.created_at).toLocaleString()}</small></div>)}</div>{!['resolved','closed'].includes(mySelectedTicket.status)&&<form onSubmit={replyMySupportTicket}><textarea rows="3" required value={mySupportReply} onChange={e=>setMySupportReply(e.target.value)} placeholder="Write a reply…"/><button className="btn primary" type="submit">Send reply</button></form>}</>:<p className="market-empty">Select one of your support requests to see replies.</p>}</div></div>
       </section>}
 
-      {page === 'professionals' && <section className="section professional-directory"><div className="section-label">NUSQRA · PROFESSIONAL DIRECTORY</div><h2>{isAr?'المحترفون حسب التصنيف':'Professionals by category'}</h2><p className="section-intro">{selectedCategoryId?(isAr?'المحترفون الذين يقدمون الخدمة في التصنيف المحدد.':'Professionals who offer services in your selected category.'):(isAr?'اختر تصنيفاً أولاً لعرض المحترفين المناسبين.':'Choose a service category first to see matching professionals.')}</p><div className="professional-directory-toolbar">{selectedCategoryId&&<strong>{(()=>{const c=categories.find(x=>x.id===selectedCategoryId);return c?(isAr?c.name_ar:c.name_en):'';})()}</strong>}<button className="btn secondary" type="button" onClick={()=>navigatePage('categories')}>{isAr?'تغيير التصنيف':'Change category'}</button>{selectedCategoryId&&<button className="btn primary" type="button" onClick={()=>{setJobForm(v=>({...v,category_id:selectedCategoryId}));navigatePage('marketplace');}}>{isAr?'انشر طلباً بهذا التصنيف':'Post a job in this category'}</button>}</div>{error&&<p className="auth-error" role="alert">{error}</p>}{professionalDirectory.length===0?<p className="market-empty">{selectedCategoryId?(isAr?'لا يوجد محترفون مسجلون في هذا التصنيف بعد.':'No professionals have selected this category yet.'):(isAr?'اختر تصنيفاً لعرض المحترفين.':'Select a category to view professionals.')}</p>:<div className="professional-directory-grid">{professionalDirectory.map(p=><article className="professional-directory-card" key={p.user_id}>{p.profile.avatar_url?<img src={p.profile.avatar_url} alt=""/>:<div className="professional-avatar">{(p.profile.display_name||p.profile.full_name||'N').slice(0,1).toUpperCase()}</div>}<div className="professional-directory-copy"><h3>{p.profile.display_name||p.profile.full_name||t.professional}</h3><strong>{p.headline|| (isAr?'محترف في نسقرا':'NUSQRA professional')}</strong><span className="professional-level-badge">{p.profile_level==='expert'?(isAr?'خبير':'Expert'):p.profile_level==='experienced'?(isAr?'ذو خبرة':'Experienced'):(isAr?'مبتدئ':'Entry level')} · {isAr?'مستوى معلن':'Self-declared level'}</span>{p.can_travel_to_jobs&&<span className="travel-ready-badge">{isAr?'يستطيع الانتقال إلى مواقع العمل':'Can travel to job locations'}</span>}<span className={'availability-badge availability-'+(p.availability_status||'unavailable')}>{p.availability_status==='available'?(isAr?'متاح للعمل':'Available for work'):p.availability_status==='busy'?(isAr?'مشغول حالياً':'Currently busy'):(isAr?'غير متاح حالياً':'Not currently available')}</span><span className="verified-profile-badge">✓ {isAr?'ملف موثق':'Verified profile'}</span>{p.skillScores?.length>0&&<div className="professional-skill-scores"><strong>{isAr?'تقييمات المهارات':'Skill ratings'}</strong>{p.skillScores.map(score=><span key={score.skill}><b>{score.skill}</b><em>{'★'.repeat(Math.round(score.average))}{'☆'.repeat(5-Math.round(score.average))}</em><small>{score.average.toFixed(1)} ({score.count})</small></span>)}</div>}<p>{p.about||p.profile.bio||''}</p><small>{[p.city,p.country_code||p.profile.country_code].filter(Boolean).join(' · ')}{p.years_experience?` · ${p.years_experience} ${isAr?'سنوات خبرة':'years experience'}`:''}</small><div className="professional-category-tags">{(p.categoryIds||[]).map(id=>{const c=categories.find(x=>x.id===id);return c?<span key={id}>{isAr?c.name_ar:c.name_en}</span>:null;})}</div>{p.portfolio?.length>0&&<div className="directory-work-highlights"><strong>{isAr?'أبرز الأعمال':'Work highlights'}</strong>{p.portfolio.slice(0,3).map(item=><div key={item.id}>{item.media_url&&<img src={item.media_url} alt={item.title}/>}<b>{item.title}</b><p>{item.description}</p>{item.project_url&&<a href={item.project_url} target="_blank" rel="noreferrer">{isAr?'عرض المشروع':'View project'}</a>}</div>)}</div>}</div></article>)}</div>}<div className="buttons"><button className="btn secondary" onClick={()=>navigatePage('marketplace')}>{isAr?'استكشف فرص العمل':'Explore opportunities'}</button></div></section>}
+      {page === 'professionals' && <section className="section professional-directory"><div className="section-label">NUSQRA · PROFESSIONAL DIRECTORY</div><h2>{isAr?'المحترفون حسب التصنيف':'Professionals by category'}</h2><p className="section-intro">{selectedCategoryId?(isAr?'المحترفون الذين يقدمون الخدمة في التصنيف المحدد.':'Professionals who offer services in your selected category.'):(isAr?'اختر تصنيفاً أولاً لعرض المحترفين المناسبين.':'Choose a service category first to see matching professionals.')}</p><div className="professional-directory-toolbar">{selectedCategoryId&&<strong>{(()=>{const c=categories.find(x=>x.id===selectedCategoryId);return c?(isAr?c.name_ar:c.name_en):'';})()}</strong>}<button className="btn secondary" type="button" onClick={()=>navigatePage('categories')}>{isAr?'تغيير التصنيف':'Change category'}</button>{selectedCategoryId&&<button className="btn primary" type="button" onClick={()=>{setJobForm(v=>({...v,category_id:selectedCategoryId}));navigatePage('marketplace');}}>{isAr?'انشر طلباً بهذا التصنيف':'Post a job in this category'}</button>}</div>{error&&<p className="auth-error" role="alert">{error}</p>}{professionalDirectory.length===0?<p className="market-empty">{selectedCategoryId?(isAr?'لا يوجد محترفون مسجلون في هذا التصنيف بعد.':'No professionals have selected this category yet.'):(isAr?'اختر تصنيفاً لعرض المحترفين.':'Select a category to view professionals.')}</p>:<div className="professional-directory-grid">{professionalDirectory.map(p=><article className="professional-directory-card member-directory-card" key={p.user_id}><MemberAvatar url={p.profile.avatar_url} reputation={p.reputation} years={p.years_experience}/><div className="professional-directory-copy"><h3>{p.profile.display_name||p.profile.full_name||t.professional}</h3><strong>{p.headline|| (isAr?'محترف في نسقرا':'NUSQRA professional')}</strong><span className="professional-level-badge">{p.profile_level==='expert'?(isAr?'خبير':'Expert'):p.profile_level==='experienced'?(isAr?'ذو خبرة':'Experienced'):(isAr?'مبتدئ':'Entry level')} · {isAr?'مستوى معلن':'Self-declared level'}</span>{p.can_travel_to_jobs&&<span className="travel-ready-badge">{isAr?'يستطيع الانتقال إلى مواقع العمل':'Can travel to job locations'}</span>}<span className={'availability-badge availability-'+(p.availability_status||'unavailable')}>{p.availability_status==='available'?(isAr?'متاح للعمل':'Available for work'):p.availability_status==='busy'?(isAr?'مشغول حالياً':'Currently busy'):(isAr?'غير متاح حالياً':'Not currently available')}</span><span className="verified-profile-badge">✓ {isAr?'ملف موثق':'Verified profile'}</span>{p.skillScores?.length>0&&<div className="professional-skill-scores"><strong>{isAr?'تقييمات المهارات':'Skill ratings'}</strong>{p.skillScores.map(score=><span key={score.skill}><b>{score.skill}</b><em>{'★'.repeat(Math.round(score.average))}{'☆'.repeat(5-Math.round(score.average))}</em><small>{score.average.toFixed(1)} ({score.count})</small></span>)}</div>}<p>{p.about||p.profile.bio||''}</p><small>{[p.city,p.country_code||p.profile.country_code].filter(Boolean).join(' · ')}{p.years_experience?` · ${p.years_experience} ${isAr?'سنوات خبرة':'years experience'}`:''}</small><div className="professional-category-tags">{(p.categoryIds||[]).map(id=>{const c=categories.find(x=>x.id===id);return c?<span key={id}>{isAr?c.name_ar:c.name_en}</span>:null;})}</div><button type="button" className="saudi-outline" onClick={()=>setViewedProfessional(p)}>{isAr?'عرض الملف المهني':'View professional profile'}</button></div></article>)}</div>}<div className="buttons"><button className="btn secondary" onClick={()=>navigatePage('marketplace')}>{isAr?'استكشف فرص العمل':'Explore opportunities'}</button></div></section>}
       {page === 'explore' && <section className="section" id="explore"><div className="section-label">NUSQRA PLATFORM</div><h2>{t.trust}</h2><div className="feature-grid">
         {[ShieldCheck,Users,Crown,Globe2].map((Icon,i)=><article className="feature" key={i}><span className="iconbox"><Icon size={24}/></span><h3>{t.features[i]}</h3><p>{t.featureText[i]}</p></article>)}
       </div></section>}
@@ -1019,7 +1082,7 @@ function App() {
                 const v=proposalForms[job.id]||{cover_letter:'',proposed_price:'',delivery_days:''};
                 return <article className="job-card" key={job.id}>
                   <div className="job-card-top"><span className="job-status">{job.status}</span><span className="job-date">{new Date(job.created_at).toLocaleDateString(lang==='ar'?'ar-SA':'en-US')}</span></div>
-                  <h4>{job.title}</h4><p className="job-category">{category?(isAr?category.name_ar:category.name_en):t.marketplace} · {job.city||job.country_code}</p>
+                  <h4>{job.title}</h4><ReputationBadge reputation={clientReputation[job.customer_id]} customer isAr={isAr}/><p className="job-category">{category?(isAr?category.name_ar:category.name_en):t.marketplace} · {job.city||job.country_code}</p>
                   <p className="job-description">{job.description}</p>
                   <div className="job-meta"><strong>{t.budget}: {job.budget_min??'—'} – {job.budget_max??'—'} {job.currency}</strong></div>
                   {!session&&job.status==='open'&&<button className="btn primary" type="button" onClick={()=>{setForm(x=>({...x,account_type:'professional'}));setAuthMode('login');}}>{isAr?'سجّل الدخول لتقديم عرض':'Log in to submit a proposal'}</button>}
@@ -1051,6 +1114,21 @@ function App() {
         </div>
       </section>}
       {page === 'messages' && session && <section className="section marketplace-section messaging-section" id="messages"><div className="section-label">NUSQRA · PRIVATE</div><h2>{t.messages}</h2><div className="messaging-layout"><aside className="conversation-list">{conversations.length===0?<p className="market-empty">{t.noConversations}</p>:conversations.map(c=><button type="button" className={'conversation-item'+(selectedConversation?.id===c.id?' active':'')} key={c.id} onClick={()=>setSelectedConversation(c)}><strong>{c.job?.title||t.marketplace}</strong><span>{session.user.id===c.customer_id?(c.professional?.full_name||t.professional):(c.customer?.full_name||t.customer)}</span></button>)}</aside><div className="chat-panel">{selectedConversation?<><div className="chat-heading"><strong>{selectedConversation.job?.title||conversations.find(c=>c.id===selectedConversation.id)?.job?.title||t.marketplace}</strong><span>{session.user.id===selectedConversation.customer_id?(conversations.find(c=>c.id===selectedConversation.id)?.professional?.full_name||t.professional):(conversations.find(c=>c.id===selectedConversation.id)?.customer?.full_name||t.customer)}</span></div><div className="message-list">{messages.map(m=><div key={m.id} className={'message-bubble'+(m.sender_id===session.user.id?' mine':'')}><p>{m.body}</p><time>{new Date(m.created_at).toLocaleString(lang==='ar'?'ar-SA':'en-US')}</time></div>)}</div><form className="message-compose" onSubmit={sendMessage}><textarea rows="2" maxLength="4000" required placeholder={t.messagePlaceholder} value={messageDraft} onChange={e=>setMessageDraft(e.target.value)}/><button className="btn primary" type="submit" disabled={busy||!messageDraft.trim()||!canMessage}><Send size={16}/>{t.sendMessage}</button></form></>:<p className="market-empty">{t.noConversations}</p>}</div></div></section>}
+      {page === 'profile' && session && <div className="member-page">
+        <MemberProfile person={profile || {}} professional={professional} customer={roles.includes('customer') || Boolean(myReputation?.confirmed_paid_projects)}
+          country={t.countries[profile?.country_code]} isAr={isAr} reputation={myReputation}
+          portfolio={professionalPortfolio.filter(item => item.review_status === 'approved')}
+          skills={categories.filter(category => professionalCategoryIds.includes(category.id)).map(category => isAr ? category.name_ar : category.name_en)}
+          onEdit={() => setSettingsOpen(true)}/>
+        <PaymentConfirmations projects={reputationProjects} pending={paymentPending} error={paymentError} isAr={isAr} onConfirm={confirmProjectPayment}/>
+      </div>}
+      {viewedProfessional && <MemberProfileDialog onClose={()=>setViewedProfessional(null)} isAr={isAr}>
+        <MemberProfile person={viewedProfessional.profile} professional={viewedProfessional} isAr={isAr}
+          reputation={viewedProfessional.reputation} customer={Boolean(viewedProfessional.reputation?.confirmed_paid_projects)}
+          country={t.countries[viewedProfessional.country_code || viewedProfessional.profile.country_code]}
+          portfolio={viewedProfessional.portfolio}
+          skills={[...new Set([...viewedProfessional.skillScores.map(score => score.skill), ...categories.filter(category => viewedProfessional.categoryIds.includes(category.id)).map(category => isAr ? category.name_ar : category.name_en)])]}/>
+      </MemberProfileDialog>}
       {settingsOpen && session && <section className="section account-section settings-page settings-popover-panel" id="account">
         <div className="settings-popover-heading"><div><span>NUSQRA ACCOUNT</span><h2>{t.dashboard}</h2></div><button type="button" aria-label="Close settings" onClick={()=>setSettingsOpen(false)}><X size={19}/></button></div>
         <div className="account-card">
